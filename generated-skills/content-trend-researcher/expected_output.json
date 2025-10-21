@@ -1,0 +1,397 @@
+{
+  "research_summary": {
+    "topic": "AI automation for small businesses",
+    "platforms_analyzed": 6,
+    "analysis_depth": "deep",
+    "analysis_date": "2025-10-21",
+    "total_outlines_generated": 3
+  },
+  "topic_overview": {
+    "topic": "AI automation for small businesses",
+    "search_volume_monthly": "15K - 25K",
+    "trend_direction": "Rising",
+    "trend_velocity": "Fast (+45% over 6 months)",
+    "competition_level": "Medium",
+    "seasonality": "Low seasonality - consistent year-round interest",
+    "market_maturity": "Growth phase - established but still expanding",
+    "opportunity_score": {
+      "overall_score": 76.4,
+      "rating": "Good",
+      "breakdown": {
+        "search_demand": 75,
+        "trend_momentum": 82,
+        "competition": 60,
+        "engagement": 88
+      },
+      "recommendation": "Recommend creating content with unique angle"
+    }
+  },
+  "platform_insights": [
+    {
+      "platform": "Google Trends",
+      "trending_queries": [
+        {"query": "AI automation for small businesses tutorial", "growth": "+150%"},
+        {"query": "best AI automation for small businesses tools", "growth": "+85%"},
+        {"query": "AI automation for small businesses guide 2025", "growth": "+120%"}
+      ],
+      "related_topics": [
+        {"topic": "AI automation for small businesses automation", "relevance": 95},
+        {"topic": "AI automation for small businesses best practices", "relevance": 88},
+        {"topic": "AI automation for small businesses for beginners", "relevance": 82}
+      ],
+      "regional_interest": [
+        {"region": "United States", "interest": 100},
+        {"region": "United Kingdom", "interest": 75},
+        {"region": "Canada", "interest": 68}
+      ],
+      "trend_status": "Rising",
+      "peak_interest_period": "Last 3 months"
+    },
+    {
+      "platform": "Reddit",
+      "relevant_subreddits": [
+        {
+          "subreddit": "r/AIautomationforsmallbusinesses",
+          "subscribers": "250K",
+          "activity": "High",
+          "avg_upvotes": 450
+        },
+        {
+          "subreddit": "r/AI",
+          "subscribers": "500K",
+          "activity": "Very High",
+          "avg_upvotes": 680
+        }
+      ],
+      "trending_discussions": [
+        {
+          "title": "How I mastered AI automation for small businesses in 30 days",
+          "upvotes": 2400,
+          "comments": 180,
+          "engagement_rate": "High"
+        },
+        {
+          "title": "The ultimate AI automation for small businesses resource list",
+          "upvotes": 1800,
+          "comments": 95,
+          "engagement_rate": "High"
+        }
+      ],
+      "common_questions": [
+        "What are the best resources for learning AI automation for small businesses?",
+        "How long does it take to get good at AI automation for small businesses?",
+        "Is AI automation for small businesses worth learning in 2025?"
+      ],
+      "sentiment": "Positive (78%)"
+    },
+    {
+      "platform": "YouTube",
+      "top_videos": [
+        {
+          "title": "AI automation for small businesses Complete Guide 2025",
+          "views": "850K",
+          "upload_date": "2 months ago",
+          "duration": "45:30",
+          "engagement": "High (12K likes, 800 comments)"
+        },
+        {
+          "title": "I tried AI automation for small businesses for 100 days",
+          "views": "1.2M",
+          "upload_date": "1 month ago",
+          "duration": "18:45",
+          "engagement": "Very High (28K likes, 1.5K comments)"
+        }
+      ],
+      "content_formats": [
+        {"format": "Tutorial/How-to", "performance": "Excellent"},
+        {"format": "Case study", "performance": "Good"},
+        {"format": "Review/Comparison", "performance": "Excellent"}
+      ],
+      "optimal_video_length": "15-25 minutes for tutorials, 8-12 for quick tips",
+      "trending_angles": [
+        "AI automation for small businesses for beginners",
+        "AI automation for small businesses mistakes to avoid",
+        "Advanced AI automation for small businesses techniques"
+      ]
+    }
+  ],
+  "user_intent_analysis": {
+    "primary_intent": {
+      "intent": "informational",
+      "confidence": "High",
+      "description": "Users want to learn and understand the topic"
+    },
+    "intent_breakdown": {
+      "informational": 65.0,
+      "commercial": 20.0,
+      "transactional": 8.0,
+      "navigational": 5.0,
+      "problem_solving": 2.0
+    },
+    "user_journey_stage": {
+      "stage": "Awareness",
+      "characteristics": [
+        "Just discovering the topic",
+        "Researching to understand basics",
+        "Looking for educational content",
+        "High-level information needs"
+      ],
+      "content_focus": "Educational, broad, foundational content"
+    },
+    "content_depth_needed": {
+      "recommended_depth": "Beginner to Intermediate",
+      "approach": "Start with basics, progress to intermediate concepts",
+      "audience_level": "Mixed - cater to multiple skill levels"
+    },
+    "top_questions": [
+      {
+        "question": "What is AI automation for small businesses?",
+        "intent": "informational",
+        "search_volume": "High",
+        "difficulty": "Easy"
+      },
+      {
+        "question": "How to get started with AI automation for small businesses?",
+        "intent": "informational",
+        "search_volume": "High",
+        "difficulty": "Easy"
+      },
+      {
+        "question": "What are the benefits of AI automation for small businesses?",
+        "intent": "informational",
+        "search_volume": "Medium",
+        "difficulty": "Easy"
+      },
+      {
+        "question": "Best AI automation for small businesses tools/resources?",
+        "intent": "commercial",
+        "search_volume": "High",
+        "difficulty": "Medium"
+      },
+      {
+        "question": "How much does AI automation for small businesses cost?",
+        "intent": "transactional",
+        "search_volume": "Medium",
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  "content_gaps": [
+    {
+      "gap": "Practical implementation guides for non-technical small business owners",
+      "opportunity": "Most content is either too technical or too high-level. Gap exists for step-by-step practical guides.",
+      "difficulty": "Medium",
+      "potential_traffic": "High"
+    },
+    {
+      "gap": "Cost-benefit analysis specific to small business budgets",
+      "opportunity": "ROI and pricing information is scattered. Comprehensive cost analysis missing.",
+      "difficulty": "Low",
+      "potential_traffic": "Medium-High"
+    },
+    {
+      "gap": "Industry-specific AI automation case studies",
+      "opportunity": "Generic advice dominates. Niche-specific examples (e.g., retail, services, restaurants) underserved.",
+      "difficulty": "Medium",
+      "potential_traffic": "Medium"
+    }
+  ],
+  "article_outlines": [
+    {
+      "outline_type": "ultimate_guide",
+      "title": "The Complete AI automation for small businesses Guide for 2025",
+      "subtitle": "A comprehensive, data-driven guide to mastering AI automation for small businesses with proven strategies and expert insights",
+      "meta_description": "Discover everything about AI automation for small businesses in this comprehensive guide. Learn proven strategies, expert tips, and actionable insights to get s",
+      "target_word_count": "3500-5000",
+      "estimated_reading_time": "19 min read",
+      "structure": [
+        {
+          "heading": "Introduction",
+          "heading_level": "H2",
+          "subheadings": [
+            {"text": "What is AI automation for small businesses?", "level": "H3"},
+            {"text": "Why AI automation for small businesses matters in 2025", "level": "H3"},
+            {"text": "Who this guide is for", "level": "H3"}
+          ],
+          "key_points": [
+            "Hook with compelling stat or story",
+            "Define AI automation for small businesses in simple terms",
+            "Explain relevance and benefits",
+            "Set expectations for what readers will learn"
+          ],
+          "word_count": "300-400"
+        },
+        {
+          "heading": "AI automation for small businesses Fundamentals",
+          "heading_level": "H2",
+          "subheadings": [
+            {"text": "Core concepts explained", "level": "H3"},
+            {"text": "Common terminology", "level": "H3"},
+            {"text": "Essential prerequisites", "level": "H3"}
+          ],
+          "key_points": [
+            "Cover foundational concepts",
+            "Explain key terms and definitions",
+            "List what readers need to get started",
+            "Include beginner-friendly examples"
+          ],
+          "word_count": "600-800"
+        }
+      ],
+      "seo_keywords": [
+        "AI automation for small businesses",
+        "AI automation for small businesses guide",
+        "AI automation for small businesses tutorial",
+        "learn AI automation for small businesses",
+        "AI automation for small businesses tips",
+        "best AI automation for small businesses",
+        "AI automation for small businesses 2025"
+      ],
+      "internal_linking_opportunities": [
+        "Link to: AI automation for small businesses basics article",
+        "Link to: AI automation for small businesses tools comparison",
+        "Link to: Related topic article",
+        "Link to: Case study or example"
+      ],
+      "external_sources": [
+        "Industry reports and statistics",
+        "Expert quotes and interviews",
+        "Research papers or studies",
+        "Official documentation"
+      ],
+      "multimedia_suggestions": [
+        {
+          "type": "Featured image",
+          "description": "Eye-catching header image related to AI automation for small businesses",
+          "placement": "Top of article"
+        },
+        {
+          "type": "Infographic",
+          "description": "Visual summary of key AI automation for small businesses statistics or process",
+          "placement": "Middle of article"
+        },
+        {
+          "type": "Screenshots/diagrams",
+          "description": "Step-by-step visual guides",
+          "placement": "Throughout tutorial sections"
+        },
+        {
+          "type": "Video embed",
+          "description": "Short explainer video about AI automation for small businesses",
+          "placement": "Introduction or conclusion"
+        }
+      ],
+      "cta": {
+        "type": "Resource download",
+        "text": "Download our free AI automation for small businesses checklist",
+        "placement": "End of article and sidebar"
+      },
+      "social_media_hooks": [
+        "Just published: The Complete AI automation for small businesses Guide for 2025 📚",
+        "Everything you need to know about AI automation for small businesses in one place 👇",
+        "Spent 3 months researching AI automation for small businesses. Here's what I learned:",
+        "The AI automation for small businesses guide I wish I had when I started 🎯"
+      ],
+      "email_newsletter_angle": {
+        "subject_line": "New guide: The Complete AI automation for small bu...",
+        "preview_text": "Your complete resource for mastering AI automation for small businesses",
+        "email_intro": "I'm excited to share our comprehensive guide to AI automation for small businesses. Whether you're just getting started or looking to level up, this guide has you covered."
+      }
+    },
+    {
+      "outline_type": "how_to",
+      "title": "How to Master AI automation for small businesses in 30 Days (Step-by-Step)",
+      "subtitle": "Learn AI automation for small businesses step-by-step with this practical, beginner-friendly tutorial",
+      "meta_description": "Discover everything about AI automation for small businesses in this comprehensive guide. Learn proven strategies, expert tips, and actionable insights to get s",
+      "target_word_count": "1800-2500",
+      "estimated_reading_time": "9 min read",
+      "seo_keywords": [
+        "AI automation for small businesses",
+        "AI automation for small businesses guide",
+        "AI automation for small businesses tutorial",
+        "learn AI automation for small businesses",
+        "AI automation for small businesses tips",
+        "best AI automation for small businesses",
+        "AI automation for small businesses 2025"
+      ]
+    },
+    {
+      "outline_type": "guide",
+      "title": "The AI automation for small businesses Playbook: Strategies That Actually Work",
+      "subtitle": "Discover everything you need to know about AI automation for small businesses to get started today",
+      "meta_description": "Discover everything about AI automation for small businesses in this comprehensive guide. Learn proven strategies, expert tips, and actionable insights to get s",
+      "target_word_count": "2000-3000",
+      "estimated_reading_time": "11 min read",
+      "seo_keywords": [
+        "AI automation for small businesses",
+        "AI automation for small businesses guide",
+        "AI automation for small businesses tutorial",
+        "learn AI automation for small businesses",
+        "AI automation for small businesses tips",
+        "best AI automation for small businesses",
+        "AI automation for small businesses 2025"
+      ]
+    }
+  ],
+  "platform_recommendations": {
+    "cross_platform_strategy": {
+      "content_repurposing": {
+        "core_asset": "Long-form blog article or YouTube video",
+        "derivatives": [
+          "LinkedIn carousel (key points)",
+          "X thread (summarized insights)",
+          "Instagram posts (quotes/stats)",
+          "Medium article (personal angle)",
+          "Newsletter (expanded analysis)",
+          "Podcast episode (discuss topic)",
+          "Reddit post (community discussion)"
+        ],
+        "workflow": "Create once, distribute everywhere (COPE strategy)"
+      }
+    },
+    "content_calendar": {
+      "Monday": {
+        "primary": "Publish long-form blog article",
+        "secondary": ["Share on LinkedIn", "Email newsletter"],
+        "time_investment": "4-6 hours"
+      },
+      "Tuesday": {
+        "primary": "X thread from blog insights",
+        "secondary": ["Engage with comments on Monday's content"],
+        "time_investment": "1-2 hours"
+      },
+      "Wednesday": {
+        "primary": "LinkedIn carousel or post",
+        "secondary": ["Reddit discussion (if relevant community)"],
+        "time_investment": "2-3 hours"
+      }
+    }
+  },
+  "recommendations": {
+    "primary_focus": "Create comprehensive ultimate guide (3500-5000 words)",
+    "secondary_content": [
+      "How-to tutorial for quick wins",
+      "LinkedIn carousel highlighting key points",
+      "YouTube video tutorial"
+    ],
+    "publishing_schedule": {
+      "blog": "Monday 9 AM EST",
+      "linkedin": "Tuesday 8 AM EST",
+      "youtube": "Thursday 2 PM EST"
+    },
+    "content_format": "Ultimate guide with embedded video tutorials",
+    "promotion_strategy": "Blog → Email → LinkedIn → X → Reddit (in that order)",
+    "follow_up_topics": [
+      "AI automation tools comparison",
+      "AI automation case studies",
+      "Advanced AI automation techniques",
+      "AI automation for specific industries"
+    ],
+    "estimated_impact": {
+      "organic_traffic_potential": "High (5K-10K monthly visits within 6 months)",
+      "engagement_potential": "Very High (comprehensive, actionable content)",
+      "backlink_potential": "High (resource quality attracts natural backlinks)",
+      "conversion_potential": "Medium-High (informational intent with commercial crossover)"
+    }
+  }
+}
