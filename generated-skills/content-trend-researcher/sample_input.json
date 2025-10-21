@@ -1,0 +1,22 @@
+{
+  "topic": "AI automation for small businesses",
+  "platforms": [
+    "Google Trends",
+    "Reddit",
+    "LinkedIn",
+    "YouTube",
+    "Medium",
+    "Blogs"
+  ],
+  "intent_focus": "informational",
+  "target_audience": "Small business owners and entrepreneurs looking to implement AI tools without technical expertise",
+  "content_type": "blog",
+  "analysis_depth": "deep",
+  "number_of_outlines": 3,
+  "additional_requirements": {
+    "include_cost_analysis": true,
+    "focus_on_practical_implementation": true,
+    "avoid_technical_jargon": true,
+    "target_word_count_preference": "2000-2500"
+  }
+}
