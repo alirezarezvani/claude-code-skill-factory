@@ -29,6 +29,10 @@ claude-code-skills-factory/
 │   ├── sensitivity_analysis.py
 │   ├── brand_guidelines.md
 │   └── apply_brand.py
+├── generated-skills/                      # Production-ready generated skills
+│   ├── aws-solution-architect/            # AWS architecture and infrastructure
+│   ├── content-trend-researcher/          # Content research and trend analysis
+│   └── ms365-tenant-manager/              # Microsoft 365 administration
 └── documentation/
     └── templates/
         └── SKILLS_FACTORY_PROMPT.md       # The main prompt template
@@ -114,6 +118,68 @@ This repository includes three fully-functional example skills:
 - [apply_brand.py](claude-skills-examples/apply_brand.py)
 
 **Pattern**: Brand definition + application logic
+
+## Generated Skills
+
+This repository also includes production-ready skills generated using the Skills Factory Prompt, demonstrating the quality and completeness of output you can expect.
+
+### 4. AWS Solution Architect
+**Purpose**: Expert AWS architecture design for startups - serverless, scalable, and cost-effective cloud infrastructure
+
+**Files**:
+- [SKILL.md](generated-skills/aws-solution-architect/SKILL.md)
+- [architecture_designer.py](generated-skills/aws-solution-architect/architecture_designer.py)
+- [cost_optimizer.py](generated-skills/aws-solution-architect/cost_optimizer.py)
+- [serverless_stack.py](generated-skills/aws-solution-architect/serverless_stack.py)
+
+**Capabilities**:
+- Serverless architecture design (Lambda, API Gateway, DynamoDB, EventBridge)
+- Infrastructure as Code (CloudFormation, CDK, Terraform)
+- Cost optimization and budget management
+- Security best practices and compliance
+- CI/CD pipeline setup
+- Multi-region deployment strategies
+
+**Pattern**: Architecture design → IaC templates → cost optimization
+
+### 5. Content Trend Researcher
+**Purpose**: Advanced content research analyzing trends across 10+ platforms to generate data-driven article outlines
+
+**Files**:
+- [SKILL.md](generated-skills/content-trend-researcher/SKILL.md)
+- [trend_analyzer.py](generated-skills/content-trend-researcher/trend_analyzer.py)
+- [intent_analyzer.py](generated-skills/content-trend-researcher/intent_analyzer.py)
+- [platform_insights.py](generated-skills/content-trend-researcher/platform_insights.py)
+- [outline_generator.py](generated-skills/content-trend-researcher/outline_generator.py)
+
+**Capabilities**:
+- Multi-platform trend analysis (Google Trends, Reddit, YouTube, Medium, Substack, LinkedIn, X, etc.)
+- User intent analysis (informational, commercial, transactional)
+- Content gap identification
+- SEO-optimized article outline generation
+- Platform-specific best practices and publishing strategies
+
+**Pattern**: Trend analysis → intent analysis → content gap discovery → outline generation
+
+### 6. Microsoft 365 Tenant Manager
+**Purpose**: Comprehensive M365 tenant administration for setup, security, user management, and organizational optimization
+
+**Files**:
+- [SKILL.md](generated-skills/ms365-tenant-manager/SKILL.md)
+- [tenant_setup.py](generated-skills/ms365-tenant-manager/tenant_setup.py)
+- [user_management.py](generated-skills/ms365-tenant-manager/user_management.py)
+- [powershell_generator.py](generated-skills/ms365-tenant-manager/powershell_generator.py)
+
+**Capabilities**:
+- Tenant setup and configuration
+- User and group lifecycle management
+- Security and compliance policies (Conditional Access, MFA, DLP)
+- SharePoint, OneDrive, and Teams administration
+- Exchange Online management
+- PowerShell automation script generation
+- License management and cost optimization
+
+**Pattern**: Configuration requirements → PowerShell scripts → validation checklists
 
 ## Key Features
 
@@ -274,22 +340,26 @@ Keep sample files minimal and focused:
 - **Claude Help Center**: https://support.claude.com/en/articles/12512176-what-are-skills
 - **API Documentation**: https://docs.claude.com/en/api/skills-guide
 
-## Examples of Generated Skills
+## Real-World Examples
 
-### Example Input
-```
-BUSINESS_TYPE: Financial advisory firm
-USE_CASES: Portfolio risk analysis, Client investment reports, Market trend summaries
-NUMBER_OF_SKILLS: 3
-```
+The `generated-skills/` folder contains actual production-ready skills created using the Skills Factory Prompt:
 
-### Example Output
-Three complete skills:
-1. **portfolio-risk-analyzer/** - Calculates risk metrics and correlations
-2. **investment-report-generator/** - Creates professional client reports
-3. **market-trend-summarizer/** - Analyzes and summarizes market trends
+### AWS Solution Architect
+Generated for startup infrastructure needs - includes architecture design, cost optimization, and IaC templates.
 
-Each with full implementation, samples, and ready-to-import ZIP files.
+**See**: [generated-skills/aws-solution-architect/](generated-skills/aws-solution-architect/)
+
+### Content Trend Researcher
+Generated for content creators and marketers - analyzes trends across 10+ platforms and creates data-driven outlines.
+
+**See**: [generated-skills/content-trend-researcher/](generated-skills/content-trend-researcher/)
+
+### Microsoft 365 Tenant Manager
+Generated for IT administrators - manages M365 tenant setup, security, and generates PowerShell automation scripts.
+
+**See**: [generated-skills/ms365-tenant-manager/](generated-skills/ms365-tenant-manager/)
+
+Each includes full implementation, sample data, HOW_TO_USE guide, and ready-to-import ZIP files.
 
 ## Contributing
 

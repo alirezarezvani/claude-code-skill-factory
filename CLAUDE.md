@@ -13,15 +13,19 @@ This repository is a **Claude Code Skills factory** - a collection of example sk
 ```
 claude-code-skills-factory/
 ├── claude-skills-instructions.md    # Full documentation from Anthropic blog post
-└── claude-skills-examples/          # Example skills with implementation
-    ├── analyzing_financial_statements.md  # Skill: Financial ratio analysis
-    ├── calculate_ratios.py                # Implementation for ratios
-    ├── interpret_ratios.py                # Ratio interpretation logic
-    ├── creating-financial-models.md       # Skill: DCF & financial modeling
-    ├── dcf_model.py                       # DCF valuation engine
-    ├── sensitivity_analysis.py            # Sensitivity testing framework
-    ├── brand_guidelines.md                # Skill: Corporate branding
-    └── apply_brand.py                     # Brand application module
+├── claude-skills-examples/          # Example skills with implementation
+│   ├── analyzing_financial_statements.md  # Skill: Financial ratio analysis
+│   ├── calculate_ratios.py                # Implementation for ratios
+│   ├── interpret_ratios.py                # Ratio interpretation logic
+│   ├── creating-financial-models.md       # Skill: DCF & financial modeling
+│   ├── dcf_model.py                       # DCF valuation engine
+│   ├── sensitivity_analysis.py            # Sensitivity testing framework
+│   ├── brand_guidelines.md                # Skill: Corporate branding
+│   └── apply_brand.py                     # Brand application module
+└── generated-skills/                # Production-ready generated skills
+    ├── aws-solution-architect/      # AWS architecture and IaC
+    ├── content-trend-researcher/    # Content research and trend analysis
+    └── ms365-tenant-manager/        # Microsoft 365 administration
 ```
 
 ## Skill Architecture
@@ -61,6 +65,28 @@ Each skill follows a standard pattern:
 - **Purpose**: Apply consistent corporate branding to documents (colors, fonts, layouts)
 - **Key Class**: `BrandFormatter` - applies Acme Corporation brand standards
 - **Pattern**: Brand definition (colors, fonts, layouts) + application logic
+
+## Generated Skills (Production-Ready)
+
+The `generated-skills/` folder contains complete, production-ready skills created using the Skills Factory Prompt:
+
+### 4. AWS Solution Architect
+- **Files**: `SKILL.md`, `architecture_designer.py`, `cost_optimizer.py`, `serverless_stack.py`
+- **Purpose**: Expert AWS architecture design for startups - serverless, scalable, cost-effective infrastructure
+- **Key Classes**: `ArchitectureDesigner`, `CostOptimizer`, `ServerlessStackBuilder`
+- **Pattern**: Architecture design → IaC templates → cost optimization
+
+### 5. Content Trend Researcher
+- **Files**: `SKILL.md`, `trend_analyzer.py`, `intent_analyzer.py`, `platform_insights.py`, `outline_generator.py`
+- **Purpose**: Multi-platform trend analysis and data-driven content outline generation
+- **Key Classes**: `TrendAnalyzer`, `IntentAnalyzer`, `PlatformInsights`, `OutlineGenerator`
+- **Pattern**: Trend analysis → intent analysis → content gap discovery → outline generation
+
+### 6. Microsoft 365 Tenant Manager
+- **Files**: `SKILL.md`, `tenant_setup.py`, `user_management.py`, `powershell_generator.py`
+- **Purpose**: Comprehensive M365 tenant administration and PowerShell automation
+- **Key Classes**: `TenantManager`, `UserLifecycle`, `PowerShellScriptGenerator`
+- **Pattern**: Configuration requirements → PowerShell scripts → validation checklists
 
 ## Common Development Patterns
 
