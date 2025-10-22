@@ -1,6 +1,6 @@
-# Claude Code Skills Factory
+# Claude Code Skills & Agents Factory
 
-A comprehensive toolkit for generating production-ready Claude Skills at scale. This repository provides templates, examples, and a powerful prompt engineering system to create custom skills for Claude AI across all platforms (Claude apps, Claude Code, and API).
+A comprehensive toolkit for generating production-ready Claude Skills and Claude Code Agents at scale. This repository provides templates, examples, and powerful prompt engineering systems to create custom skills and specialized agents for Claude AI across all platforms (Claude apps, Claude Code, and API).
 
 ## What Are Claude Skills?
 
@@ -13,14 +13,29 @@ Claude Skills are specialized capabilities that teach Claude how to perform spec
 
 Skills are **composable** (work together), **portable** (same format everywhere), and **efficient** (loaded only when relevant).
 
+## What Are Claude Code Agents?
+
+Claude Code Agents (also called sub-agents) are specialized AI assistants that handle specific types of tasks. They're single Markdown files with YAML frontmatter containing:
+
+- **Enhanced YAML frontmatter**: name, description, tools, model, color, field, expertise, MCP integrations
+- **System prompt**: Detailed instructions for the agent's behavior and approach
+- **Auto-invocation**: Claude automatically uses them when the description matches the task
+
+Agents are **focused** (one responsibility), **efficient** (separate context window), **flexible** (configurable tool access), and **composable** (multiple agents work together on complex workflows).
+
+**Key Difference:**
+- **Skills** = Multi-file capabilities (folders with SKILL.md + Python + samples)
+- **Agents** = Single-file specialists (.md files in `.claude/agents/`)
+
 ## Repository Contents
 
 ```
 claude-code-skills-factory/
 ├── README.md                              # This file
 ├── CLAUDE.md                              # Repository guidance for Claude Code
-├── claude-skills-instructions.md          # Full Anthropic documentation
-├── claude-skills-examples/                # Reference implementations
+├── claude-skills-instructions.md          # Full Skills documentation from Anthropic
+├── claude-agents-instructions.md          # Full Agents documentation from Anthropic
+├── claude-skills-examples/                # Reference skill implementations
 │   ├── analyzing_financial_statements.md
 │   ├── calculate_ratios.py
 │   ├── interpret_ratios.py
@@ -30,17 +45,22 @@ claude-code-skills-factory/
 │   ├── brand_guidelines.md
 │   └── apply_brand.py
 ├── generated-skills/                      # Production-ready generated skills
-│   ├── aws-solution-architect/            # AWS architecture and infrastructure
-│   ├── content-trend-researcher/          # Content research and trend analysis
-│   └── ms365-tenant-manager/              # Microsoft 365 administration
+│   ├── aws-solution-architect/            # AWS architecture (53 KB)
+│   ├── content-trend-researcher/          # Multi-platform content research (35 KB)
+│   ├── ms365-tenant-manager/              # Microsoft 365 administration (40 KB)
+│   ├── psychology-advisor/                # Mental wellness & CBT techniques (31 KB)
+│   └── agent-factory/                     # Claude Code agent generation (12 KB)
 └── documentation/
     └── templates/
-        └── SKILLS_FACTORY_PROMPT.md       # The main prompt template
+        ├── SKILLS_FACTORY_PROMPT.md       # Template for generating Skills
+        └── AGENTS_FACTORY_PROMPT.md       # Template for generating Agents
 ```
 
 ## Quick Start
 
-### 1. Use the Skills Factory Prompt
+### Option A: Generate Claude Skills (Multi-file Capabilities)
+
+#### 1. Use the Skills Factory Prompt
 
 Open [documentation/templates/SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md) and scroll to the bottom.
 
@@ -85,6 +105,61 @@ Claude will generate complete skill packages with:
 
 **API:**
 - Use the `/v1/skills` endpoint to upload
+
+### Option B: Generate Claude Code Agents (Single-file Specialists)
+
+#### 1. Use the Agents Factory Prompt
+
+Open [documentation/templates/AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md) and scroll to the bottom.
+
+Fill in the template variables:
+
+```
+=== FILL IN YOUR DETAILS BELOW ===
+
+AGENT_NAME: api-integration-specialist
+AGENT_TYPE: Implementation
+DOMAIN_FIELD: backend
+DESCRIPTION: API integration expert. Use when building API clients.
+TOOLS_NEEDED: Read, Write, Edit, Bash
+MODEL: sonnet
+COLOR: green
+EXPERTISE_LEVEL: expert
+MCP_TOOLS: mcp__github
+```
+
+#### 2. Generate Your Agent
+
+Copy the entire prompt and paste into Claude. You'll get a complete agent .md file:
+
+```markdown
+---
+name: api-integration-specialist
+description: API integration expert...
+tools: Read, Write, Edit, Bash
+model: sonnet
+color: green
+field: backend
+expertise: expert
+mcp_tools: mcp__github
+---
+
+System prompt with detailed instructions...
+```
+
+#### 3. Install Your Agent
+
+**Project-level** (shared with team):
+```bash
+cp api-integration-specialist.md .claude/agents/
+```
+
+**User-level** (available everywhere):
+```bash
+cp api-integration-specialist.md ~/.claude/agents/
+```
+
+Agent auto-invokes when Claude detects relevant tasks!
 
 ## Example Skills Included
 
@@ -354,10 +429,32 @@ Generated for content creators and marketers - analyzes trends across 10+ platfo
 
 **See**: [generated-skills/content-trend-researcher/](generated-skills/content-trend-researcher/)
 
-### Microsoft 365 Tenant Manager
+### Microsoft 365 Tenant Manager (40 KB)
 Generated for IT administrators - manages M365 tenant setup, security, and generates PowerShell automation scripts.
 
 **See**: [generated-skills/ms365-tenant-manager/](generated-skills/ms365-tenant-manager/)
+
+### Psychology Advisor (31 KB)
+Evidence-based mental wellness skill with CBT techniques, mindfulness exercises, stress management, and emotional regulation tools.
+
+**Key Features**: 10 cognitive distortion types, 4 breathing techniques, RAIN method, stress assessment, behavioral activation
+
+**See**: [generated-skills/psychology-advisor/](generated-skills/psychology-advisor/)
+
+### Content Trend Researcher (35 KB)
+Multi-platform content research analyzing trends across Google, Reddit, YouTube, Medium, LinkedIn, X, Substack, and more to generate data-driven article outlines.
+
+**Key Features**: User intent analysis, content gap discovery, platform-specific strategies, SEO-optimized outlines
+
+**See**: [generated-skills/content-trend-researcher/](generated-skills/content-trend-researcher/)
+
+### Agent Factory (12 KB)
+Claude Code agent generation system that creates custom agents/sub-agents with enhanced YAML frontmatter, tool patterns, and MCP integration.
+
+**Key Features**: Enhanced YAML (color, field, expertise), tool access patterns, execution safety, MCP tool suggestions
+
+**See**: [generated-skills/agent-factory/](generated-skills/agent-factory/)
+**Template**: [documentation/templates/AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
 
 Each includes full implementation, sample data, HOW_TO_USE guide, and ready-to-import ZIP files.
 
@@ -376,17 +473,20 @@ This repository provides examples and templates for creating Claude Skills. The 
 
 ## Version
 
-**Current Version**: 1.0.0
-**Last Updated**: October 21, 2025
-**Compatible With**: Claude Skills (all platforms)
+**Current Version**: 1.1.0
+**Last Updated**: October 22, 2025
+**Compatible With**: Claude Skills (all platforms) and Claude Code Agents
 
 ---
 
 ## Quick Reference
 
 **Create Skills**: Use [SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)
+**Create Agents**: Use [AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
 **See Examples**: Check [claude-skills-examples/](claude-skills-examples/)
+**Generated Skills**: Explore [generated-skills/](generated-skills/)
 **Read Guide**: See [CLAUDE.md](CLAUDE.md) for repository structure
-**Learn More**: Read [claude-skills-instructions.md](claude-skills-instructions.md)
+**Learn More (Skills)**: Read [claude-skills-instructions.md](claude-skills-instructions.md)
+**Learn More (Agents)**: Read [claude-agents-instructions.md](claude-agents-instructions.md)
 
-**Ready to build?** Open the prompt template, fill in your details, and start generating production-ready skills!
+**Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills or agents!
