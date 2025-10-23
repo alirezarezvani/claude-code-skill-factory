@@ -22,10 +22,16 @@ claude-code-skills-factory/
 │   ├── sensitivity_analysis.py            # Sensitivity testing framework
 │   ├── brand_guidelines.md                # Skill: Corporate branding
 │   └── apply_brand.py                     # Brand application module
-└── generated-skills/                # Production-ready generated skills
-    ├── aws-solution-architect/      # AWS architecture and IaC
-    ├── content-trend-researcher/    # Content research and trend analysis
-    └── ms365-tenant-manager/        # Microsoft 365 administration
+├── documentation/
+│   └── templates/
+│       ├── SKILLS_FACTORY_PROMPT.md    # Template for generating Claude Skills
+│       └── AGENTS_FACTORY_PROMPT.md    # Template for generating Claude Code agents
+└── generated-skills/                   # Production-ready generated skills
+    ├── aws-solution-architect/         # AWS architecture and IaC
+    ├── content-trend-researcher/       # Content research and trend analysis
+    ├── ms365-tenant-manager/           # Microsoft 365 administration
+    ├── psychology-advisor/             # Mental wellness and CBT techniques
+    └── agent-factory/                  # Claude Code agent generation system
 ```
 
 ## Skill Architecture
@@ -87,6 +93,25 @@ The `generated-skills/` folder contains complete, production-ready skills create
 - **Purpose**: Comprehensive M365 tenant administration and PowerShell automation
 - **Key Classes**: `TenantManager`, `UserLifecycle`, `PowerShellScriptGenerator`
 - **Pattern**: Configuration requirements → PowerShell scripts → validation checklists
+
+### 7. Psychology Advisor
+- **Files**: `SKILL.md`, `cbt_techniques.py`, `mindfulness_tools.py`, `stress_assessment.py`
+- **Purpose**: Evidence-based psychological advisory with CBT techniques, mindfulness exercises, and stress management
+- **Key Classes**: `CBTTechniques`, `MindfulnessTools`, `StressAssessment`
+- **Pattern**: Cognitive distortion detection → thought reframing → coping strategies → practice plans
+
+### 8. Content Trend Researcher
+- **Files**: `SKILL.md`, `trend_analyzer.py`, `intent_analyzer.py`, `platform_insights.py`, `outline_generator.py`
+- **Purpose**: Multi-platform trend analysis (Google, Reddit, YouTube, Medium, LinkedIn, X, etc.) and data-driven article outline generation
+- **Key Classes**: `TrendAnalyzer`, `IntentAnalyzer`, `PlatformInsights`, `OutlineGenerator`
+- **Pattern**: Platform trend analysis → user intent analysis → content gaps → SEO-optimized outlines
+
+### 9. Agent Factory
+- **Files**: `SKILL.md`, `agent_generator.py`
+- **Purpose**: Generate custom Claude Code agents/sub-agents with enhanced YAML frontmatter, tool patterns, and MCP integration
+- **Key Classes**: `AgentGenerator`
+- **Pattern**: Agent requirements → YAML validation → agent .md file generation
+- **Template**: Uses `documentation/templates/AGENTS_FACTORY_PROMPT.md` for generation
 
 ## Common Development Patterns
 
@@ -151,12 +176,39 @@ When helping users adapt these skills:
 - **Document assumptions**: Financial models especially need clear assumption documentation
 - **Industry context**: Many calculations (ratios, valuations) require industry-specific interpretation
 
+## Templates for Generation
+
+The `documentation/templates/` folder contains two powerful prompt templates:
+
+### SKILLS_FACTORY_PROMPT.md
+- **Purpose**: Generate complete Claude Skills (folders with SKILL.md + Python files)
+- **Use for**: Creating capabilities like financial analysis, content research, data processing
+- **Output**: Skill folders with SKILL.md, Python files, samples, and ZIP files
+- **Location**: Skills go in `.claude/skills/` or `~/.claude/skills/`
+
+### AGENTS_FACTORY_PROMPT.md
+- **Purpose**: Generate Claude Code agents/sub-agents (single .md files)
+- **Use for**: Creating specialized agents like code reviewers, developers, testers
+- **Output**: Agent .md files with enhanced YAML frontmatter (color, field, expertise, MCP tools)
+- **Location**: Agents go in `.claude/agents/` or `~/.claude/agents/`
+
+**Key Difference:**
+- **Skills** = Multi-file capabilities (folders)
+- **Agents** = Single-file specialists (.md only)
+
 ## Installation
 
-Users can install these skills:
+Users can install these skills and agents:
+
+**Skills**:
 - **Claude Code**: Copy skill folder to `~/.claude/skills/`
 - **Claude Apps**: Use the "skill-creator" skill to import
 - **API**: Use the `/v1/skills` endpoint
+
+**Agents**:
+- **Claude Code Project**: Copy .md file to `.claude/agents/`
+- **Claude Code Personal**: Copy .md file to `~/.claude/agents/`
+- **CLI**: Use `--agents` flag for session-specific agents
 
 ## References
 
