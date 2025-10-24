@@ -87,6 +87,161 @@ DO THIS INSTEAD:
 
 ---
 
+## 📋 Task Hierarchy (Plan → Task → Subtask)
+
+### Three-Level Structure
+
+```
+PLAN ISSUE (#100)                      - Epic or feature
+  ├─ TASK #101 (5-10 tasks)           - Major work item
+  │   ├─ SUBTASK #103 (0-5 subtasks)  - Atomic work
+  │   ├─ SUBTASK #104
+  │   └─ SUBTASK #105
+  ├─ TASK #102
+  │   ├─ SUBTASK #106
+  │   └─ SUBTASK #107
+  └─ TASK #108
+```
+
+### Level 1: PLAN Issues
+- **Purpose**: High-level feature or epic
+- **Task Count**: 5-10 tasks (enforced by plan-validator workflow)
+- **Labels**: `plan`, `plan-validated`
+- **Created**: Manually by team
+- **Format**:
+  ```markdown
+  ## Goal
+  [What we're building and why]
+
+  ## Tasks
+  - [ ] Task 1: Clear, actionable description
+  - [ ] Task 2: Clear, actionable description
+  - [ ] Task 3-10: ...
+
+  ## Acceptance Criteria
+  - [ ] Criterion 1
+  - [ ] Criterion 2
+  ```
+
+### Level 2: TASK Issues
+- **Purpose**: Major work item (can be completed independently)
+- **Title**: "Task: [description]" (auto-generated)
+- **Labels**: `task`, `plan-item`, `skip-triage`
+- **Created**: Automatically by plan-to-tasks workflow
+- **Parent**: Always linked to parent PLAN
+- **Subtasks**: Optional (0-5 subtasks, triggered by `needs-subtasks` label)
+- **Scope**: Focused piece of work (1-3 days)
+
+### Level 3: SUBTASK Issues
+- **Purpose**: Atomic work unit (smallest unit)
+- **Title**: "Subtask: [description]" (auto-generated)
+- **Labels**: `subtask`, `skip-triage`
+- **Created**: Automatically by task-to-subtasks workflow
+- **Parent**: Linked to parent TASK and grandparent PLAN
+- **Scope**: Single, focused piece of work (1-3 hours)
+- **Maximum**: 5 subtasks per task (enforced)
+
+### Workflow States & Labels
+
+**Triage Control**:
+- `skip-triage` - Skips automatic classification (removed when ready)
+- `needs-subtasks` - Triggers subtask creation (on TASK issues only)
+
+**Status Tracking** (synced with project board):
+- `status: triage` - Needs classification
+- `status: backlog` - Planned but not ready
+- `status: ready` - Ready to start
+- `status: in-progress` - Actively being worked on
+- `status: in-review` - Under review
+- `status: done` - Completed (auto-applied when issue closed)
+
+### How to Use the Hierarchy
+
+**Creating a Plan**:
+1. Create issue with `plan` label
+2. Add 5-10 tasks in checklist format
+3. Validation workflow checks count & rate limits
+4. If valid, adds `plan-validated` label
+5. Plan-to-tasks workflow creates TASK issues automatically
+
+**Breaking Down a Task**:
+1. Open a TASK issue
+2. Add `needs-subtasks` label
+3. Create checklist in task body (max 5 items)
+4. Task-to-subtasks workflow creates SUBTASK issues automatically
+
+**Working on Tasks/Subtasks**:
+1. Remove `skip-triage` label when ready for classification
+2. Auto-triage workflow classifies and prioritizes
+3. Move to "In Progress" on project board when starting work
+4. Close issue when done (auto-syncs to "Done" on board)
+
+### Best Practices
+
+**Plan Issues**:
+- ✅ DO: Keep to 5-10 tasks
+- ✅ DO: Make tasks independent when possible
+- ✅ DO: Write clear, actionable task descriptions
+- ❌ DON'T: Create 20+ task plans (split into multiple plans)
+- ❌ DON'T: Make tasks too vague or too detailed
+
+**Task Issues**:
+- ✅ DO: Add `needs-subtasks` if task is complex
+- ✅ DO: Keep subtask count to 5 or fewer
+- ✅ DO: Link to parent PLAN in description
+- ❌ DON'T: Create subtasks manually (use automation)
+- ❌ DON'T: Skip the `skip-triage` label removal step
+
+**Subtask Issues**:
+- ✅ DO: Keep scope small and focused (1-3 hours)
+- ✅ DO: Link to both parent TASK and grandparent PLAN
+- ✅ DO: Close promptly when completed
+- ❌ DON'T: Create sub-subtasks (3 levels max)
+- ❌ DON'T: Make subtasks too granular
+
+### Examples
+
+**Good Plan (7 tasks)**:
+```markdown
+## Goal
+Implement user authentication system
+
+## Tasks
+- [ ] Design login UI components
+- [ ] Implement JWT authentication backend
+- [ ] Add password reset flow
+- [ ] Create user profile management
+- [ ] Implement session handling
+- [ ] Add OAuth integration (Google, GitHub)
+- [ ] Write authentication tests
+
+## Acceptance Criteria
+- [ ] Users can log in with email/password
+- [ ] JWT tokens expire after 24h
+- [ ] OAuth integration works
+- [ ] 90%+ test coverage
+```
+
+**Good Task with Subtasks** (Task #101):
+```markdown
+Title: Task: Design login UI components
+Labels: task, plan-item, needs-subtasks
+
+## Description
+Create all UI components needed for user authentication
+
+## Subtasks
+- [ ] Create LoginForm component
+- [ ] Create SignupForm component
+- [ ] Add form validation
+- [ ] Design password strength indicator
+- [ ] Create forgot password UI
+```
+
+This creates 5 subtask issues automatically.
+
+---
+
 ## Repository Purpose
 
 This repository is a **Claude Code Skills factory** - a collection of example skills that demonstrate how to create specialized capabilities for Claude Code. Skills are folders with instructions and resources that Claude loads when relevant to the user's task.

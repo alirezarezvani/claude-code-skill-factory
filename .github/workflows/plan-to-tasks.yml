@@ -1,0 +1,146 @@
+name: Plan to Tasks Automation
+
+on:
+  issues:
+    types: [labeled]
+
+# Prevent multiple runs on the same plan
+concurrency:
+  group: plan-to-tasks-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  create-tasks:
+    # Only run if plan validation passed
+    if: github.event.label.name == 'plan-validated'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Create Task Issues
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          prompt: |
+            # Plan to Tasks - Create TASK Issues (Not Subtasks)
+
+            ## YOUR ROLE
+            Convert plan checklist items into TASK issues using REST API for rate limit efficiency.
+
+            ## INPUT DATA
+            **Parent Plan**: #${{ github.event.issue.number }}
+            **Title**: "${{ github.event.issue.title }}"
+            **Body**: See below
+
+            ## YOUR TASK (Step-by-Step)
+
+            ### Step 1: Parse Tasks from Plan
+            Extract all tasks from checklist (lines starting with "- [ ]").
+
+            ```bash
+            tasks=$(gh issue view ${{ github.event.issue.number }} --json body --jq '.body' | grep "^- \[ \]" | sed 's/^- \[ \] //')
+            echo "Tasks to create:"
+            echo "$tasks"
+            ```
+
+            ### Step 2: Create Task Issues Using REST API
+            CRITICAL: Use REST API (1 point) instead of gh issue create (5 points GraphQL).
+
+            ```bash
+            task_numbers=()
+            count=0
+
+            while IFS= read -r task; do
+              count=$((count + 1))
+              echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo "Creating Task $count: $task"
+
+              task_num=$(gh api repos/${{ github.repository }}/issues \
+                --method POST \
+                --field title="Task: $task" \
+                --field body="## Parent Plan
+
+            This task is part of #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
+
+            ## Description
+            $task
+
+            ## Task Breakdown (Optional)
+            If this task needs further breakdown into subtasks:
+            1. Add the \`needs-subtasks\` label to this issue
+            2. Create a checklist in this description (maximum 5 subtasks)
+            3. The task-to-subtasks workflow will create subtask issues automatically
+
+            ## Acceptance Criteria
+            - [ ] Task completed
+            - [ ] Tests passing
+            - [ ] Documentation updated
+
+            ---
+            **Parent Plan**: #${{ github.event.issue.number }}
+            **Created**: Automatically from plan-to-tasks automation" \
+                --raw-field 'labels=["task","plan-item","skip-triage"]' \
+                --jq '.number')
+
+              task_numbers+=($task_num)
+              echo "✅ Created #$task_num"
+              sleep 2
+            done <<< "$tasks"
+
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "✅ Created ${#task_numbers[@]} task issues"
+            ```
+
+            ### Step 3: Add to Project Board
+            ```bash
+            for task_num in "${task_numbers[@]}"; do
+              gh project item-add 7 --owner alirezarezvani \
+                --url https://github.com/${{ github.repository }}/issues/$task_num || true
+              sleep 1
+            done
+
+            gh project item-add 7 --owner alirezarezvani \
+              --url https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }} || true
+            ```
+
+            ### Step 4: Update Parent Plan
+            ```bash
+            task_links=""
+            for task_num in "${task_numbers[@]}"; do
+              task_title=$(gh issue view $task_num --json title --jq '.title' | sed 's/^Task: //')
+              task_links+="- [ ] #$task_num - $task_title\n"
+            done
+
+            gh issue comment ${{ github.event.issue.number }} --body "## ✅ Tasks Created
+
+            ${task_links}
+
+            **Total**: ${#task_numbers[@]} tasks | **Project Board**: All added
+
+            **Next Steps**:
+            - Remove \`skip-triage\` when ready for classification
+            - Add \`needs-subtasks\` to tasks needing breakdown (max 5 subtasks)
+
+            ---
+            *🤖 Created by plan-to-tasks | REST API for efficiency*"
+            ```
+
+            ## CRITICAL RULES
+            - ✅ DO: Use REST API (gh api) not GraphQL
+            - ✅ DO: Add 2-second sleep between creations
+            - ✅ DO: Label as 'task' not 'subtask'
+            - ❌ DO NOT: Create subtasks here
+
+          claude_args: '--allowed-tools "Bash(gh api:*),Bash(gh issue:*),Bash(gh project:*),Bash(sleep:*),Bash(echo:*)"'
