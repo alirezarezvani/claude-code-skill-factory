@@ -2,6 +2,38 @@
 
 A comprehensive toolkit for generating production-ready Claude Skills and Claude Code Agents at scale. This repository provides templates, examples, and powerful prompt engineering systems to create custom skills and specialized agents for Claude AI across all platforms (Claude apps, Claude Code, and API).
 
+## Table of Contents
+
+- [What Are Claude Skills?](#what-are-claude-skills)
+- [What Are Claude Code Agents?](#what-are-claude-code-agents)
+- [Repository Contents](#repository-contents)
+- [Quick Start](#quick-start)
+  - [Option A: Generate Claude Skills](#option-a-generate-claude-skills-multi-file-capabilities)
+  - [Option B: Generate Claude Code Agents](#option-b-generate-claude-code-agents-single-file-specialists)
+- [Example Skills Included](#example-skills-included)
+  - [1. Analyzing Financial Statements](#1-analyzing-financial-statements)
+  - [2. Creating Financial Models](#2-creating-financial-models)
+  - [3. Applying Brand Guidelines](#3-applying-brand-guidelines)
+- [Generated Skills](#generated-skills)
+  - [4. AWS Solution Architect](#4-aws-solution-architect)
+  - [5. Content Trend Researcher](#5-content-trend-researcher)
+  - [6. Microsoft 365 Tenant Manager](#6-microsoft-365-tenant-manager)
+  - [7. Prompt Suite](#7-prompt-suite)
+- [Key Features](#key-features)
+- [Skill Architecture Patterns](#skill-architecture-patterns)
+- [Best Practices](#best-practices)
+- [Customization Guide](#customization-guide)
+- [YAML Frontmatter Rules](#yaml-frontmatter-rules)
+- [Technical Details](#technical-details)
+- [Resources](#resources)
+- [Real-World Examples](#real-world-examples)
+- [Contributing](#contributing)
+- [License](#license)
+- [Version](#version)
+- [Quick Reference](#quick-reference)
+
+---
+
 ## What Are Claude Skills?
 
 Claude Skills are specialized capabilities that teach Claude how to perform specific tasks. They're packaged as folders containing:
