@@ -1,0 +1,161 @@
+name: Issue Auto-Triage
+
+on:
+  issues:
+    types: [opened]
+
+# Prevent multiple triage runs on the same issue
+concurrency:
+  group: triage-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write          # Required to add labels and comments
+      id-token: write        # Required for OIDC authentication
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          prompt: |
+            # Issue Auto-Triage Task
+
+            You are an intelligent issue triage assistant for the **claude-code-skills-factory** repository.
+
+            ## Repository Context
+            This is a Claude Code Skills factory - a collection of example skills and agents that demonstrate how to create specialized capabilities for Claude Code. It's a reference repository that users customize and extend for their own projects.
+
+            ## Your Task
+            Analyze issue #${{ github.event.issue.number }} and provide comprehensive triage analysis.
+
+            **Issue Title**: "${{ github.event.issue.title }}"
+            **Issue Body**:
+            ```
+            ${{ github.event.issue.body }}
+            ```
+            **Author**: @${{ github.event.issue.user.login }}
+
+            ## Analysis Framework
+
+            ### 1. Issue Type Classification
+            Determine the primary type:
+            - **bug**: Something isn't working correctly
+            - **feature**: New capability or enhancement request
+            - **documentation**: Improvements to docs, README, or examples
+            - **question**: User needs help or clarification
+            - **enhancement**: Improvement to existing functionality
+            - **skill-request**: Request for new skill example
+            - **agent-request**: Request for new agent example
+            - **template-improvement**: Improvements to generation templates
+
+            ### 2. Priority Assessment (P0-P3)
+            - **P0 (Critical)**: Blocks all users, security issue, data loss risk
+            - **P1 (High)**: Major functionality broken, affects many users
+            - **P2 (Medium)**: Important but has workaround, affects some users
+            - **P3 (Low)**: Nice to have, minimal impact, cosmetic issues
+
+            ### 3. Clarity & Completeness Check
+            - Is the issue description clear?
+            - Are steps to reproduce provided (if bug)?
+            - Is expected vs actual behavior described (if bug)?
+            - Are relevant files/skills mentioned?
+            - Is there enough context to act on this?
+
+            ### 4. Actionability Assessment
+            - Can this be acted on immediately?
+            - What additional information is needed (if any)?
+            - Estimated complexity: simple / moderate / complex
+
+            ### 5. Related Components
+            Identify which parts of the repository this affects:
+            - Skill examples (analyzing_financial_statements, creating-financial-models, brand_guidelines)
+            - Generated skills (aws-solution-architect, content-trend-researcher, ms365-tenant-manager, etc.)
+            - Templates (SKILLS_FACTORY_PROMPT, AGENTS_FACTORY_PROMPT)
+            - Documentation (README, CLAUDE.md, etc.)
+            - GitHub workflows
+
+            ## Your Output Format
+
+            Post a comment on issue #${{ github.event.issue.number }} using `gh issue comment` with this EXACT format:
+
+            ```markdown
+            ## 🤖 Automatic Triage Analysis
+
+            **Issue Type**: [primary-label]
+            **Priority**: [P0/P1/P2/P3]
+            **Clarity Score**: [1-5 stars] ⭐⭐⭐⭐⭐
+            **Actionable**: [Yes/Needs Info/Blocked]
+
+            ---
+
+            ### 📋 Summary
+            [2-3 sentence summary of what this issue is about]
+
+            ### 🏷️ Suggested Labels
+            Primary: `[main-label]`
+            Additional: `[label2]`, `[label3]` (if applicable)
+
+            ### 🎯 Priority Justification
+            **[P0/P1/P2/P3]**: [1-2 sentence explanation of why this priority]
+
+            ### ✅ Completeness Check
+            - [x] Clear description
+            - [ ] Steps to reproduce (if needed)
+            - [x] Expected behavior described
+            - [ ] Relevant context provided
+
+            **Missing Information**: [List what's needed, or "None - issue is complete"]
+
+            ### 💡 Recommended Action
+            [Specific next steps or recommendations for handling this issue]
+
+            **Estimated Effort**: [Simple/Moderate/Complex]
+            **Affected Components**: [List relevant parts of repository]
+
+            ### 🔗 Related Issues
+            [Link to similar/related issues if found, or "None found"]
+
+            ---
+
+            *🤖 Triaged automatically by Claude Code in ~30 seconds*
+            *Human review recommended before applying labels*
+            ```
+
+            ## Important Instructions
+
+            1. **Search for similar issues first**: Use `gh issue list --search "keywords"` to find related issues
+            2. **Be objective**: Base priority on actual impact, not emotion
+            3. **Be helpful**: If info is missing, ask specific questions
+            4. **Use repository context**: Reference CLAUDE.md and README.md for standards
+            5. **Apply labels**: After posting comment, use `gh issue edit ${{ github.event.issue.number }} --add-label "label1,label2"` to apply the primary label and priority label (e.g., "bug,P2")
+
+            ## Available Labels (use these exact names)
+
+            **Types**: bug, feature, documentation, question, enhancement, skill-request, agent-request, template-improvement
+
+            **Priorities**: P0, P1, P2, P3
+
+            **Status**: needs-info, duplicate, wontfix, good-first-issue, help-wanted
+
+            **Components**: skills, agents, templates, workflows, docs
+
+            ## Example Label Application
+            If you determine this is a bug with P2 priority affecting skills:
+            ```bash
+            gh issue edit ${{ github.event.issue.number }} --add-label "bug,P2,skills"
+            ```
+
+            Now analyze the issue and post your triage analysis!
+
+          claude_args: '--allowed-tools "Bash(gh issue:*),Bash(gh search:*)"'
