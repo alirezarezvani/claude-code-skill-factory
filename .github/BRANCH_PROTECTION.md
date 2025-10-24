@@ -267,7 +267,7 @@ git push
 ## 📚 Related Documentation
 
 - **Security Model**: [.github/SECURITY.md](.github/SECURITY.md)
-- **Workflow Documentation**: [.github/README.md](.github/README.md)
+- **Workflow Documentation**: [.github/WORKFLOWS.md](.github/WORKFLOWS.md)
 - **Claude Code Review**: [.github/workflows/claude-code-review.yml](.github/workflows/claude-code-review.yml)
 
 ---
