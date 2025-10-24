@@ -129,7 +129,7 @@ jobs:
             ---
 
             *🤖 Triaged automatically by Claude Code in ~30 seconds*
-            *Human review recommended before applying labels*
+            *✅ Added to [@claude-skills-factory](https://github.com/users/alirezarezvani/projects/7) project board*
             ```
 
             ## Important Instructions
@@ -139,6 +139,10 @@ jobs:
             3. **Be helpful**: If info is missing, ask specific questions
             4. **Use repository context**: Reference CLAUDE.md and README.md for standards
             5. **Apply labels**: After posting comment, use `gh issue edit ${{ github.event.issue.number }} --add-label "label1,label2"` to apply the primary label and priority label (e.g., "bug,P2")
+            6. **Add to project board**: After labeling, add the issue to the @claude-skills-factory project (#7) using:
+               ```bash
+               gh project item-add 7 --owner alirezarezvani --url ${{ github.event.issue.html_url }}
+               ```
 
             ## Available Labels (use these exact names)
 
@@ -158,4 +162,4 @@ jobs:
 
             Now analyze the issue and post your triage analysis!
 
-          claude_args: '--allowed-tools "Bash(gh issue:*),Bash(gh search:*)"'
+          claude_args: '--allowed-tools "Bash(gh issue:*),Bash(gh search:*),Bash(gh project:*)"'
