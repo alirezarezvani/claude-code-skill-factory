@@ -26,8 +26,7 @@ The issue auto-triage workflow automatically adds triaged issues to your GitHub 
    - **Select scopes**:
      - ✅ `repo` (Full control of private repositories)
        - This includes: `repo:status`, `repo_deployment`, `public_repo`, `repo:invite`
-     - ✅ `read:project` (Read access to projects)
-     - ✅ `write:project` (Write access to projects)
+     - ✅ `project` (Full access to projects - includes read and write)
 
 3. **Generate token**:
    - Click "Generate token" at the bottom
@@ -131,8 +130,7 @@ gh secret list -R alirezarezvani/claude-code-skill-factory
 1. Delete old token: https://github.com/settings/tokens
 2. Create new token with ALL these scopes:
    - ✅ `repo`
-   - ✅ `read:project`
-   - ✅ `write:project`
+   - ✅ `project`
 3. Update `PROJECTS_TOKEN` secret with new token
 
 ---
@@ -144,7 +142,7 @@ gh secret list -R alirezarezvani/claude-code-skill-factory
 **Verify project number**:
 ```bash
 # Run locally (not in Actions)
-gh auth refresh -s read:project
+gh auth refresh -s project
 gh project list --owner alirezarezvani
 ```
 
@@ -181,7 +179,7 @@ gh project list --owner alirezarezvani
 ✅ **DO**:
 - Use descriptive token names (`claude-skills-factory-projects`)
 - Set reasonable expiration (90 days recommended)
-- Use minimum required scopes (`repo`, `read:project`, `write:project`)
+- Use minimum required scopes (`repo`, `project`)
 - Store only in GitHub Secrets (never commit to code)
 - Rotate tokens periodically
 
