@@ -25,6 +25,8 @@ jobs:
 
       - name: Run Claude Triage
         uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
@@ -141,8 +143,10 @@ jobs:
             5. **Apply labels**: After posting comment, use `gh issue edit ${{ github.event.issue.number }} --add-label "label1,label2"` to apply the primary label and priority label (e.g., "bug,P2")
             6. **Add to project board**: After labeling, add the issue to the @claude-skills-factory project (#7) using:
                ```bash
+               # The GH_TOKEN environment variable is already set with project permissions
                gh project item-add 7 --owner alirezarezvani --url ${{ github.event.issue.html_url }}
                ```
+               **Note**: If you get a "Could not resolve to a ProjectV2" error, the issue will still be triaged (labels applied, comment posted). The project assignment can be done manually.
 
             ## Available Labels (use these exact names)
 
