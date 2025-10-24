@@ -77,16 +77,17 @@ if: |
 1. ✅ @claude mentioned in content
 2. ✅ Author is OWNER, MEMBER, or COLLABORATOR
 
-#### Permissions (Line 28-31)
+#### Permissions (Line 28-33)
 ```yaml
 permissions:
   contents: read          # Read repository files
   pull-requests: read     # Read PR context
   issues: read            # Read issue context
+  id-token: write         # Required for OIDC authentication with Claude Code action
   actions: read           # Read CI results
 ```
 
-**Note**: No write permissions granted. Claude can read context but cannot directly modify repository without explicit tool allowlist.
+**Note**: The `id-token: write` permission is **required** by the Claude Code action for OIDC (OpenID Connect) authentication. This allows GitHub Actions to generate secure identity tokens for authenticating with the Claude API. No direct write permissions to repository contents are granted.
 
 #### Tool Allowlist (Line 55)
 ```yaml
@@ -136,15 +137,16 @@ if: |
 - API abuse from external contributors opening spam PRs
 - Review runs on exploratory/test PRs from untrusted sources
 
-#### Permissions (Line 26-29)
+#### Permissions (Line 26-30)
 ```yaml
 permissions:
   contents: read          # Read repository files
   pull-requests: read     # Read PR details
   issues: read            # Read linked issues
+  id-token: write         # Required for OIDC authentication with Claude Code action
 ```
 
-**Note**: Read-only. Reviews posted via `gh pr comment` command (allowed in tool list).
+**Note**: The `id-token: write` permission is **required** for OIDC authentication. Reviews posted via `gh pr comment` command (allowed in tool list). No direct write permissions to repository contents granted.
 
 #### Tool Allowlist (Line 56)
 ```yaml
@@ -282,10 +284,10 @@ When Claude runs, it:
 ### Security Checklist
 
 - [x] Access control implemented (author_association checks)
-- [x] Permissions minimized (read-only + explicit writes)
+- [x] Permissions minimized (read-only + OIDC token generation)
 - [x] Tool allowlist configured (no unrestricted bash)
 - [x] Concurrency controls prevent abuse
-- [x] No unnecessary permissions (id-token removed)
+- [x] id-token: write permission correctly granted (required for OIDC authentication)
 - [x] GitHub context fields validated
 - [x] Threat model documented
 - [x] Operational guidelines provided

@@ -27,6 +27,7 @@ jobs:
       contents: read
       pull-requests: read
       issues: read
+      id-token: write  # Required by Claude Code action for OIDC authentication
 
     steps:
       - name: Checkout repository

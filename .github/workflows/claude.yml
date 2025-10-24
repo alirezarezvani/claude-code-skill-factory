@@ -29,7 +29,8 @@ jobs:
       contents: read
       pull-requests: read
       issues: read
-      actions: read # Required for Claude to read CI results on PRs
+      id-token: write  # Required by Claude Code action for OIDC authentication
+      actions: read    # Required for Claude to read CI results on PRs
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
