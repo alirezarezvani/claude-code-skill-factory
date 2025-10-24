@@ -12,7 +12,10 @@ concurrency:
 jobs:
   create-subtasks:
     # Only run if issue has 'plan' label
-    if: contains(github.event.issue.labels.*.name, 'plan')
+    # Check if the plan label was just added, or if issue was opened with plan label
+    if: |
+      github.event.action == 'labeled' && github.event.label.name == 'plan' ||
+      github.event.action == 'opened' && contains(toJSON(github.event.issue.labels.*.name), 'plan')
     runs-on: ubuntu-latest
     permissions:
       contents: read
