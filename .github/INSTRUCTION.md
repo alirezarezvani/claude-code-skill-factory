@@ -938,7 +938,7 @@ When workflows fail:
 
 ### Support Resources
 
-- **README.md**: System overview and quick reference
+- **WORKFLOWS.md**: System overview and quick reference
 - **Master Prompt**: `documentation/implementation/github-workflow-master-prompt.md`
 - **Claude Code Docs**: https://docs.claude.com/claude-code
 - **GitHub Actions Docs**: https://docs.github.com/actions
