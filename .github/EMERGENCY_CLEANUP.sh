@@ -64,7 +64,7 @@ for issue_num in $SPAM_ISSUES; do
   total=$((total + 1))
 
   echo -n "  Closing #$issue_num... "
-  gh issue close $issue_num --reason "not_planned" --comment "🤖 Automatically closed: Created by misconfigured workflow" 2>/dev/null && echo "✅" || echo "❌"
+  gh issue close $issue_num --reason "not planned" --comment "🤖 Automatically closed: Created by misconfigured workflow" 2>/dev/null && echo "✅" || echo "❌"
 
   # Rate limit protection: pause after each batch
   if [ $((count % BATCH_SIZE)) -eq 0 ]; then
