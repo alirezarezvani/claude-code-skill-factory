@@ -18,7 +18,8 @@ concurrency:
 jobs:
   claude-review:
     # Auto-review ALL pull requests with Claude
-    # No restrictions - Claude reviews every PR automatically
+    # BYPASS: Add [EMERGENCY], [SKIP REVIEW], or [HOTFIX] to PR title
+    # BYPASS: Or add 'emergency' or 'skip-review' label to PR
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,12 +28,58 @@ jobs:
       id-token: write  # Required by Claude Code action for OIDC authentication
 
     steps:
+      - name: Check for Review Bypass
+        id: bypass
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_LABELS="${{ toJSON(github.event.pull_request.labels.*.name) }}"
+
+          # Check for bypass markers in PR title
+          if echo "$PR_TITLE" | grep -qE '\[EMERGENCY\]|\[SKIP REVIEW\]|\[HOTFIX\]'; then
+            echo "bypass=true" >> $GITHUB_OUTPUT
+            echo "reason=PR title contains bypass marker" >> $GITHUB_OUTPUT
+            echo "⏭️ BYPASS: PR title contains bypass marker"
+            exit 0
+          fi
+
+          # Check for bypass labels
+          if echo "$PR_LABELS" | grep -qE 'emergency|skip-review|hotfix'; then
+            echo "bypass=true" >> $GITHUB_OUTPUT
+            echo "reason=PR has bypass label" >> $GITHUB_OUTPUT
+            echo "⏭️ BYPASS: PR has bypass label"
+            exit 0
+          fi
+
+          echo "bypass=false" >> $GITHUB_OUTPUT
+          echo "✅ No bypass detected - review will proceed"
+
+      - name: Post Bypass Notice
+        if: steps.bypass.outputs.bypass == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⏭️ Code Review Bypassed
+
+              **Reason**: ${{ steps.bypass.outputs.reason }}
+
+              ⚠️ **Manual review recommended** - This PR was merged without automated code review.
+
+              ---
+              *Bypass triggered by EMERGENCY_PROCEDURES.md protocol*`
+            })
+
       - name: Checkout repository
+        if: steps.bypass.outputs.bypass != 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
       - name: Run Claude Code Review
+        if: steps.bypass.outputs.bypass != 'true'
         id: claude-review
         uses: anthropics/claude-code-action@v1
         with:
