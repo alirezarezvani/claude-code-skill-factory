@@ -1,0 +1,166 @@
+name: Plan Validator
+
+on:
+  issues:
+    types: [labeled]
+
+# Prevent multiple validations on same plan
+concurrency:
+  group: plan-validate-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: github.event.label.name == 'plan'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Validate Plan Structure
+        run: |
+          echo "🔍 Validating plan #${{ github.event.issue.number }}..."
+
+          # Get issue body
+          issue_body=$(gh issue view ${{ github.event.issue.number }} --json body --jq '.body')
+
+          # Count tasks (lines starting with "- [ ]")
+          task_count=$(echo "$issue_body" | grep -c "^- \[ \]" || echo "0")
+
+          echo "📊 Found $task_count tasks"
+
+          # Validate task count (5-10 tasks)
+          if [ "$task_count" -lt 5 ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "## ⚠️ Plan Validation Failed
+
+**Tasks found**: $task_count
+**Minimum required**: 5 tasks
+
+### Why This Minimum?
+- Plans should contain multiple related tasks
+- Single tasks don't need a plan structure
+- Use regular issues for 1-4 tasks
+
+### Solution
+Either:
+1. Add more tasks to reach 5+ tasks
+2. Remove the \`plan\` label if this is a single task
+3. Break this into smaller, focused work items"
+
+            gh issue edit ${{ github.event.issue.number }} --remove-label "plan" --add-label "plan-invalid"
+            exit 0
+          fi
+
+          if [ "$task_count" -gt 10 ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "## ⚠️ Plan Validation Failed
+
+**Tasks found**: $task_count
+**Maximum allowed**: 10 tasks
+
+### Why This Limit?
+- Prevents GitHub API rate limits (80 requests/min, 500/hour)
+- Keeps plans manageable and focused
+- Enforced by repository standards (CLAUDE.md)
+- Reduces workflow overhead and complexity
+
+### Solution
+Split this plan into $(( ($task_count + 9) / 10 )) smaller plans:
+- Plan 1: Tasks 1-10
+- Plan 2: Tasks 11-20
+$([ "$task_count" -gt 20 ] && echo "- Plan 3: Tasks 21-30")
+
+Each plan will be processed safely without hitting rate limits or overwhelming the team.
+
+### How to Split
+1. Create separate plan issues for each group of 10 tasks
+2. Each plan should be focused on a related set of work
+3. Plans can be worked on sequentially or in parallel"
+
+            gh issue edit ${{ github.event.issue.number }} --remove-label "plan" --add-label "plan-invalid"
+            exit 0
+          fi
+
+          echo "✅ Task count valid: $task_count tasks"
+
+      - name: Check Rate Limits
+        run: |
+          echo "🔍 Checking GitHub API rate limits..."
+
+          # Check REST API rate limit
+          core_remaining=$(gh api rate_limit --jq '.resources.core.remaining')
+          core_limit=$(gh api rate_limit --jq '.resources.core.limit')
+          core_reset=$(gh api rate_limit --jq '.resources.core.reset')
+
+          # Check GraphQL rate limit
+          graphql_remaining=$(gh api rate_limit --jq '.resources.graphql.remaining')
+          graphql_limit=$(gh api rate_limit --jq '.resources.graphql.limit')
+
+          echo "📊 Rate Limits:"
+          echo "  REST API: $core_remaining/$core_limit"
+          echo "  GraphQL: $graphql_remaining/$graphql_limit"
+
+          # Require at least 100 remaining for each
+          if [ "$core_remaining" -lt 100 ] || [ "$graphql_remaining" -lt 100 ]; then
+            reset_time=$(date -r $core_reset "+%Y-%m-%d %H:%M:%S")
+
+            gh issue comment ${{ github.event.issue.number }} --body "## ⏳ Rate Limit Protection
+
+GitHub API rate limits are currently low. This plan will be processed automatically when limits reset.
+
+### Current Status
+- **REST API**: $core_remaining/$core_limit remaining
+- **GraphQL**: $graphql_remaining/$graphql_limit remaining
+- **Next reset**: $reset_time
+
+### What This Means
+Your plan is valid and queued for processing. The system will automatically:
+1. Wait for rate limits to reset
+2. Process your plan safely
+3. Create all task issues without hitting limits
+
+No action needed - just be patient! 🙏"
+
+            gh issue edit ${{ github.event.issue.number }} --add-label "rate-limit-wait"
+            exit 0
+          fi
+
+          echo "✅ Rate limits sufficient"
+
+      - name: Validation Passed
+        run: |
+          echo "✅ All validations passed!"
+
+          # Get task count for summary
+          task_count=$(gh issue view ${{ github.event.issue.number }} --json body --jq '.body' | grep -c "^- \[ \]" || echo "0")
+
+          gh issue comment ${{ github.event.issue.number }} --body "## ✅ Plan Validated
+
+**Tasks**: $task_count
+**API capacity**: ✅ Sufficient
+**Status**: Ready for processing
+
+The \`plan-to-tasks\` workflow will now create task issues automatically.
+
+### What Happens Next
+1. Task issues will be created (one per checklist item)
+2. Each task will be labeled with \`task\`, \`plan-item\`, \`skip-triage\`
+3. All tasks will be added to the project board
+4. Parent plan will be updated with task links
+
+### Task Breakdown
+If any task needs further breakdown:
+- Add \`needs-subtasks\` label to the task
+- Add a checklist in the task body (max 5 subtasks)
+- Subtasks will be created automatically
+
+---
+
+*🤖 Validated by plan-validator workflow*"
+
+          # Add plan-validated label to trigger plan-to-tasks workflow
+          gh issue edit ${{ github.event.issue.number }} --add-label "plan-validated"

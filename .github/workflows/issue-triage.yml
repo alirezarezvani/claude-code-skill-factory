@@ -11,6 +11,10 @@ concurrency:
 
 jobs:
   triage:
+    # Skip if has 'subtask' OR 'skip-triage' label
+    if: |
+      !contains(toJSON(github.event.issue.labels.*.name), 'subtask') &&
+      !contains(toJSON(github.event.issue.labels.*.name), 'skip-triage')
     runs-on: ubuntu-latest
     permissions:
       contents: read

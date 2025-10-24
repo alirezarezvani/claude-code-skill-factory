@@ -1,0 +1,171 @@
+name: Plan Auto-Close
+
+on:
+  issues:
+    types: [closed]
+
+# Prevent multiple concurrent runs per plan
+concurrency:
+  group: plan-close-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  check-plan-completion:
+    # Only run when a TASK issue is closed
+    if: contains(toJSON(github.event.issue.labels.*.name), 'task')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Extract Parent Plan Number
+        id: extract_plan
+        run: |
+          echo "🔍 Looking for parent plan..."
+
+          # Get issue body
+          BODY=$(gh issue view ${{ github.event.issue.number }} --json body --jq '.body')
+
+          # Extract plan number from body (looks for "Part of #123" or "Parent Plan" section)
+          PLAN_NUM=$(echo "$BODY" | grep -oP '(?<=#)\d+' | head -1)
+
+          if [ -z "$PLAN_NUM" ]; then
+            echo "⏭️ No parent plan found. This task is standalone."
+            echo "has_plan=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "plan_number=$PLAN_NUM" >> $GITHUB_OUTPUT
+          echo "has_plan=true" >> $GITHUB_OUTPUT
+          echo "✅ Found parent plan: #$PLAN_NUM"
+
+      - name: Check if Plan is Complete
+        if: steps.extract_plan.outputs.has_plan == 'true'
+        id: check_completion
+        run: |
+          PLAN_NUM=${{ steps.extract_plan.outputs.plan_number }}
+
+          echo "📊 Checking completion status of plan #$PLAN_NUM..."
+
+          # Get all TASK issues for this plan
+          TASKS=$(gh issue list \
+            --label "task,plan-item" \
+            --state all \
+            --limit 500 \
+            --json number,title,body,state \
+            --jq ".[] | select(.body | contains(\"#$PLAN_NUM\"))")
+
+          if [ -z "$TASKS" ]; then
+            echo "⚠️ No tasks found for plan #$PLAN_NUM"
+            echo "all_complete=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Count total tasks and closed tasks
+          TOTAL=$(echo "$TASKS" | jq -s 'length')
+          CLOSED=$(echo "$TASKS" | jq -s '[.[] | select(.state == "CLOSED")] | length')
+          OPEN=$(echo "$TASKS" | jq -s '[.[] | select(.state == "OPEN")] | length')
+
+          echo "📊 Task Status:"
+          echo "  Total:  $TOTAL"
+          echo "  Closed: $CLOSED"
+          echo "  Open:   $OPEN"
+
+          # Store for next step
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "closed=$CLOSED" >> $GITHUB_OUTPUT
+          echo "open=$OPEN" >> $GITHUB_OUTPUT
+
+          # Check if all tasks are complete
+          if [ $OPEN -eq 0 ]; then
+            echo "all_complete=true" >> $GITHUB_OUTPUT
+            echo "✅ All tasks complete! Plan can be closed."
+          else
+            echo "all_complete=false" >> $GITHUB_OUTPUT
+            echo "⏳ $OPEN tasks still open. Plan remains open."
+          fi
+
+      - name: Close Plan Issue
+        if: |
+          steps.extract_plan.outputs.has_plan == 'true' &&
+          steps.check_completion.outputs.all_complete == 'true'
+        run: |
+          PLAN_NUM=${{ steps.extract_plan.outputs.plan_number }}
+          TOTAL=${{ steps.check_completion.outputs.total }}
+          CLOSED=${{ steps.check_completion.outputs.closed }}
+
+          echo "🎉 Closing plan #$PLAN_NUM..."
+
+          # Create completion comment
+          COMMENT="## ✅ Plan Completed
+
+All **$TOTAL tasks** have been completed! This plan is now being automatically closed.
+
+### 📊 Completion Summary
+
+- **Total Tasks**: $TOTAL
+- **Completed**: $CLOSED
+- **Success Rate**: 100%
+
+### 🎉 What's Next?
+
+- Review completed work
+- Archive or reference this plan for future projects
+- Create new plans for upcoming work
+
+---
+
+*🤖 Automatically closed by plan-auto-close.yml*"
+
+          # Post comment
+          gh issue comment $PLAN_NUM --body "$COMMENT"
+
+          # Close the plan issue
+          gh issue close $PLAN_NUM --reason completed
+
+          echo "✅ Plan #$PLAN_NUM closed successfully"
+
+      - name: Update Plan Progress (if not complete)
+        if: |
+          steps.extract_plan.outputs.has_plan == 'true' &&
+          steps.check_completion.outputs.all_complete == 'false'
+        run: |
+          PLAN_NUM=${{ steps.extract_plan.outputs.plan_number }}
+          TOTAL=${{ steps.check_completion.outputs.total }}
+          CLOSED=${{ steps.check_completion.outputs.closed }}
+          OPEN=${{ steps.check_completion.outputs.open }}
+
+          # Calculate progress percentage
+          PROGRESS=$((CLOSED * 100 / TOTAL))
+
+          echo "📈 Updating progress for plan #$PLAN_NUM..."
+          echo "  Progress: $CLOSED/$TOTAL ($PROGRESS%)"
+
+          # Post progress update comment
+          COMMENT="## 📈 Progress Update
+
+Task **#${{ github.event.issue.number }}** completed!
+
+### Current Status
+
+- **Completed**: $CLOSED/$TOTAL tasks ($PROGRESS%)
+- **Remaining**: $OPEN tasks
+
+Keep up the great work! 🚀
+
+---
+
+*🤖 Automated progress update by plan-auto-close.yml*"
+
+          # Only post comment on major milestones (25%, 50%, 75%)
+          if [ $PROGRESS -eq 25 ] || [ $PROGRESS -eq 50 ] || [ $PROGRESS -eq 75 ]; then
+            gh issue comment $PLAN_NUM --body "$COMMENT"
+            echo "✅ Progress milestone comment posted"
+          else
+            echo "⏭️ Not a milestone percentage. No comment posted."
+          fi

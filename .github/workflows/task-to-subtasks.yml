@@ -1,0 +1,189 @@
+name: Task to Subtasks Automation
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: task-subtasks-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  rate-limit-check:
+    if: |
+      github.event.label.name == 'needs-subtasks' &&
+      contains(toJSON(github.event.issue.labels.*.name), 'task')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    outputs:
+      can_proceed: ${{ steps.check.outputs.can_proceed }}
+
+    steps:
+      - name: Circuit Breaker - Check Rate Limits
+        id: check
+        run: |
+          echo "🔍 Pre-flight rate limit check..."
+
+          core_remaining=$(gh api rate_limit --jq '.resources.core.remaining')
+          graphql_remaining=$(gh api rate_limit --jq '.resources.graphql.remaining')
+
+          echo "📊 REST: $core_remaining | GraphQL: $graphql_remaining"
+
+          if [ "$core_remaining" -lt 25 ] || [ "$graphql_remaining" -lt 25 ]; then
+            echo "can_proceed=false" >> $GITHUB_OUTPUT
+            gh issue comment ${{ github.event.issue.number }} --body "## ⚠️ Rate Limit Protection
+
+Rate limits too low. Subtask creation postponed until limits reset.
+
+**Current**: REST: $core_remaining | GraphQL: $graphql_remaining
+**Required**: 25+ each (for max 5 subtasks)
+
+Workflow will retry when limits recover."
+            exit 0
+          fi
+
+          echo "can_proceed=true" >> $GITHUB_OUTPUT
+          echo "✅ Rate limits sufficient"
+
+  validate-and-create:
+    needs: rate-limit-check
+    if: needs.rate-limit-check.outputs.can_proceed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Validate Subtask Count
+        run: |
+          subtasks=$(gh issue view ${{ github.event.issue.number }} --json body --jq '.body' | grep "^- \[ \]" | wc -l)
+
+          if [ "$subtasks" -gt 5 ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "## ⚠️ Too Many Subtasks
+
+**Found**: $subtasks subtasks
+**Maximum**: 5 subtasks per task
+
+Please reduce to 5 or fewer subtasks. Keep tasks focused and manageable."
+
+            gh issue edit ${{ github.event.issue.number }} --remove-label "needs-subtasks" --add-label "subtasks-invalid"
+            exit 1
+          fi
+
+          if [ "$subtasks" -eq 0 ]; then
+            gh issue comment ${{ github.event.issue.number }} --body "## ℹ️ No Subtasks Found
+
+Add a checklist to this task's description:
+\`\`\`markdown
+## Subtasks
+- [ ] Subtask 1
+- [ ] Subtask 2
+- [ ] Subtask 3 (max 5)
+\`\`\`"
+
+            gh issue edit ${{ github.event.issue.number }} --remove-label "needs-subtasks"
+            exit 0
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Create Subtask Issues
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          prompt: |
+            # Task to Subtasks - Create SUBTASK Issues
+
+            ## YOUR ROLE
+            Convert task checklist into SUBTASK issues (max 5).
+
+            ## INPUT
+            Task: #${{ github.event.issue.number }}
+            Title: "${{ github.event.issue.title }}"
+
+            ## TASK
+
+            ### Step 1: Get Parent Plan
+            ```bash
+            parent_plan=$(gh issue view ${{ github.event.issue.number }} --json body --jq '.body' | grep -o "Parent Plan: #[0-9]*" | grep -o "[0-9]*")
+            echo "Parent Plan: #$parent_plan"
+            ```
+
+            ### Step 2: Parse & Create Subtasks (REST API)
+            ```bash
+            subtasks=$(gh issue view ${{ github.event.issue.number }} --json body --jq '.body' | grep "^- \[ \]" | sed 's/^- \[ \] //')
+
+            subtask_numbers=()
+            count=0
+
+            while IFS= read -r subtask; do
+              count=$((count + 1))
+              echo "Creating Subtask $count: $subtask"
+
+              num=$(gh api repos/${{ github.repository }}/issues \
+                --method POST \
+                --field title="Subtask: $subtask" \
+                --field body="## Parent Task
+            #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
+
+            **Plan**: #$parent_plan
+
+            ## Work
+            $subtask
+
+            ---
+            Parent Task: #${{ github.event.issue.number }}
+            Parent Plan: #$parent_plan" \
+                --raw-field 'labels=["subtask","skip-triage"]' \
+                --jq '.number')
+
+              subtask_numbers+=($num)
+              echo "✅ Created #$num"
+              sleep 2
+            done <<< "$subtasks"
+            ```
+
+            ### Step 3: Update Parent Task
+            ```bash
+            subtask_links=""
+            for num in "${subtask_numbers[@]}"; do
+              title=$(gh issue view $num --json title --jq '.title' | sed 's/^Subtask: //')
+              subtask_links+="- [ ] #$num - $title\n"
+            done
+
+            gh issue comment ${{ github.event.issue.number }} --body "## ✅ Subtasks Created
+
+            ${subtask_links}
+
+            **Total**: ${#subtask_numbers[@]} subtasks
+
+            ---
+            *🤖 Created by task-to-subtasks*"
+
+            gh issue edit ${{ github.event.issue.number }} --remove-label "needs-subtasks"
+            ```
+
+            ## CRITICAL RULES
+            - ✅ DO: Use REST API
+            - ✅ DO: 2-second delays
+            - ✅ DO: Link to both parent task AND parent plan
+            - ❌ DO NOT: Create more than 5 subtasks
+
+          claude_args: '--allowed-tools "Bash(gh api:*),Bash(gh issue:*),Bash(sleep:*),Bash(echo:*)"'
