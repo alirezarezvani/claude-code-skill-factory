@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 1. **PLAN MODE FIRST**
    - Use plan mode to create a detailed implementation plan
    - Break down the work into clear, actionable steps
+   - **KEEP PLANS SMALL: 5-10 tasks maximum**
    - Estimate effort and identify potential challenges
 
 2. **GET USER APPROVAL**
@@ -24,12 +25,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - Create a GitHub issue with the `plan` label
    - Include the approved plan in the issue body
    - Use markdown checkboxes for tasks: `- [ ] Task name`
-   - The plan-to-issues automation will automatically create subtasks
+   - **MAXIMUM 5-10 TASKS** - The plan-to-issues automation creates one issue per task
+   - **For large initiatives**: Create multiple small plan issues, NOT one giant plan
 
 4. **AUTOMATION CREATES SUBTASKS**
    - GitHub workflow creates individual issues for each task
    - All subtasks are linked to the parent issue
    - All added to project board for tracking
+   - **WARNING**: 40+ tasks = API rate limits and issue spam
 
 5. **START IMPLEMENTATION**
    - Begin work on subtasks in priority order
@@ -44,29 +47,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ **Audit trail**: Complete history of decisions and implementation
 - ✅ **Automation leverage**: Uses the excellent GitHub automation built into this repo
 
-### Example Workflow
+### Example Workflows
 
+**✅ CORRECT - Small Plan (5 tasks)**:
 ```
 User: "Add a new skill for data visualization"
 
-❌ WRONG: Start implementing immediately
-
-✅ CORRECT:
 1. Enter plan mode
-2. Create plan with tasks:
+2. Create plan with 5 tasks:
    - Research data visualization libraries
    - Design SKILL.md structure
    - Implement Python visualization classes
-   - Create sample data and examples
-   - Write HOW_TO_USE.md
+   - Create sample data and HOW_TO_USE.md
    - Test with real data
 3. Present plan to user, get approval
-4. Create GitHub issue with 'plan' label containing tasks
-5. Wait for automation to create subtasks
+4. Create GitHub issue with 'plan' label containing 5 tasks
+5. Automation creates 5 subtask issues
 6. Begin implementation
 ```
 
-**NEVER START WORK WITHOUT FOLLOWING THIS PROCESS.**
+**❌ WRONG - Too Many Tasks**:
+```
+User: "Create comprehensive Wiki documentation"
+
+DON'T DO THIS:
+- Create issue with 40+ tasks in checkboxes
+- Results in 40+ GitHub issues created
+- Hits API rate limits
+- Creates issue spam
+
+DO THIS INSTEAD:
+- Break into 3-4 small plan issues:
+  - Plan #1: Wiki Foundation (5 tasks)
+  - Plan #2: Core Wiki Pages (6 tasks)
+  - Plan #3: Advanced Documentation (5 tasks)
+```
+
+**GOLDEN RULE: 5-10 TASKS MAXIMUM PER PLAN ISSUE**
 
 ---
 
