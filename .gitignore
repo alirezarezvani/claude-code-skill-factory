@@ -17,3 +17,4 @@ generated-skills/master-prompt-engineer.zip
 .env.development
 .env.test
 .env.production
+github-docs/

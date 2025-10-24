@@ -9,11 +9,51 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate-and-create:
+  rate-limit-check:
     if: |
       github.event.label.name == 'needs-subtasks' &&
       contains(toJSON(github.event.issue.labels.*.name), 'task')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
 
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    outputs:
+      can_proceed: ${{ steps.check.outputs.can_proceed }}
+
+    steps:
+      - name: Circuit Breaker - Check Rate Limits
+        id: check
+        run: |
+          echo "🔍 Pre-flight rate limit check..."
+
+          core_remaining=$(gh api rate_limit --jq '.resources.core.remaining')
+          graphql_remaining=$(gh api rate_limit --jq '.resources.graphql.remaining')
+
+          echo "📊 REST: $core_remaining | GraphQL: $graphql_remaining"
+
+          if [ "$core_remaining" -lt 25 ] || [ "$graphql_remaining" -lt 25 ]; then
+            echo "can_proceed=false" >> $GITHUB_OUTPUT
+            gh issue comment ${{ github.event.issue.number }} --body "## ⚠️ Rate Limit Protection
+
+Rate limits too low. Subtask creation postponed until limits reset.
+
+**Current**: REST: $core_remaining | GraphQL: $graphql_remaining
+**Required**: 25+ each (for max 5 subtasks)
+
+Workflow will retry when limits recover."
+            exit 0
+          fi
+
+          echo "can_proceed=true" >> $GITHUB_OUTPUT
+          echo "✅ Rate limits sufficient"
+
+  validate-and-create:
+    needs: rate-limit-check
+    if: needs.rate-limit-check.outputs.can_proceed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

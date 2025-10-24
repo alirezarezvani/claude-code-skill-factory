@@ -155,6 +155,69 @@ PLAN ISSUE (#100)                      - Epic or feature
 - `status: in-review` - Under review
 - `status: done` - Completed (auto-applied when issue closed)
 
+### Smart Bidirectional Synchronization
+
+**Workflow**: `.github/workflows/smart-sync.yml`
+
+The smart-sync workflow replaces the old issue-to-project-sync and project-to-issue-sync workflows with a single, intelligent system that prevents sync loops and respects rate limits.
+
+**Key Features**:
+- ✅ **10-second debouncing**: Prevents rapid back-and-forth updates
+- ✅ **Circuit breaker**: Checks rate limits before executing (requires 50+ remaining)
+- ✅ **Direction detection**: Automatically determines sync direction based on event source
+- ✅ **Silent operation**: No notification spam (updates without comments)
+- ✅ **Loop prevention**: One-way sync logic prevents ping-pong loops
+
+**How It Works**:
+
+1. **Event Triggers**:
+   - Issue labeled/closed/reopened → Syncs Issue → Project Board
+   - Project board status changed → Syncs Project Board → Issue
+
+2. **Safety Checks**:
+   - Rate limit check (circuit breaker)
+   - 10-second debounce delay
+   - Concurrency control (cancel in-progress runs)
+
+3. **Sync Operations**:
+
+   **Issue → Project Board**:
+   - Adds issue to project if not present
+   - Maps issue status labels to project board columns
+   - Updates project board status field
+   - Closes/reopens based on issue state
+
+   **Project Board → Issue**:
+   - Removes old status labels
+   - Adds new status label based on project board column
+   - Closes issue if moved to "Done"
+   - Reopens issue if moved from "Done"
+
+4. **Status Mapping**:
+   ```
+   Issue Label          ↔  Project Board Column
+   ─────────────────────────────────────────────
+   status: triage       ↔  To triage
+   status: backlog      ↔  Backlog
+   status: ready        ↔  Ready
+   status: in-progress  ↔  In Progress
+   status: in-review    ↔  In Review
+   status: done         ↔  Done
+   (closed state)       ↔  Done
+   ```
+
+**Best Practices**:
+- ✅ DO: Change status on project board OR issue (not both at once)
+- ✅ DO: Wait 10 seconds between rapid status changes
+- ✅ DO: Use status labels for tracking (they sync automatically)
+- ❌ DON'T: Manually update both issue and project board (creates duplicate syncs)
+- ❌ DON'T: Make rapid status changes (triggers rate limit protection)
+
+**Troubleshooting**:
+- If sync appears stuck: Check rate limits with `gh api rate_limit`
+- If status out of sync: Manually trigger by re-labeling or moving on board
+- If getting rate limit warnings: Wait for cooldown (syncs will resume automatically)
+
 ### How to Use the Hierarchy
 
 **Creating a Plan**:
