@@ -10,20 +10,24 @@ on:
     #   - "src/**/*.js"
     #   - "src/**/*.jsx"
 
+# Prevent multiple review runs on rapid PR updates
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   claude-review:
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    # Security: Only run auto-review for team members (OWNER, MEMBER, COLLABORATOR)
+    # External contributors can still request reviews by mentioning @claude
+    if: |
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
 
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: read
       issues: read
-      id-token: write
+      id-token: write  # Required by Claude Code action for OIDC authentication
 
     steps:
       - name: Checkout repository
