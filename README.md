@@ -49,7 +49,8 @@ claude-code-skills-factory/
 │   ├── content-trend-researcher/          # Multi-platform content research (35 KB)
 │   ├── ms365-tenant-manager/              # Microsoft 365 administration (40 KB)
 │   ├── psychology-advisor/                # Mental wellness & CBT techniques (31 KB)
-│   └── agent-factory/                     # Claude Code agent generation (12 KB)
+│   ├── agent-factory/                     # Claude Code agent generation (12 KB)
+│   └── prompt-suite/                      # Prompt generation powerhouse (427 KB)
 └── documentation/
     └── templates/
         ├── SKILLS_FACTORY_PROMPT.md       # Template for generating Skills
@@ -256,6 +257,27 @@ This repository also includes production-ready skills generated using the Skills
 
 **Pattern**: Configuration requirements → PowerShell scripts → validation checklists
 
+### 7. Prompt Suite
+**Purpose**: World-class prompt powerhouse for generating production-ready mega-prompts for any role, industry, and task
+
+**Files**:
+- [SKILL.md](generated-skills/prompt-suite/SKILL.md)
+- [generate_prompt.py](generated-skills/prompt-suite/scripts/generate_prompt.py)
+- [validator.py](generated-skills/prompt-suite/scripts/validator.py)
+- [optimizer.py](generated-skills/prompt-suite/scripts/optimizer.py)
+- [batch_generator.py](generated-skills/prompt-suite/scripts/batch_generator.py)
+
+**Capabilities**:
+- 69 comprehensive presets across 15 professional domains
+- Intelligent 7-question flow for requirement gathering
+- Multiple output formats (XML/Claude/ChatGPT/Gemini)
+- 7-point quality validation before delivery
+- Contextual best practices from OpenAI, Anthropic, Google
+- Core & Advanced modes with testing scenarios
+- Complete coverage: Technical (8), Business (8), Legal (4), Finance (4), HR (4), Design (4), Customer (4), Executive (7), Specialized-Technical (6), Research (3), Creative-Media (4), Manufacturing (4), R&D (2), Regulatory (1), Specialized (3)
+
+**Pattern**: 7-question flow → preset selection → quality validation → multi-format output
+
 ## Key Features
 
 ### 🎯 Production-Ready Output
@@ -456,6 +478,15 @@ Claude Code agent generation system that creates custom agents/sub-agents with e
 **See**: [generated-skills/agent-factory/](generated-skills/agent-factory/)
 **Template**: [documentation/templates/AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
 
+### Prompt Suite (427 KB)
+World-class prompt powerhouse that generates production-ready mega-prompts for any role, industry, and task through intelligent 7-question flow.
+
+**Key Features**: 69 comprehensive presets across 15 professional domains (Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media), multiple output formats (XML/Claude/ChatGPT/Gemini), 7-point quality validation gates, contextual best practices from OpenAI/Anthropic/Google
+
+**Domains Covered**: Full-Stack Engineer, DevOps, Product Manager, Legal Counsel, CFO, HR Manager, UI/UX Designer, Customer Success, CEO, ML Engineer, Research Scientist, Copywriter, Manufacturing Engineer, Clinical Specialist, and 55+ more roles
+
+**See**: [generated-skills/prompt-suite/](generated-skills/prompt-suite/)
+
 Each includes full implementation, sample data, HOW_TO_USE guide, and ready-to-import ZIP files.
 
 ## Contributing
@@ -473,9 +504,14 @@ This repository provides examples and templates for creating Claude Skills. The 
 
 ## Version
 
-**Current Version**: 1.1.0
-**Last Updated**: October 22, 2025
+**Current Version**: 1.2.0
+**Last Updated**: October 23, 2025
 **Compatible With**: Claude Skills (all platforms) and Claude Code Agents
+
+**Latest Changes** (v1.2.0):
+- Added Prompt Suite skill (427 KB) - World-class prompt generation with 69 presets across 15 domains
+- Expanded coverage: Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media domains
+- Multi-format output support (XML/Claude/ChatGPT/Gemini)
 
 ---
 
