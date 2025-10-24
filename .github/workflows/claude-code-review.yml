@@ -17,11 +17,8 @@ concurrency:
 
 jobs:
   claude-review:
-    # Security: Only run auto-review for team members (OWNER, MEMBER, COLLABORATOR)
-    # External contributors can still request reviews by mentioning @claude
-    if: |
-      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
-
+    # Auto-review ALL pull requests with Claude
+    # No restrictions - Claude reviews every PR automatically
     runs-on: ubuntu-latest
     permissions:
       contents: read
