@@ -1,0 +1,223 @@
+name: Plan to Issues Automation
+
+on:
+  issues:
+    types: [opened, labeled]
+
+# Prevent multiple runs on the same plan
+concurrency:
+  group: plan-to-issues-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  create-subtasks:
+    # Only run if issue has 'plan' label
+    if: contains(github.event.issue.labels.*.name, 'plan')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Create Subtask Issues
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          prompt: |
+            # Plan to Issues Automation
+
+            You are a project management assistant that converts GitHub issue plans into trackable subtask issues.
+
+            ## Your Task
+
+            **Parent Issue**: #${{ github.event.issue.number }}
+            **Title**: "${{ github.event.issue.title }}"
+            **Body**:
+            ```
+            ${{ github.event.issue.body }}
+            ```
+            **Author**: @${{ github.event.issue.user.login }}
+
+            ## What You Need to Do
+
+            1. **Parse the plan** - Extract the main goal and all subtasks
+            2. **Create child issues** - One GitHub issue per subtask
+            3. **Link everything** - Update parent issue with references
+            4. **Add to project** - Ensure all issues are in project #7
+
+            ## Expected Plan Format
+
+            The plan issue should have:
+            - **Goal/Description**: Main objective (in body)
+            - **Tasks**: Markdown checklist with `- [ ]` format
+
+            Example:
+            ```markdown
+            ## Goal
+            Implement user authentication
+
+            ## Tasks
+            - [ ] Design login UI
+            - [ ] Implement JWT auth
+            - [ ] Add password reset
+            ```
+
+            ## Step-by-Step Instructions
+
+            ### Step 1: Parse Tasks from Issue Body
+
+            Look for:
+            - Markdown checkboxes: `- [ ] Task name`
+            - Numbered lists: `1. Task name`
+            - Bulleted lists: `- Task name` or `* Task name`
+
+            Extract each task as a separate item.
+
+            ### Step 2: Create Child Issues
+
+            For EACH task found, create a new GitHub issue:
+
+            ```bash
+            gh issue create \
+              --title "Task: [extracted task text]" \
+              --label "subtask,plan-item" \
+              --body "## Parent Plan
+
+            This task is part of #${{ github.event.issue.number }}: ${{ github.event.issue.title }}
+
+            ## Task Description
+
+            [Task text from checklist]
+
+            ## Context
+
+            [Any relevant context from parent issue]
+
+            ---
+
+            **Parent**: #${{ github.event.issue.number }}
+            **Created**: Automatically from plan automation
+            **Project**: [@claude-skills-factory](https://github.com/users/alirezarezvani/projects/7)"
+            ```
+
+            **IMPORTANT**:
+            - Prefix each task with "Task: " in the title
+            - Always add labels: `subtask` and `plan-item`
+            - Include parent issue reference in body
+            - Save the issue number from output (e.g., `#45`)
+
+            ### Step 3: Add Child Issues to Project Board
+
+            For each created issue, add it to the project:
+
+            ```bash
+            gh project item-add 7 --owner alirezarezvani --url https://github.com/alirezarezvani/claude-code-skill-factory/issues/[ISSUE_NUMBER]
+            ```
+
+            ### Step 4: Update Parent Issue
+
+            Update the parent issue #${{ github.event.issue.number }} with links to all child issues:
+
+            ```bash
+            gh issue comment ${{ github.event.issue.number }} --body "$(cat <<'EOF'
+            ## 🤖 Plan Automation Complete
+
+            This plan has been converted into trackable subtask issues:
+
+            ### Subtasks Created
+
+            - [ ] #[issue1] - [Task 1 title]
+            - [ ] #[issue2] - [Task 2 title]
+            - [ ] #[issue3] - [Task 3 title]
+
+            **Total Subtasks**: [count]
+            **Project Board**: All tasks added to [@claude-skills-factory](https://github.com/users/alirezarezvani/projects/7)
+
+            ---
+
+            ✅ **Next Steps**:
+            1. Review each subtask issue
+            2. Assign team members to tasks
+            3. Track progress by checking off tasks above
+            4. Close this parent issue when all subtasks are complete
+
+            *🤖 Automated by Plan-to-Issues workflow*
+            EOF
+            )"
+            ```
+
+            ### Step 5: Add Parent Issue to Project
+
+            Don't forget to add the parent issue itself:
+
+            ```bash
+            gh project item-add 7 --owner alirezarezvani --url https://github.com/alirezarezvani/claude-code-skill-factory/issues/${{ github.event.issue.number }}
+            ```
+
+            ## Output Format
+
+            After completing all steps, post a summary comment:
+
+            ```markdown
+            ## ✅ Plan Automation Summary
+
+            **Parent Issue**: #${{ github.event.issue.number }}
+            **Tasks Found**: [count]
+            **Issues Created**: [count]
+            **Project Board**: ✅ All added
+
+            ### Created Issues
+
+            1. #[num] - [title]
+            2. #[num] - [title]
+            3. #[num] - [title]
+
+            ---
+
+            **Status**: ✅ Complete
+            **Time**: ~[duration] seconds
+            ```
+
+            ## Error Handling
+
+            If no tasks found:
+            ```bash
+            gh issue comment ${{ github.event.issue.number }} --body "⚠️ **No Tasks Found**
+
+            This issue has the \`plan\` label but no tasks were detected.
+
+            **Expected format**:
+            - Markdown checkboxes: \`- [ ] Task name\`
+            - Numbered lists: \`1. Task name\`
+            - Bulleted lists: \`- Task name\`
+
+            Please update the issue body with tasks, or remove the \`plan\` label if this is not a plan."
+            ```
+
+            If project assignment fails:
+            - Continue creating issues
+            - Note in summary which issues couldn't be added to project
+            - Issues will still be linked and functional
+
+            ## Available Tools
+
+            You can use:
+            - `gh issue create` - Create new issues
+            - `gh issue comment` - Post comments
+            - `gh issue edit` - Update issues (add labels, etc.)
+            - `gh project item-add` - Add to project board
+
+            ## Now Execute
+
+            Parse the issue body above, create subtask issues, link everything, and provide a summary!
+
+          claude_args: '--allowed-tools "Bash(gh issue:*),Bash(gh project:*)"'
