@@ -1,0 +1,235 @@
+name: Hierarchy Dashboard
+
+on:
+  schedule:
+    # Update every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch:  # Allow manual triggering
+  issues:
+    types: [opened, closed, labeled, unlabeled]  # Update when issues change
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  generate-dashboard:
+    # Skip if this is an automated issue (prevents infinite loops)
+    if: |
+      !contains(toJSON(github.event.issue.labels.*.name), 'skip-triage') ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Generate Hierarchy Tree
+        id: generate
+        run: |
+          echo "🏗️ Generating task hierarchy dashboard..."
+
+          # Initialize markdown file
+          cat > HIERARCHY.md << 'EOH'
+# Task Hierarchy Dashboard
+
+**Last Updated**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+
+This file provides a visual representation of the Plan → Task → Subtask hierarchy for all active work.
+
+---
+
+## 📊 Overview
+
+EOH
+
+          # Get counts
+          plans_open=$(gh issue list --label "plan" --state open --limit 100 --json number --jq 'length')
+          plans_total=$(gh issue list --label "plan" --state all --limit 100 --json number --jq 'length')
+          tasks_open=$(gh issue list --label "task" --state open --limit 500 --json number --jq 'length')
+          tasks_total=$(gh issue list --label "task" --state all --limit 500 --json number --jq 'length')
+          subtasks_open=$(gh issue list --label "subtask" --state open --limit 500 --json number --jq 'length')
+          subtasks_total=$(gh issue list --label "subtask" --state all --limit 500 --json number --jq 'length')
+
+          # Add overview table
+          cat >> HIERARCHY.md << EOH
+
+| Level | Open | Total | Completion |
+|-------|------|-------|------------|
+| 📋 Plans | $plans_open | $plans_total | $((($plans_total - $plans_open) * 100 / ($plans_total > 0 ? $plans_total : 1)))% |
+| 📌 Tasks | $tasks_open | $tasks_total | $((($tasks_total - $tasks_open) * 100 / ($tasks_total > 0 ? $tasks_total : 1)))% |
+| ✅ Subtasks | $subtasks_open | $subtasks_total | $((($subtasks_total - $subtasks_open) * 100 / ($subtasks_total > 0 ? $subtasks_total : 1)))% |
+
+---
+
+## 🌳 Active Plans
+
+EOH
+
+          # Get all open plans
+          PLANS=$(gh issue list --label "plan" --state open --limit 100 --json number,title,labels,createdAt,body | jq -c '.[]')
+
+          if [ -z "$PLANS" ]; then
+            echo "No active plans found." >> HIERARCHY.md
+          else
+            # Process each plan
+            echo "$PLANS" | while IFS= read -r plan; do
+              plan_num=$(echo "$plan" | jq -r '.number')
+              plan_title=$(echo "$plan" | jq -r '.title')
+              plan_created=$(echo "$plan" | jq -r '.createdAt' | cut -d'T' -f1)
+
+              echo "" >> HIERARCHY.md
+              echo "### 📋 Plan #$plan_num: $plan_title" >> HIERARCHY.md
+              echo "" >> HIERARCHY.md
+              echo "**Created**: $plan_created | [View Issue](#$plan_num)" >> HIERARCHY.md
+              echo "" >> HIERARCHY.md
+
+              # Get all tasks for this plan
+              TASKS=$(gh issue list --label "task,plan-item" --state all --limit 500 --json number,title,state,body | jq -c ".[] | select(.body | contains(\"#$plan_num\"))")
+
+              if [ -z "$TASKS" ]; then
+                echo "  *No tasks created yet*" >> HIERARCHY.md
+              else
+                task_count=$(echo "$TASKS" | wc -l)
+                task_closed=$(echo "$TASKS" | jq -s '[.[] | select(.state == "CLOSED")] | length')
+                task_open=$((task_count - task_closed))
+                progress=$((task_closed * 100 / task_count))
+
+                echo "**Progress**: $task_closed/$task_count tasks ($progress%)" >> HIERARCHY.md
+                echo "" >> HIERARCHY.md
+                echo "\`\`\`" >> HIERARCHY.md
+
+                # Process each task
+                echo "$TASKS" | while IFS= read -r task; do
+                  task_num=$(echo "$task" | jq -r '.number')
+                  task_title=$(echo "$task" | jq -r '.title' | sed 's/^Task: //')
+                  task_state=$(echo "$task" | jq -r '.state')
+
+                  if [ "$task_state" = "CLOSED" ]; then
+                    task_icon="✅"
+                  else
+                    task_icon="🔲"
+                  fi
+
+                  echo "├─ $task_icon #$task_num: $task_title" >> HIERARCHY.md
+
+                  # Get subtasks for this task
+                  SUBTASKS=$(gh issue list --label "subtask" --state all --limit 100 --json number,title,state,body | jq -c ".[] | select(.body | contains(\"#$task_num\"))")
+
+                  if [ -n "$SUBTASKS" ]; then
+                    subtask_count=$(echo "$SUBTASKS" | wc -l)
+                    subtask_index=0
+
+                    echo "$SUBTASKS" | while IFS= read -r subtask; do
+                      subtask_index=$((subtask_index + 1))
+                      subtask_num=$(echo "$subtask" | jq -r '.number')
+                      subtask_title=$(echo "$subtask" | jq -r '.title' | sed 's/^Subtask: //')
+                      subtask_state=$(echo "$subtask" | jq -r '.state')
+
+                      if [ "$subtask_state" = "CLOSED" ]; then
+                        subtask_icon="✅"
+                      else
+                        subtask_icon="🔲"
+                      fi
+
+                      # Use different branch character for last subtask
+                      if [ $subtask_index -eq $subtask_count ]; then
+                        echo "│  └─ $subtask_icon #$subtask_num: $subtask_title" >> HIERARCHY.md
+                      else
+                        echo "│  ├─ $subtask_icon #$subtask_num: $subtask_title" >> HIERARCHY.md
+                      fi
+                    done
+                  fi
+                done
+
+                echo "\`\`\`" >> HIERARCHY.md
+              fi
+            done
+          fi
+
+          # Add completed plans section
+          cat >> HIERARCHY.md << 'EOH'
+
+---
+
+## ✅ Recently Completed Plans
+
+EOH
+
+          # Get recently closed plans (last 10)
+          CLOSED_PLANS=$(gh issue list --label "plan" --state closed --limit 10 --json number,title,closedAt | jq -c '.[]')
+
+          if [ -z "$CLOSED_PLANS" ]; then
+            echo "No completed plans yet." >> HIERARCHY.md
+          else
+            echo "$CLOSED_PLANS" | while IFS= read -r plan; do
+              plan_num=$(echo "$plan" | jq -r '.number')
+              plan_title=$(echo "$plan" | jq -r '.title')
+              plan_closed=$(echo "$plan" | jq -r '.closedAt' | cut -d'T' -f1)
+
+              echo "- ✅ **#$plan_num**: $plan_title *(completed $plan_closed)*" >> HIERARCHY.md
+            done
+          fi
+
+          # Add footer
+          cat >> HIERARCHY.md << 'EOH'
+
+---
+
+## 📖 How to Use This Dashboard
+
+This dashboard is automatically updated:
+- Every 12 hours via scheduled workflow
+- When issues are created, closed, or labeled
+- Manually via workflow dispatch
+
+### Legend
+
+- 📋 = Plan (epic/feature)
+- 📌 = Task (major work item)
+- ✅ = Completed
+- 🔲 = In Progress / Open
+
+### Quick Links
+
+- [All Plans](../../issues?q=is%3Aissue+label%3Aplan)
+- [All Tasks](../../issues?q=is%3Aissue+label%3Atask)
+- [All Subtasks](../../issues?q=is%3Aissue+label%3Asubtask)
+- [Project Board](../../projects/7)
+
+---
+
+*🤖 Auto-generated by [hierarchy-dashboard.yml](../.github/workflows/hierarchy-dashboard.yml)*
+EOH
+
+          echo "✅ Dashboard generated successfully"
+
+      - name: Commit and Push Dashboard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add the file
+          git add HIERARCHY.md
+
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "⏭️ No changes to HIERARCHY.md. Skipping commit."
+            exit 0
+          fi
+
+          # Commit and push
+          git commit -m "docs: Update task hierarchy dashboard
+
+🤖 Auto-generated by hierarchy-dashboard.yml"
+
+          git push
+
+          echo "✅ Dashboard committed and pushed"

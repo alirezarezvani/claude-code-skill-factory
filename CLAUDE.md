@@ -218,6 +218,95 @@ The smart-sync workflow replaces the old issue-to-project-sync and project-to-is
 - If status out of sync: Manually trigger by re-labeling or moving on board
 - If getting rate limit warnings: Wait for cooldown (syncs will resume automatically)
 
+### Monitoring & Automation
+
+**Three Powerful Automation Workflows**:
+
+#### 1. Workflow Health Monitor (`.github/workflows/workflow-health.yml`)
+
+Automated system health monitoring every 6 hours.
+
+**What It Monitors**:
+- ✅ GitHub API rate limits (REST & GraphQL)
+- ✅ Workflow success rates (last 24 hours)
+- ✅ Task hierarchy statistics (Plans, Tasks, Subtasks)
+
+**Alerting**:
+- Creates health alert issues when problems detected
+- **Critical**: Rate limits <20% OR success rate <70%
+- **Warning**: Rate limits <40% OR success rate <85%
+
+**Manual Trigger**: Go to Actions → Workflow Health Monitor → Run workflow
+
+**What You Get**:
+```
+📊 Rate Limits: REST 85% | GraphQL 82%
+📈 Workflows: 47 runs, 94% success rate
+🏗️ Hierarchy: 3 plans (2 open), 18 tasks (12 open), 23 subtasks (15 open)
+```
+
+#### 2. Plan Auto-Close (`.github/workflows/plan-auto-close.yml`)
+
+Automatically closes plan issues when all tasks are completed.
+
+**How It Works**:
+1. Triggers when any TASK issue is closed
+2. Checks if task belongs to a PLAN
+3. Counts remaining open tasks for that plan
+4. If all tasks done → automatically closes plan with celebration comment
+5. Posts progress updates at 25%, 50%, 75% milestones
+
+**Benefits**:
+- ✅ No manual plan closure needed
+- ✅ Automatic completion tracking
+- ✅ Progress milestone notifications
+- ✅ Clear completion summaries
+
+**Example Comment**:
+```markdown
+## ✅ Plan Completed
+
+All 8 tasks have been completed! This plan is now being automatically closed.
+
+📊 Completion Summary
+- Total Tasks: 8
+- Completed: 8
+- Success Rate: 100%
+
+🎉 What's Next?
+- Review completed work
+- Archive or reference for future projects
+```
+
+#### 3. Hierarchy Dashboard (`.github/workflows/hierarchy-dashboard.yml`)
+
+Generates visual Plan→Task→Subtask tree in [HIERARCHY.md](../../HIERARCHY.md).
+
+**Updates**:
+- Every 12 hours (scheduled)
+- When issues are created, closed, or labeled
+- Manual trigger via workflow dispatch
+
+**What It Shows**:
+- Overview table with completion percentages
+- Visual tree of all active plans with tasks and subtasks
+- Progress bars for each plan
+- Recently completed plans (last 10)
+
+**Example Tree**:
+```
+📋 Plan #55: Create Wiki Documentation
+Progress: 5/8 tasks (62%)
+
+├─ ✅ #58: Create Wiki Home page
+│  ├─ ✅ #60: Design page structure
+│  └─ ✅ #61: Write content
+├─ 🔲 #59: Add skill documentation
+├─ ✅ #62: Create navigation
+```
+
+**Quick Links**: [View Current Dashboard](../../HIERARCHY.md)
+
 ### How to Use the Hierarchy
 
 **Creating a Plan**:
