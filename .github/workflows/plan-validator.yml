@@ -22,6 +22,30 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Check Workflow Kill Switch
+        id: killswitch
+        run: |
+          if [ -f ".github/WORKFLOW_KILLSWITCH" ]; then
+            STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
+            if [ "$STATUS" = "DISABLED" ]; then
+              echo "🛑 Workflow execution stopped by kill switch"
+              gh issue comment ${{ github.event.issue.number }} --body "## 🛑 Workflow Disabled
+
+Workflows are currently disabled by the kill switch.
+
+Check \`.github/WORKFLOW_KILLSWITCH\` file status.
+
+Once re-enabled, remove and re-add the \`plan\` label to retry."
+              exit 0
+            fi
+          fi
+          echo "✅ Kill switch check passed - STATUS: ENABLED"
+
       - name: Validate Plan Structure
         run: |
           echo "🔍 Validating plan #${{ github.event.issue.number }}..."
