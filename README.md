@@ -18,7 +18,7 @@ A comprehensive toolkit for generating production-ready Claude Skills and Claude
   - [4. AWS Solution Architect](#4-aws-solution-architect)
   - [5. Content Trend Researcher](#5-content-trend-researcher)
   - [6. Microsoft 365 Tenant Manager](#6-microsoft-365-tenant-manager)
-  - [7. Prompt Suite](#7-prompt-suite)
+  - [7. Prompt Factory](#7-prompt-factory)
 - [Key Features](#key-features)
 - [Skill Architecture Patterns](#skill-architecture-patterns)
 - [Best Practices](#best-practices)
@@ -82,7 +82,7 @@ claude-code-skills-factory/
 │   ├── ms365-tenant-manager/              # Microsoft 365 administration (40 KB)
 │   ├── psychology-advisor/                # Mental wellness & CBT techniques (31 KB)
 │   ├── agent-factory/                     # Claude Code agent generation (12 KB)
-│   └── prompt-suite/                      # Prompt generation powerhouse (427 KB)
+│   └── prompt-factory/                    # Prompt generation powerhouse (427 KB)
 └── documentation/
     └── templates/
         ├── SKILLS_FACTORY_PROMPT.md       # Template for generating Skills
@@ -289,15 +289,15 @@ This repository also includes production-ready skills generated using the Skills
 
 **Pattern**: Configuration requirements → PowerShell scripts → validation checklists
 
-### 7. Prompt Suite
+### 7. Prompt Factory
 **Purpose**: World-class prompt powerhouse for generating production-ready mega-prompts for any role, industry, and task
 
 **Files**:
-- [SKILL.md](generated-skills/prompt-suite/SKILL.md)
-- [generate_prompt.py](generated-skills/prompt-suite/scripts/generate_prompt.py)
-- [validator.py](generated-skills/prompt-suite/scripts/validator.py)
-- [optimizer.py](generated-skills/prompt-suite/scripts/optimizer.py)
-- [batch_generator.py](generated-skills/prompt-suite/scripts/batch_generator.py)
+- [SKILL.md](generated-skills/prompt-factory/SKILL.md)
+- [generate_prompt.py](generated-skills/prompt-factory/scripts/generate_prompt.py)
+- [validator.py](generated-skills/prompt-factory/scripts/validator.py)
+- [optimizer.py](generated-skills/prompt-factory/scripts/optimizer.py)
+- [batch_generator.py](generated-skills/prompt-factory/scripts/batch_generator.py)
 
 **Capabilities**:
 - 69 comprehensive presets across 15 professional domains
@@ -510,14 +510,14 @@ Claude Code agent generation system that creates custom agents/sub-agents with e
 **See**: [generated-skills/agent-factory/](generated-skills/agent-factory/)
 **Template**: [documentation/templates/AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
 
-### Prompt Suite (427 KB)
+### Prompt Factory (427 KB)
 World-class prompt powerhouse that generates production-ready mega-prompts for any role, industry, and task through intelligent 7-question flow.
 
 **Key Features**: 69 comprehensive presets across 15 professional domains (Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media), multiple output formats (XML/Claude/ChatGPT/Gemini), 7-point quality validation gates, contextual best practices from OpenAI/Anthropic/Google
 
 **Domains Covered**: Full-Stack Engineer, DevOps, Product Manager, Legal Counsel, CFO, HR Manager, UI/UX Designer, Customer Success, CEO, ML Engineer, Research Scientist, Copywriter, Manufacturing Engineer, Clinical Specialist, and 55+ more roles
 
-**See**: [generated-skills/prompt-suite/](generated-skills/prompt-suite/)
+**See**: [generated-skills/prompt-factory/](generated-skills/prompt-factory/)
 
 Each includes full implementation, sample data, HOW_TO_USE guide, and ready-to-import ZIP files.
 
@@ -541,7 +541,7 @@ This repository provides examples and templates for creating Claude Skills. The 
 **Compatible With**: Claude Skills (all platforms) and Claude Code Agents
 
 **Latest Changes** (v1.2.0):
-- Added Prompt Suite skill (427 KB) - World-class prompt generation with 69 presets across 15 domains
+- Added Prompt Factory skill (427 KB) - World-class prompt generation with 69 presets across 15 domains
 - Expanded coverage: Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media domains
 - Multi-format output support (XML/Claude/ChatGPT/Gemini)
 
@@ -551,6 +551,7 @@ This repository provides examples and templates for creating Claude Skills. The 
 
 **Create Skills**: Use [SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)
 **Create Agents**: Use [AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
+**Create Prompt Builders**: Use [PROMPTS_FACTORY_PROMPT.md](documentation/templates/PROMPTS_FACTORY_PROMPT.md)
 **See Examples**: Check [claude-skills-examples/](claude-skills-examples/)
 **Generated Skills**: Explore [generated-skills/](generated-skills/)
 **Read Guide**: See [CLAUDE.md](CLAUDE.md) for repository structure

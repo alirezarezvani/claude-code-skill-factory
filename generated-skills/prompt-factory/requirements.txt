@@ -1,0 +1,11 @@
+# Prompt Factory - Python Dependencies
+#
+# This skill uses only Python standard library modules.
+# No third-party packages required.
+#
+# Python version: 3.8+
+
+# Optional: Development and testing tools
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0

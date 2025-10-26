@@ -179,13 +179,13 @@ documentation/
 
 | Skill | Size | Quality | Documentation | Gaps |
 |-------|------|---------|---------------|------|
-| **prompt-suite** | 427 KB | ✅ Excellent | Complete | Missing video demo |
+| **prompt-factory** | 427 KB | ✅ Excellent | Complete | Missing video demo |
 | **aws-solution-architect** | 53 KB | ✅ Excellent | Complete | No cost calculator |
 | **content-trend-researcher** | 35 KB | ✅ Good | Complete | Missing platform guides |
 | **ms365-tenant-manager** | 40 KB | ✅ Good | Complete | No PowerShell samples |
 | **psychology-advisor** | 31 KB | ✅ Good | Complete | Missing crisis resources |
 | **agent-factory** | 12 KB | ✅ Good | Complete | No preset library |
-| **master-prompt-engineer** | 68 KB | ✅ Excellent | Complete | Duplicate of prompt-suite? |
+| **master-prompt-engineer** | 68 KB | ✅ Excellent | Complete | Duplicate of prompt-factory? |
 
 **Strengths:**
 - All skills follow standard format (SKILL.md + Python files)
@@ -203,7 +203,7 @@ documentation/
 **Recommendation**: **P1 - High Priority**
 - Create `documentation/reference/skills-catalog.md`
 - Add comparison matrix (use case → recommended skill)
-- Create combination examples (e.g., content-trend + prompt-suite)
+- Create combination examples (e.g., content-trend + prompt-factory)
 - Add HOW_TO_USE.md to each skill with 5 real scenarios
 - Include performance/cost data
 

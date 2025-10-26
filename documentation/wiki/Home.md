@@ -60,7 +60,7 @@ Import ZIP file through Skills menu
 
 | Skill | Size | What It Does | Use Case |
 |---|---|---|---|
-| **[Prompt Suite](generated-skills/prompt-suite/)** | 427 KB | Generate mega-prompts for any role | 69 presets across 15 domains (Technical, Business, Legal, Finance, Executive) |
+| **[Prompt Factory](generated-skills/prompt-factory/)** | 427 KB | Generate mega-prompts for any role | 69 presets across 15 domains (Technical, Business, Legal, Finance, Executive) |
 | **[AWS Solution Architect](generated-skills/aws-solution-architect/)** | 53 KB | Design serverless infrastructure | Startup architecture, cost optimization, IaC templates |
 | **[Content Trend Researcher](generated-skills/content-trend-researcher/)** | 35 KB | Multi-platform trend analysis | Google, Reddit, YouTube, Medium, LinkedIn, X - SEO-optimized outlines |
 | **[M365 Tenant Manager](generated-skills/ms365-tenant-manager/)** | 40 KB | Microsoft 365 administration | Tenant setup, security policies, PowerShell automation |
@@ -180,7 +180,7 @@ Import ZIP file through Skills menu
 **"I need content research and writing assistance"**
 
 → Install [Content Trend Researcher](generated-skills/content-trend-researcher/)
-→ Install [Prompt Suite](generated-skills/prompt-suite/)
+→ Install [Prompt Factory](generated-skills/prompt-factory/)
 → **Result**: Data-driven outlines, SEO optimization, trend analysis
 
 **Time Investment**: 5 minutes

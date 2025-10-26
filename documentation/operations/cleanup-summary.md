@@ -68,7 +68,7 @@
 
 ## Key Deliverables
 
-1. **Consolidated CHANGELOG.md** (`generated-skills/prompt-suite/CHANGELOG.md`)
+1. **Consolidated CHANGELOG.md** (`generated-skills/prompt-factory/CHANGELOG.md`)
    - Complete version history v1.0 → v3.1
    - Migration guides between versions
    - Known issues and limitations
@@ -161,7 +161,7 @@
 
 **Consolidated Changelog Location:**
 ```
-generated-skills/prompt-suite/CHANGELOG.md
+generated-skills/prompt-factory/CHANGELOG.md
 ```
 
 **Detailed Cleanup Report Location:**

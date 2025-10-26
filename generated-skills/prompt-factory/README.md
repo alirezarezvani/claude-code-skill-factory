@@ -1,16 +1,16 @@
-# Prompt Suite - World-Class Prompt Powerhouse
+# Prompt Factory - World-Class Prompt Powerhouse
 
 > Create production-ready AI prompts in under 2 minutes, zero iteration required.
 
-## What is Prompt Suite?
+## What is Prompt Factory?
 
-**Prompt Suite** transforms requirements into world-class mega-prompts through smart questioning, quality validation, and contextual best practices from OpenAI, Anthropic, and Google.
+**Prompt Factory** transforms requirements into world-class mega-prompts through smart questioning, quality validation, and contextual best practices from OpenAI, Anthropic, and Google.
 
-### Why Prompt Suite?
+### Why Prompt Factory?
 
 ✅ **Fast:** Max 7 questions, < 2 min generation
 ✅ **Quality:** 7-point validation before delivery
-✅ **Flexible:** 15 presets + unlimited custom combinations
+✅ **Flexible:** 69 presets across 15 domains + unlimited custom combinations
 ✅ **Universal:** XML, Claude, ChatGPT, Gemini formats
 ✅ **Comprehensive:** 15,000+ role × industry × task combinations
 
@@ -51,7 +51,9 @@ Everything in Core **PLUS**:
 
 ---
 
-## 15 Quick-Start Presets
+## 69 Quick-Start Presets (Showing 15 Examples)
+
+**Total:** 69 presets across 15 professional domains. See [SKILL.md](SKILL.md) for complete list.
 
 ### Technical (5)
 1. Senior Full-Stack Engineer (React/Node.js/PostgreSQL/AWS)
@@ -124,7 +126,7 @@ python scripts/optimizer.py \
 ## File Structure
 
 ```
-prompt-suite/
+prompt-factory/
 ├── SKILL.md              # Main skill (use with Claude Code)
 ├── HOW_TO_USE.md         # Comprehensive guide
 ├── README.md             # This file
@@ -134,7 +136,7 @@ prompt-suite/
 │   ├── validator.py
 │   └── optimizer.py
 ├── templates/
-│   └── presets/          # 15 quick-start templates
+│   └── presets/          # 69 quick-start preset templates
 ├── references/           # Best practices, patterns
 ├── examples/             # 20 complete examples
 └── outputs/              # Your generated prompts
@@ -151,7 +153,7 @@ prompt-suite/
 "Use the Marketing Strategist preset"
 ```
 
-**Prompt Suite:**
+**Prompt Factory:**
 ```
 📋 Loaded: Marketing Strategist
 - Domain: B2B SaaS Growth
@@ -171,7 +173,7 @@ Mode? core
 "Create custom prompt for cryptocurrency trading analysis"
 ```
 
-**Prompt Suite:**
+**Prompt Factory:**
 ```
 7 Questions (with example answers):
 1. Role? → "Crypto Trading Analyst"
@@ -196,13 +198,13 @@ Mode? advanced
 
 1. Upload this folder to your Claude Code project
 2. Claude automatically detects the skill
-3. Start using: "Use Prompt Suite to create [...]"
+3. Start using: "Use Prompt Factory to create [...]"
 
 ### For Command Line Users
 
 ```bash
 # Clone or download this folder
-cd prompt-suite
+cd prompt-factory
 
 # Install dependencies (if needed)
 pip install -r requirements.txt
@@ -301,11 +303,11 @@ Every prompt passes **7 validation gates**:
 
 ## Performance Benchmarks
 
-| Metric | Prompt Suite | Other Tools |
-|--------|--------------|-------------|
+| Metric | Prompt Factory | Other Tools |
+|--------|----------------|-------------|
 | Questions | 5-7 | 14-16 |
 | Time to prompt | < 2 min | 5-10 min |
-| Presets | 15 | 0-5 |
+| Presets | 69 | 0-5 |
 | Formats | 5 | 1-2 |
 | Validation | 7-point | None |
 | Token efficiency | High | Variable |
@@ -317,15 +319,15 @@ Every prompt passes **7 validation gates**:
 
 ### vs. Manual Prompt Writing
 - ❌ Manual: Hours of trial and error, inconsistent quality
-- ✅ Prompt Suite: 2 minutes, validated quality
+- ✅ Prompt Factory: 2 minutes, validated quality
 
 ### vs. Generic Templates
 - ❌ Templates: One-size-fits-all, requires heavy editing
-- ✅ Prompt Suite: Contextually customized, ready to use
+- ✅ Prompt Factory: Contextually customized, ready to use
 
 ### vs. Other Prompt Tools
 - ❌ Others: Many questions, single format, no validation
-- ✅ Prompt Suite: Max 7 questions, multi-format, 7-point validation
+- ✅ Prompt Factory: Max 7 questions, multi-format, 7-point validation
 
 ---
 
@@ -335,7 +337,7 @@ Every prompt passes **7 validation gates**:
 
 **Python API:**
 ```python
-from prompt_suite import PromptGenerator
+from prompt_factory import PromptGenerator
 
 generator = PromptGenerator()
 prompt = generator.generate(
@@ -376,7 +378,7 @@ python scripts/validator.py \
 - **Examples:** [examples/](examples/)
 
 ### Getting Help
-- **Issues:** [GitHub Issues](https://github.com/your-repo/prompt-suite/issues)
+- **Issues:** [GitHub Issues](https://github.com/your-repo/prompt-factory/issues)
 - **Discussions:** [Community Forum](https://forum.example.com)
 - **Updates:** [Changelog](CHANGELOG.md)
 
@@ -413,7 +415,7 @@ python scripts/validator.py \
 **Ready to create world-class prompts?**
 
 ```
-"Use Prompt Suite to create a prompt for [your need]"
+"Use Prompt Factory to create a prompt for [your need]"
 ```
 
 **It's that simple.**
