@@ -424,7 +424,7 @@ claude-code-skills-factory/
     ├── ms365-tenant-manager/           # Microsoft 365 administration
     ├── psychology-advisor/             # Mental wellness and CBT techniques
     ├── agent-factory/                  # Claude Code agent generation system
-    └── prompt-suite/                   # World-class prompt generation (69 presets)
+    └── prompt-factory/                 # World-class prompt generation (69 presets)
 ```
 
 ## Skill Architecture
@@ -578,7 +578,7 @@ When helping users adapt these skills:
 
 ## Templates for Generation
 
-The `documentation/templates/` folder contains two powerful prompt templates:
+The `documentation/templates/` folder contains three powerful prompt templates:
 
 ### SKILLS_FACTORY_PROMPT.md
 - **Purpose**: Generate complete Claude Skills (folders with SKILL.md + Python files)
@@ -592,9 +592,16 @@ The `documentation/templates/` folder contains two powerful prompt templates:
 - **Output**: Agent .md files with enhanced YAML frontmatter (color, field, expertise, MCP tools)
 - **Location**: Agents go in `.claude/agents/` or `~/.claude/agents/`
 
-**Key Difference:**
-- **Skills** = Multi-file capabilities (folders)
-- **Agents** = Single-file specialists (.md only)
+### PROMPTS_FACTORY_PROMPT.md
+- **Purpose**: Generate domain-specific prompt builders (complete prompt generation systems)
+- **Use for**: Creating specialized prompt builders for specific industries (Healthcare, Legal, FinTech, etc.)
+- **Output**: Complete prompt builder systems with 10-20 role presets, custom 7-question flow, domain compliance rules, and multi-format output (XML/Claude/ChatGPT/Gemini)
+- **Example**: Generate "Healthcare Prompt Builder" with 15 medical role presets, HIPAA compliance, clinical documentation standards
+
+**Key Differences:**
+- **Skills** = Multi-file capabilities (folders with SKILL.md + Python files)
+- **Agents** = Single-file specialists (.md with YAML frontmatter)
+- **Prompts** = Domain-specific prompt generation systems (meta-prompts that create mega-prompts)
 
 ## Installation
 

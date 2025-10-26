@@ -1,9 +1,9 @@
 ---
-name: prompt-suite
+name: prompt-factory
 description: World-class prompt powerhouse that generates production-ready mega-prompts for any role, industry, and task through intelligent 7-question flow, 69 comprehensive presets across 15 professional domains (technical, business, creative, legal, finance, HR, design, customer, executive, manufacturing, R&D, regulatory, specialized-technical, research, creative-media), multiple output formats (XML/Claude/ChatGPT/Gemini), quality validation gates, and contextual best practices from OpenAI/Anthropic/Google. Supports both core and advanced modes with testing scenarios and prompt variations.
 ---
 
-# Prompt Suite - World-Class Prompt Powerhouse
+# Prompt Factory - World-Class Prompt Powerhouse
 
 A comprehensive system for generating world-class, production-ready prompts in one shot, eliminating the need for iteration.
 
@@ -57,6 +57,27 @@ Transform any requirement into an optimized mega-prompt through:
 5. **Contextual best practices** from OpenAI, Anthropic, Google
 6. **Core & Advanced modes** for different needs
 7. **Complete coverage** of role × industry × task combinations
+
+---
+
+## Relationship to PROMPTS_FACTORY_PROMPT.md
+
+This skill works alongside the meta-prompt template:
+
+- **prompt-factory skill (this file)**: Generates individual mega-prompts for specific roles using 69 presets
+  - **Use when**: You need a single prompt for a common role (e.g., "Product Manager", "Full-Stack Engineer")
+  - **Output**: One ready-to-use mega-prompt (~4-12K tokens)
+  - **Example**: "Create a prompt for a Growth Hacker in B2B SaaS" → generates one prompt
+
+- **PROMPTS_FACTORY_PROMPT.md**: Meta-prompt that generates domain-specific prompt builders
+  - **Use when**: You want to create a new prompt generation system for a specific domain (e.g., Healthcare, FinTech, Legal)
+  - **Output**: A complete prompt builder with 10-20 role presets for that domain
+  - **Example**: "Generate a FinTech Prompt Builder" → creates a system with 10-20 FinTech role presets
+  - **Location**: `documentation/templates/PROMPTS_FACTORY_PROMPT.md`
+
+**Quick Decision**:
+- Need one prompt now? → Use this skill (prompt-factory)
+- Building a prompt system for a new domain? → Use PROMPTS_FACTORY_PROMPT.md
 
 ---
 
@@ -777,7 +798,7 @@ The skill has finished generating your prompt. Do NOT proceed with:
 
 When user mentions a preset name, load template and offer customization.
 
-### Available Presets (63 Total)
+### Available Presets (69 Total)
 
 #### Technical (8 presets)
 

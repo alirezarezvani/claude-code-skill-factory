@@ -1,4 +1,4 @@
-# Prompt Suite - Comprehensive User Guide
+# Prompt Factory - Comprehensive User Guide
 
 ## Table of Contents
 
@@ -17,16 +17,29 @@
 
 ## Overview
 
-**Prompt Suite** is your one-stop solution for creating world-class AI prompts without iteration. Whether you're building prompts for technical development, business strategy, creative work, or specialized domains, Prompt Suite delivers production-ready results in under 2 minutes.
+**Prompt Factory** is your one-stop solution for creating world-class AI prompts without iteration. Whether you're building prompts for technical development, business strategy, creative work, or specialized domains, Prompt Factory delivers production-ready results in under 2 minutes.
 
 ### Key Features
 
 ✅ **Max 7 questions** - Get to results fast with smart questioning
-✅ **15 quick-start presets** - One-click prompts for common roles
+✅ **69 quick-start presets** - One-click prompts across 15 professional domains
 ✅ **Multi-format output** - XML, Claude, ChatGPT, Gemini formats
 ✅ **Quality validation** - 7-point validation before delivery
 ✅ **Best practices** - Auto-applied from OpenAI, Anthropic, Google
 ✅ **15,000+ combinations** - Any role × industry × task
+
+### Relationship to PROMPTS_FACTORY_PROMPT.md
+
+**Quick Decision Guide:**
+
+- **Need one prompt now?** → Use this skill (**Prompt Factory**)
+  - Generates individual mega-prompts for specific roles
+  - Example: "Create a prompt for a Growth Hacker" → One ready-to-use prompt
+
+- **Building a prompt system for a new domain?** → Use **PROMPTS_FACTORY_PROMPT.md**
+  - Meta-prompt that generates domain-specific prompt builders
+  - Example: "Generate a FinTech Prompt Builder" → Complete system with 10-20 FinTech role presets
+  - Location: `documentation/templates/PROMPTS_FACTORY_PROMPT.md`
 
 ---
 
@@ -115,7 +128,11 @@ The skill generates and validates your prompt, then delivers it ready to use.
 
 ### Available Presets
 
-#### Technical Presets (5)
+**Total Presets:** 69 across 15 professional domains
+
+Below are highlighted examples. For the complete list of all 69 presets, see [SKILL.md](SKILL.md#available-presets-69-total).
+
+#### Technical Presets (8 total - showing 5 examples)
 
 **1. Senior Full-Stack Engineer**
 - **Stack:** React, Node.js, PostgreSQL, AWS
@@ -142,7 +159,7 @@ The skill generates and validates your prompt, then delivers it ready to use.
 - **Best for:** System architecture, technical strategy, scaling
 - **Output:** Architecture diagrams, technical specs, decisions
 
-#### Business Presets (4)
+#### Business Presets (8 total - showing 4 examples)
 
 **6. Product Manager**
 - **Focus:** Tech product strategy, roadmaps, user stories
@@ -164,7 +181,7 @@ The skill generates and validates your prompt, then delivers it ready to use.
 - **Best for:** Process design, operational improvements, workflows
 - **Output:** Process docs, optimization plans, SOPs
 
-#### Creative Presets (3)
+#### Creative & Design Presets (multiple domains - showing 3 examples)
 
 **10. Content Strategist**
 - **Focus:** SEO optimization, multi-channel content, audience targeting
@@ -181,7 +198,7 @@ The skill generates and validates your prompt, then delivers it ready to use.
 - **Best for:** Documentation projects, technical writing, guides
 - **Output:** Documentation, API references, tutorials
 
-#### Specialized Presets (3)
+#### Specialized Industry Presets (Legal, Finance, Healthcare, etc. - showing 3 examples)
 
 **13. Healthcare Tech Consultant**
 - **Focus:** HIPAA compliance, clinical systems, health data
@@ -1129,7 +1146,7 @@ Please fix and regenerate."
 
 ---
 
-## Summary: Your Prompt Suite Workflow
+## Summary: Your Prompt Factory Workflow
 
 ### Simple 3-Step Process
 
