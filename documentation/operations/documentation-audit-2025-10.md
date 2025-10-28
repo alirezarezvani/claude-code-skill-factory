@@ -111,14 +111,15 @@ This audit analyzed **285 markdown files** across the Claude Code Skills & Agent
 - Add clear guidance: "Use templates to generate skills/agents, NOT this repo's agent examples"
 - Create separate AGENTS_SYSTEM.md if the orchestration system is relevant
 
-#### .github/WORKFLOWS.md (426 lines) + INSTRUCTION.md (953 lines)
-**Status**: 🟡 Excellent quality, poor discoverability
+#### .github/GITHUB_WORKFLOWS_GUIDE.md (Consolidated Guide)
+**Status**: 🟢 Excellent quality, single source of truth (Updated 2025-10-28)
 
 **Strengths:**
-- Comprehensive GitHub automation documentation
-- Clear setup instructions (INSTRUCTION.md)
+- Comprehensive GitHub automation documentation (consolidated from 6 files into 1)
+- Clear setup instructions and usage guide
 - Security model well-documented
-- Troubleshooting guides included
+- Emergency procedures included
+- Troubleshooting guides comprehensive
 - 4-layer security architecture detailed
 
 **Critical Gaps:**
@@ -438,9 +439,9 @@ Create `documentation/reference/developer-guide.md`:
 ### 3.3 Enterprise Teams
 
 **Current Experience:**
-- Security documentation excellent (.github/WORKFLOWS.md)
-- But buried and hard to find
-- No compliance documentation
+- Security documentation excellent (.github/GITHUB_WORKFLOWS_GUIDE.md)
+- Consolidated guide (single source of truth, updated 2025-10-28)
+- Emergency procedures included
 - No deployment guides for private instances
 - Missing governance patterns
 
