@@ -10,6 +10,7 @@ A comprehensive toolkit for generating production-ready Claude Skills and Claude
 - [Quick Start](#quick-start)
   - [Option A: Generate Claude Skills](#option-a-generate-claude-skills-multi-file-capabilities)
   - [Option B: Generate Claude Code Agents](#option-b-generate-claude-code-agents-single-file-specialists)
+  - [Option C: Generate Production-Ready Prompts](#option-c-generate-production-ready-prompts-prompt-factory)
 - [Example Skills Included](#example-skills-included)
   - [1. Analyzing Financial Statements](#1-analyzing-financial-statements)
   - [2. Creating Financial Models](#2-creating-financial-models)
@@ -194,6 +195,60 @@ cp api-integration-specialist.md ~/.claude/agents/
 ```
 
 Agent auto-invokes when Claude detects relevant tasks!
+
+### Option C: Generate Production-Ready Prompts (Prompt Factory)
+
+#### 1. Use the Prompt Factory Skill
+
+The Prompt Factory is a ready-to-use skill (not a template) that generates world-class mega-prompts for any role, industry, and task.
+
+**Install the skill**:
+```bash
+# Copy to your skills directory
+cp -r generated-skills/prompt-factory ~/.claude/skills/
+
+# Or import the ZIP in Claude Desktop
+# File: generated-skills/prompt-factory.zip (403 KB)
+```
+
+#### 2. Generate Your Prompt
+
+**Interactive Mode** (Recommended):
+```
+I need a prompt for a Senior Full-Stack Engineer
+```
+
+Claude will ask 5-7 questions and generate a complete mega-prompt.
+
+**Custom Mode**:
+```
+Create a custom prompt for [your specific role/need]
+```
+
+Answer the intelligent question flow (max 7 questions) and select:
+- **Format**: XML, Claude, ChatGPT, Gemini, or All
+- **Mode**: Core (~5K tokens) or Advanced (~12K tokens with testing scenarios)
+
+#### 3. Use Your Generated Prompt
+
+Copy the generated prompt and use it in:
+- **Claude AI**: Paste at start of conversation
+- **ChatGPT**: Use Custom Instructions feature
+- **Gemini**: Paste as system configuration
+- **Any LLM**: Universal XML format
+
+**Features**:
+- ✅ 69 quick-start presets across 15 professional domains
+- ✅ Technical (8), Business (8), Legal (4), Finance (4), HR (4), Design (4), Customer (4), Executive (7), Specialized-Technical (6), Research (3), Creative-Media (4), Manufacturing (4), R&D (2), Regulatory (1), Specialized (3)
+- ✅ Multiple output formats (XML/Claude/ChatGPT/Gemini)
+- ✅ 7-point quality validation before delivery
+- ✅ Contextual best practices from OpenAI, Anthropic, Google
+- ✅ Core & Advanced modes (with testing scenarios and variations)
+- ✅ Token count optimization and reporting
+
+**Pattern**: 7-question flow → preset matching → template synthesis → quality validation → multi-format output
+
+**See**: [generated-skills/prompt-factory/](generated-skills/prompt-factory/) for complete documentation
 
 ## Example Skills Included
 
@@ -640,4 +695,4 @@ This repository provides examples and templates for creating Claude Skills. The 
 **Learn More (Skills)**: Read [claude-skills-instructions.md](claude-skills-instructions.md)
 **Learn More (Agents)**: Read [claude-agents-instructions.md](claude-agents-instructions.md)
 
-**Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills or agents!
+**Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills, agents or master prompts for your Claude Code project!
