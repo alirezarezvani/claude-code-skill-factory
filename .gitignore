@@ -18,3 +18,14 @@ generated-skills/master-prompt-engineer.zip
 .env.test
 .env.production
 github-docs/
+test-workspace/
+test-workspace/agent-sdk-examples/
+generated-skills/claude-health-sdk-builder/
+generated-skills/claude-health-sdk-builder.zip
+generated-skills/master-prompt-engineer.zip
+generated-skills/claude-agent-sdk-builder/
+generated-skills/claude-agent-sdk-builder.zip
+generated-skills/health-sdk-builder/
+generated-skills/health-sdk-builder.zip
+generated-skills/health-sdk-builder-2025/
+generated-skills/health-sdk-builder-2025.zip

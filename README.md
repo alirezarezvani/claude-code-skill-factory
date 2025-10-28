@@ -26,6 +26,7 @@ A comprehensive toolkit for generating production-ready Claude Skills and Claude
 - [YAML Frontmatter Rules](#yaml-frontmatter-rules)
 - [Technical Details](#technical-details)
 - [Resources](#resources)
+- [Complementary Resources](#complementary-resources)
 - [Real-World Examples](#real-world-examples)
 - [Contributing](#contributing)
 - [License](#license)
@@ -468,6 +469,87 @@ Keep sample files minimal and focused:
 ### Support
 - **Claude Help Center**: https://support.claude.com/en/articles/12512176-what-are-skills
 - **API Documentation**: https://docs.claude.com/en/api/skills-guide
+
+## Complementary Resources
+
+Looking for ready-to-use Claude augmentation tools? These companion repositories provide battle-tested implementations that complement the factories in this project:
+
+### 🔧 Claude Code Tresor
+**Repository**: [alirezarezvani/claude-code-tresor](https://github.com/alirezarezvani/claude-code-tresor)
+
+A comprehensive collection of professional-grade utilities that supercharge your Claude Code development workflow. While this factory helps you **create** custom skills and agents, Claude Code Tresor provides **ready-to-use** implementations you can install immediately.
+
+**What It Includes**:
+- **8 Autonomous Skills (v2.0)**: Background helpers for code quality, testing, git commits, security auditing, documentation maintenance
+- **8 Specialized Agents**: Expert sub-agents for code review, system architecture, debugging, performance optimization, refactoring
+- **4 Slash Commands**: `/scaffold`, `/review`, `/test-gen`, `/docs-gen` for rapid workflow automation
+- **20+ Prompt Templates**: Curated prompts for common development tasks
+- **5 Development Standards**: Style guides and best practices
+- **200+ Components**: Additional utilities in source library
+
+**Installation**: One-command setup via `./scripts/install.sh` (completes in under 2 minutes)
+
+**Perfect For**: Developers who want immediate productivity gains with proven patterns for code quality, testing, documentation, and architecture.
+
+---
+
+### 📚 Claude Skills Library
+**Repository**: [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)
+
+A production-ready library of 37+ domain-specific skills across 8 professional areas. While this factory provides **templates** for creating skills, the Skills Library offers **complete, specialized implementations** for specific business functions.
+
+**What It Provides**:
+- **37+ Production Skills**: Marketing (3), C-Level Advisory (2), Product Teams (5), Project Management (6), Engineering (9), and more
+- **Domain Expertise Packages**: Each skill includes comprehensive documentation, Python analysis tools (CLI-based, no API dependencies), knowledge bases, and ready-to-use templates
+- **Proven Results**: 40%+ time savings, 30%+ quality improvements through battle-tested frameworks
+
+**Skill Categories**:
+- **Marketing**: Content creation, demand generation, product marketing strategy
+- **C-Level Advisory**: CEO and CTO strategic guidance
+- **Product Teams**: PM toolkit, agile practices, UX research, design systems
+- **Project Management**: Senior PM, Scrum mastery, Atlassian (Jira/Confluence) expertise
+- **Engineering**: Architecture, frontend/backend, fullstack, QA, DevOps, security, code review
+
+**Perfect For**: Teams and professionals seeking domain-specific expertise in marketing, product management, engineering, or business leadership with immediate deployment and no external API dependencies.
+
+---
+
+### How They Work Together
+
+**This Factory (claude-code-skills-factory)**:
+- ✨ **Create** custom skills and agents tailored to your specific needs
+- 🏗️ Templates and generation systems for building from scratch
+- 📖 Learning resource with detailed examples and patterns
+
+**Claude Code Tresor**:
+- ⚡ **Deploy** ready-made development workflow tools immediately
+- 🛠️ Pre-built agents, commands, and automation for daily coding tasks
+- 🎯 Focus on code quality, testing, and documentation automation
+
+**Claude Skills Library**:
+- 🎓 **Adopt** domain-specific professional expertise instantly
+- 📦 Complete skill packages for specific business functions
+- 💼 Battle-tested frameworks for marketing, product, engineering, and leadership
+
+**Recommended Workflow**:
+1. Start with **Claude Code Tresor** for immediate development productivity
+2. Browse **Claude Skills Library** for domain-specific capabilities you need
+3. Use **this Factory** to generate custom skills for unique requirements not covered by the other repositories
+
+All three repositories work seamlessly with Claude AI and Claude Code across all platforms (desktop, browser, CLI, API).
+
+---
+
+### Star History
+
+Track the growth and adoption of the Claude Code ecosystem:
+
+[![Star History Chart](https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor,alirezarezvani/claude-skills&type=Date)](https://star-history.com/#alirezarezvani/claude-code-skills-factory&alirezarezvani/claude-code-tresor&alirezarezvani/claude-skills&Date)
+
+**Legend**:
+- 🔵 **claude-code-skills-factory** - This repository (Skills & Agents Factory)
+- 🟢 **claude-code-tresor** - Development workflow utilities
+- 🟠 **claude-skills** - Domain-specific skill library
 
 ## Real-World Examples
 
