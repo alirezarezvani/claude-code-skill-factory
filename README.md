@@ -27,6 +27,7 @@ A comprehensive toolkit for generating production-ready Claude Skills and Claude
 - [YAML Frontmatter Rules](#yaml-frontmatter-rules)
 - [Technical Details](#technical-details)
 - [Resources](#resources)
+- [Public Gists (SEO & AEO)](#public-gists-seo--aeo)
 - [Complementary Resources](#complementary-resources)
 - [Real-World Examples](#real-world-examples)
 - [Contributing](#contributing)
@@ -524,6 +525,33 @@ Keep sample files minimal and focused:
 ### Support
 - **Claude Help Center**: https://support.claude.com/en/articles/12512176-what-are-skills
 - **API Documentation**: https://docs.claude.com/en/api/skills-guide
+
+## Public Gists (SEO & AEO)
+
+Comprehensive guides published as GitHub Gists for improved visibility, SEO rankings, and Answer Engine Optimization (AEO) for ChatGPT, Perplexity, Claude, and other AI search engines.
+
+### 🏥 Health SDK Builder - Healthcare AI Complete Guide
+**Gist**: [health-sdk-builder-healthcare-ai-claude-agent.md](https://gist.github.com/alirezarezvani/d1efa1cf2fdab48c67467fb17abd769c)
+
+Comprehensive guide for building HIPAA/GDPR/DSGVO-compliant healthcare applications with multilingual support (German + English), all therapy modalities (CBT, Psychodynamic, Psychoanalysis, Depth Psychology), German PTV 10 automation, and 2025 Claude API features.
+
+**Keywords**: Healthcare AI, HIPAA compliance, GDPR, Mental health apps, Psychotherapy software, German PTV 10, Medical AI, Patient empowerment
+
+### 🏭 Claude Skills & Agents Factory - Complete Guide
+**Gist**: [claude-skills-agents-factory-complete-guide.md](https://gist.github.com/alirezarezvani/c12f2906d3801dfaacdb65ebe19a3ffe)
+
+Overview of the entire factory system for generating Claude Skills, Claude Code Agents, and production-ready prompts. Includes all 6 production skills, healthcare specialization, and 2025 API features.
+
+**Keywords**: Claude Skills, Claude Agents, Agent SDK, AI Automation, Healthcare AI, Multilingual AI, 2025 Claude API
+
+### 🎯 Prompt Factory - AI Prompt Generation Tool
+**Gist**: [prompt-factory-ai-prompt-generation-tool.md](https://gist.github.com/alirezarezvani/3f31fc5435eaa3fcb260d774286587ef)
+
+World-class prompt generation with 69 professional presets across 15 domains, multi-format output (XML/Claude/ChatGPT/Gemini), and 7-point quality validation.
+
+**Keywords**: Prompt Engineering, AI Prompts, ChatGPT Custom Instructions, Claude Prompts, Gemini Prompts, Multi-LLM Support
+
+**See**: [GISTS.md](GISTS.md) for complete SEO/AEO strategy and update guidelines.
 
 ## Complementary Resources
 
