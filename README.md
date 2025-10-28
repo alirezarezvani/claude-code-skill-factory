@@ -1,6 +1,21 @@
 # Claude Code Skills & Agents Factory
 
-A comprehensive toolkit for generating production-ready Claude Skills and Claude Code Agents at scale. This repository provides templates, examples, and powerful prompt engineering systems to create custom skills and specialized agents for Claude AI across all platforms (Claude apps, Claude Code, and API).
+A comprehensive toolkit for generating production-ready Claude Skills and Claude Code Agents at scale. This repository provides templates, examples, powerful prompt engineering systems, and **interactive navigation agents** to create custom skills and specialized agents for Claude AI across all platforms (Claude apps, Claude Code, and API).
+
+## 🤖 NEW: Interactive Navigation Agents
+
+**Use the built-in guide agents** for step-by-step assistance:
+
+```
+I want to build something
+```
+
+→ **factory-guide** orchestrator asks what you want to build (Skill, Prompt, or Agent)
+→ Delegates to specialist: **skills-guide**, **prompts-guide**, or **agents-guide**
+→ Specialist asks 3-6 straightforward questions
+→ Complete output generated, validated, and ready to use
+
+**Learn more**: [.claude/agents/README.md](.claude/agents/README.md)
 
 ## Table of Contents
 
