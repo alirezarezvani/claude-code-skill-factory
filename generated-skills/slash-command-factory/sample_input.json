@@ -1,0 +1,10 @@
+{
+  "request_type": "custom",
+  "purpose": "Analyze customer feedback and generate actionable product insights",
+  "tools": "Read, Grep, Task",
+  "launches_agents": true,
+  "agent_names": ["analysis-agent"],
+  "output_type": "report",
+  "model": "default",
+  "features": []
+}

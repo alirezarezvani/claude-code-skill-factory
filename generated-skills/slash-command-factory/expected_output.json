@@ -1,0 +1,14 @@
+{
+  "command_name": "analyze-customer-feedback",
+  "command_file": "analyze-customer-feedback.md",
+  "output_location": "generated-commands/analyze-customer-feedback/",
+  "command_content": "---\ndescription: Analyze customer feedback and generate actionable product insights\nargument-hint: [feedback-source] [time-period]\nallowed-tools: Read, Grep, Task\ndisable-model-invocation: false\n---\n\nExecute task: \"$ARGUMENTS\"\n\n1. **Analyze Input**:\n   - Gather relevant data\n   - Identify key patterns\n   - Extract insights\n\n2. **Generate Analysis**:\n   - Comprehensive findings\n   - Data-driven insights\n   - Recommendations\n\n3. **Launch Agents**:\n   - Launch analysis-agent for specialized task\n\n**Success Criteria**:\n- Analyze customer feedback and generate actionable product insights completed successfully\n- Quality standards met\n- Output validated and ready to use\n",
+  "supporting_folders": [],
+  "validation": {
+    "yaml_valid": true,
+    "arguments_valid": true,
+    "tools_valid": true,
+    "organization_valid": true
+  },
+  "installation_target": ".claude/commands/analyze-customer-feedback.md"
+}

@@ -1,0 +1,111 @@
+{
+  "research-business": {
+    "name": "research-business",
+    "description": "Comprehensive business and market research with competitor analysis and strategic insights",
+    "argument-hint": "[company/market] [industry]",
+    "allowed-tools": "Read, Bash, Grep",
+    "model": null,
+    "command_body": "Conduct comprehensive business research for \"$ARGUMENTS\":\n\n1. **Market Analysis**:\n   - Market size, growth trends, and dynamics\n   - Key players and market share distribution\n   - Emerging trends and future outlook\n   - Regulatory environment and compliance requirements\n\n2. **Competitive Analysis**:\n   - Direct and indirect competitors\n   - SWOT analysis for top 3-5 competitors\n   - Competitive positioning and differentiation\n   - Pricing strategies and business models\n\n3. **Opportunity Identification**:\n   - Market gaps and underserved segments\n   - Innovation opportunities\n   - Strategic recommendations\n   - Risk assessment\n\n4. **Deliverable**:\n   - Executive summary (2-3 pages)\n   - Detailed market analysis\n   - Competitor profiles\n   - Strategic recommendations with action items\n\n**Success Criteria**:\n- Comprehensive market overview with data-driven insights\n- Actionable competitive intelligence\n- Clear strategic recommendations with prioritization",
+    "supporting_folders": []
+  },
+
+  "research-content": {
+    "name": "research-content",
+    "description": "Multi-platform content trend analysis for data-driven content strategy and SEO optimization",
+    "argument-hint": "[topic] [platforms]",
+    "allowed-tools": "Read, Bash",
+    "model": null,
+    "command_body": "Analyze content trends for \"$ARGUMENTS\" across multiple platforms:\n\n1. **Platform Analysis** (10+ platforms):\n   - Google Trends: Search volume, rising queries, regional interest\n   - Reddit: Subreddit activity, top posts, discussion themes\n   - YouTube: Video performance, trending content, engagement\n   - Medium: Article trends, claps, reading time\n   - LinkedIn: Professional content, engagement patterns\n   - X (Twitter): Hashtag performance, viral topics\n   - Substack: Newsletter trends, subscriber growth\n   - Blogs: Top-ranking posts, backlink profiles\n\n2. **User Intent Analysis**:\n   - Informational intent (learning, research)\n   - Commercial intent (comparison, evaluation)\n   - Transactional intent (purchase, action)\n\n3. **Content Gap Identification**:\n   - Underserved topics with high demand\n   - Question gaps (what people ask but isn't answered well)\n   - Format opportunities (video vs text vs infographic)\n\n4. **SEO-Optimized Outline**:\n   - H1/H2/H3 structure based on search intent\n   - Keyword integration recommendations\n   - Content length and format suggestions\n   - Platform-specific publishing strategy\n\n**Success Criteria**:\n- Comprehensive trend analysis across 5+ platforms\n- Data-driven content strategy with SEO optimization\n- Actionable outline ready for content creation",
+    "supporting_folders": []
+  },
+
+  "medical-translate": {
+    "name": "medical-translate",
+    "description": "Translate medical terminology to 8th-10th grade reading level with accuracy validation (German/English)",
+    "argument-hint": "[medical-term] [de|en]",
+    "allowed-tools": "Read",
+    "model": "claude-3-5-sonnet-20241022",
+    "command_body": "Translate medical term \"$ARGUMENTS\" to patient-friendly language:\n\n1. **Language Detection**:\n   - Identify language from second argument (de=German, en=English)\n   - Use appropriate reading level validator\n\n2. **Simplification**:\n   - Translate complex medical term to simple alternative\n   - Target reading level: 8th-10th grade\n   - Use everyday words (avoid Latin/Greek medical terms)\n   - Short sentences (12-18 words max)\n\n3. **Validation**:\n   - English: Flesch-Kincaid Grade Level (target: 8.0-10.0)\n   - German: Wiener Sachtextformel (target: Klasse 8-10)\n   - Medical accuracy: Preserve clinical correctness\n\n4. **Output Format**:\n   - Original term\n   - Simple translation\n   - 8th grade explanation (2-3 sentences)\n   - Concrete example or analogy\n   - Reading level score\n\n**Success Criteria**:\n- Reading level at 8th-10th grade (validated)\n- Medical accuracy preserved\n- Patient-friendly and empowering",
+    "supporting_folders": []
+  },
+
+  "compliance-audit": {
+    "name": "compliance-audit",
+    "description": "Audit code for HIPAA/GDPR/DSGVO compliance with detailed findings and recommendations",
+    "argument-hint": "[code-path] [hipaa|gdpr|dsgvo|all]",
+    "allowed-tools": "Read, Grep, Task",
+    "model": null,
+    "command_body": "Audit \"$ARGUMENTS\" for regulatory compliance:\n\n1. **Determine Standard** (from arguments):\n   - HIPAA (US healthcare)\n   - GDPR (EU data protection)\n   - DSGVO (German data protection)\n   - All (comprehensive check)\n\n2. **HIPAA Compliance Check** (if applicable):\n   - PHI handling: Encryption at rest/transit\n   - Access controls: Authentication, authorization\n   - Audit logging: All PHI access tracked\n   - Breach notification: Procedures in place\n\n3. **GDPR/DSGVO Compliance Check** (if applicable):\n   - Data minimization: Only necessary data collected\n   - Consent management: Explicit consent for processing\n   - Data subject rights: Access, erasure, portability\n   - Retention policies: Automated deletion workflows\n\n4. **Generate Report**:\n   - ✅ Compliant areas\n   - ❌ Non-compliant areas (with severity)\n   - ⚠️ Recommendations for improvement\n   - Priority actions (P0/P1/P2)\n\n**Success Criteria**:\n- Comprehensive compliance assessment completed\n- Clear findings with specific code references\n- Actionable recommendations with priority levels",
+    "supporting_folders": ["standards"]
+  },
+
+  "api-build": {
+    "name": "api-build",
+    "description": "Generate complete API client integration with error handling, authentication, and comprehensive tests",
+    "argument-hint": "[api-name] [endpoints]",
+    "allowed-tools": "Read, Write, Edit, Bash, Task",
+    "model": null,
+    "command_body": "Generate API client for \"$ARGUMENTS\":\n\n1. **API Client Class**:\n   - Base client with configuration\n   - Authentication handling (API key, OAuth, JWT)\n   - Request/response formatting\n   - Error handling with retries\n   - Rate limiting support\n\n2. **Endpoint Methods**:\n   - Generate method for each endpoint\n   - Type hints for all parameters\n   - Comprehensive docstrings\n   - Input validation\n   - Response parsing\n\n3. **Error Handling**:\n   - Network errors (timeout, connection)\n   - HTTP errors (4xx, 5xx)\n   - Rate limit handling\n   - Retry logic with exponential backoff\n   - Logging and debugging\n\n4. **Testing**:\n   - Unit tests (mock API responses)\n   - Integration tests (real API calls for dev)\n   - Test fixtures and sample data\n   - Coverage >80%\n\n5. **Documentation**:\n   - README with usage examples\n   - API reference for all methods\n   - Authentication setup guide\n   - Error handling documentation\n\n**Success Criteria**:\n- Complete, working API client generated\n- Error handling comprehensive\n- Tests pass with >80% coverage\n- Documentation clear and complete",
+    "supporting_folders": ["examples", "scripts"]
+  },
+
+  "test-auto": {
+    "name": "test-auto",
+    "description": "Auto-generate comprehensive test suite with unit, integration, and e2e tests plus coverage analysis",
+    "argument-hint": "[file-path] [unit|integration|e2e|all]",
+    "allowed-tools": "Read, Write, Bash",
+    "model": null,
+    "command_body": "Generate test suite for \"$ARGUMENTS\":\n\n1. **Analyze Code**:\n   - Read file/module to test\n   - Identify functions, classes, methods\n   - Determine dependencies and imports\n   - Map test coverage needs\n\n2. **Generate Test Cases**:\n   - **Happy path**: Normal, expected usage\n   - **Edge cases**: Boundary conditions, special inputs\n   - **Error cases**: Invalid inputs, exceptions\n   - **Integration**: Component interactions\n\n3. **Test Implementation**:\n   - Use appropriate framework (pytest, jest, etc.)\n   - Add test fixtures and mocks\n   - Generate sample test data\n   - Add setup/teardown logic\n\n4. **Coverage Analysis**:\n   - Run coverage report\n   - Identify untested code\n   - Recommend additional tests\n   - Target: >80% coverage\n\n5. **Documentation**:\n   - Test file organization\n   - How to run tests\n   - How to interpret results\n\n**Success Criteria**:\n- Comprehensive test suite generated\n- All test types covered (unit/integration/e2e)\n- >80% code coverage achieved\n- Tests pass on first run",
+    "supporting_folders": ["examples"]
+  },
+
+  "docs-generate": {
+    "name": "docs-generate",
+    "description": "Auto-generate comprehensive documentation including API docs, README, and architecture diagrams",
+    "argument-hint": "[code-path] [api|readme|architecture|all]",
+    "allowed-tools": "Read, Write, Grep",
+    "model": null,
+    "command_body": "Generate documentation for \"$ARGUMENTS\":\n\n1. **Code Analysis**:\n   - Extract functions, classes, modules\n   - Analyze dependencies and architecture\n   - Identify public APIs and interfaces\n   - Map data flows and relationships\n\n2. **API Documentation** (if requested):\n   - Function/method signatures with parameters\n   - Return types and descriptions\n   - Usage examples for each API\n   - Error handling documentation\n\n3. **README** (if requested):\n   - Project overview and purpose\n   - Installation instructions\n   - Quick start guide\n   - Usage examples\n   - API reference\n   - Contributing guidelines\n\n4. **Architecture** (if requested):\n   - System architecture overview\n   - Component diagrams (Mermaid)\n   - Data flow diagrams\n   - Technology stack\n   - Design decisions and rationale\n\n5. **Code Examples**:\n   - Practical usage scenarios\n   - Common patterns\n   - Best practices\n   - Troubleshooting\n\n**Success Criteria**:\n- Complete, accurate documentation generated\n- Examples work as documented\n- Diagrams clear and informative\n- Documentation follows best practices",
+    "supporting_folders": ["examples"]
+  },
+
+  "knowledge-mine": {
+    "name": "knowledge-mine",
+    "description": "Extract and structure insights from documents into FAQs, summaries, and knowledge base articles",
+    "argument-hint": "[doc-path] [faq|summary|kb|all]",
+    "allowed-tools": "Read, Grep",
+    "model": null,
+    "command_body": "Extract knowledge from \"$ARGUMENTS\":\n\n1. **Document Analysis**:\n   - Read and parse documents\n   - Identify key topics and themes\n   - Extract main concepts and definitions\n   - Map relationships and dependencies\n\n2. **FAQ Generation** (if requested):\n   - Common questions extracted from content\n   - Clear, concise answers\n   - Organized by category\n   - Prioritized by importance\n\n3. **Summary Creation** (if requested):\n   - Executive summary (2-3 paragraphs)\n   - Key points and takeaways\n   - Action items and recommendations\n   - Structured for quick scanning\n\n4. **Knowledge Base Articles** (if requested):\n   - Topic-based articles\n   - Clear explanations with examples\n   - Cross-references to related topics\n   - Searchable and well-organized\n\n5. **Structured Output**:\n   - Markdown format for easy use\n   - Proper headings and sections\n   - Internal links for navigation\n   - Ready for knowledge base import\n\n**Success Criteria**:\n- Accurate extraction of key information\n- Well-organized and structured output\n- Actionable insights and knowledge\n- Ready to use in documentation or knowledge base",
+    "supporting_folders": []
+  },
+
+  "workflow-analyze": {
+    "name": "workflow-analyze",
+    "description": "Analyze business workflows and provide optimization recommendations with automation opportunities",
+    "argument-hint": "[workflow-description]",
+    "allowed-tools": "Read, Task",
+    "model": null,
+    "command_body": "Analyze workflow: \"$ARGUMENTS\"\n\n1. **Current State Mapping**:\n   - Document current workflow steps\n   - Identify stakeholders and handoffs\n   - Map decision points and dependencies\n   - Calculate cycle time and throughput\n\n2. **Bottleneck Identification**:\n   - Manual steps that could be automated\n   - Redundant processes\n   - Waiting times and delays\n   - Communication inefficiencies\n\n3. **Optimization Opportunities**:\n   - Automation potential (tools, scripts, AI)\n   - Process simplification\n   - Parallel vs sequential execution\n   - Elimination of non-value-add steps\n\n4. **Impact Analysis**:\n   - Time savings (hours/week)\n   - Cost reduction ($$$/month)\n   - Quality improvements\n   - Risk reduction\n\n5. **Implementation Roadmap**:\n   - Quick wins (implement immediately)\n   - Short-term improvements (1-3 months)\n   - Long-term transformation (3-12 months)\n   - Resource requirements\n\n**Success Criteria**:\n- Clear current state documentation\n- Quantified bottlenecks and inefficiencies\n- Actionable optimization recommendations\n- Realistic implementation roadmap with ROI estimates",
+    "supporting_folders": []
+  },
+
+  "compliance-audit": {
+    "name": "compliance-audit",
+    "description": "Audit code for HIPAA/GDPR/DSGVO compliance with detailed findings and recommendations",
+    "argument-hint": "[code-path] [hipaa|gdpr|dsgvo|all]",
+    "allowed-tools": "Read, Grep, Task",
+    "model": null,
+    "command_body": "Audit \"$ARGUMENTS\" for regulatory compliance:\n\n1. **Determine Standard** (from arguments):\n   - HIPAA (US healthcare)\n   - GDPR (EU data protection)\n   - DSGVO (German data protection)\n   - All (comprehensive check)\n\n2. **HIPAA Compliance Check** (if applicable):\n   - PHI handling: Encryption at rest/transit\n   - Access controls: Authentication, authorization\n   - Audit logging: All PHI access tracked\n   - Breach notification: Procedures in place\n\n3. **GDPR/DSGVO Compliance Check** (if applicable):\n   - Data minimization: Only necessary data collected\n   - Consent management: Explicit consent for processing\n   - Data subject rights: Access, erasure, portability\n   - Retention policies: Automated deletion workflows\n\n4. **Generate Report**:\n   - ✅ Compliant areas\n   - ❌ Non-compliant areas (with severity)\n   - ⚠️ Recommendations for improvement\n   - Priority actions (P0/P1/P2)\n\n**Success Criteria**:\n- Comprehensive compliance assessment completed\n- Clear findings with specific code references\n- Actionable recommendations with priority levels",
+    "supporting_folders": ["standards"]
+  },
+
+  "batch-agents": {
+    "name": "batch-agents",
+    "description": "Launch and coordinate multiple specialized agents for complex multi-faceted tasks",
+    "argument-hint": "[agent-names] [task-description]",
+    "allowed-tools": "Task",
+    "model": null,
+    "command_body": "Launch coordinated agent workflow for \"$ARGUMENTS\":\n\n1. **Parse Agent List**:\n   - Extract agent names from arguments\n   - Validate agents exist\n   - Determine execution order (parallel vs sequential)\n\n2. **Execution Strategy**:\n   - **Strategic agents** (blue): Run 4-5 in parallel\n   - **Implementation agents** (green): Run 2-3 coordinated\n   - **Quality agents** (red): Run ONE at a time (never parallel)\n   - **Coordination agents** (purple): Orchestrate others\n\n3. **Launch Agents** (max 5 total):\n   - Launch with specific task instructions\n   - Monitor progress\n   - Capture outputs\n   - Handle errors gracefully\n\n4. **Coordinate Results**:\n   - Integrate outputs from all agents\n   - Resolve conflicts if any\n   - Validate completeness\n   - Generate comprehensive summary\n\n5. **Final Output**:\n   - Summary of what each agent accomplished\n   - Integrated results\n   - Quality validation\n   - Next steps if needed\n\n**Success Criteria**:\n- All agents launched successfully\n- Appropriate execution strategy (parallel/sequential)\n- Results integrated coherently\n- Task completed with quality validation",
+    "supporting_folders": []
+  }
+}
