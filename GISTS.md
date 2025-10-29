@@ -80,6 +80,29 @@ These Gists serve multiple goals:
 
 ---
 
+### 4. Slash Command Factory - Custom Command Generator
+
+**URL**: https://gist.github.com/alirezarezvani/69a40cbe6d4cdce35b82a8846d3a78de
+
+**File**: `slash-command-factory-claude-code-automation.md`
+
+**Description**: Slash Command Factory - Generate Custom Claude Code Commands in Minutes | 10 Powerful Presets | Business Research | Content Analysis | Healthcare Compliance | API Automation | Test Generation | Documentation Automation | Workflow Optimization | Claude Code Productivity | Custom Command Generator
+
+**SEO Keywords**:
+- Claude Code Commands, Slash Commands, Command Generator, Command Automation
+- Business Research Automation, Market Research AI, Competitive Analysis Tools
+- Content Analysis, SEO Strategy Tools, Multi-platform Research
+- Healthcare Compliance, HIPAA Audit, GDPR Tools, Medical Translation
+- API Automation, Test Generation, Documentation Automation
+- Workflow Optimization, Process Improvement, Productivity Tools
+- Claude Code Productivity, Development Automation
+
+**Content**: ~20KB comprehensive guide covering slash command generation with 10 presets, usage examples, real-world use cases, and technical implementation
+
+**Target Audience**: Claude Code users, developers, business analysts, healthcare professionals, content creators, productivity enthusiasts
+
+---
+
 ## 🎯 SEO Strategy
 
 ### Primary Keywords Targeted
