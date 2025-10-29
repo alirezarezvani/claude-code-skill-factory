@@ -1,374 +1,8 @@
 # Claude Code Skills & Agents Factory
 
-A comprehensive toolkit for generating production-ready Claude Skills and Claude Code Agents at scale. This repository provides templates, examples, powerful prompt engineering systems, and **interactive navigation agents** to create custom skills and specialized agents for Claude AI across all platforms (Claude apps, Claude Code, and API).
+A comprehensive toolkit for generating production-ready Claude Skills and Claude Code Agents at scale. This repository provides templates, examples, and powerful prompt engineering systems to create custom skills and specialized agents for Claude AI across all platforms (Claude apps, Claude Code, and API).
 
-## 🤖 NEW: Interactive Navigation System
-
-**The easiest way to build Skills, Prompts, and Agents** - just have a conversation!
-
-### Quick Start with Agents
-
-```
-I want to build something
-```
-
-**What happens**:
-1. **factory-guide** (orchestrator) asks what you want to build
-2. Delegates to specialist: **skills-guide**, **prompts-guide**, or **agents-guide**
-3. Specialist asks 3-6 straightforward questions
-4. Complete output generated, validated, and ready to use
-
-### The Navigation Agents
-
-**🟣 factory-guide** (Orchestrator)
-- **Use when**: "I want to build something" or just starting
-- **What it does**: Asks 1 question, delegates to appropriate specialist
-- **Tools**: Read, Grep (lightweight)
-
-**🔵 skills-guide** (Skills Specialist)
-- **Use when**: Building multi-file Claude Skills
-- **Questions**: 4-5 (domain, use cases, Python vs prompts, count, requirements)
-- **Generates**: Complete skill folder + ZIP + validation + installation help
-- **Tools**: Read, Write, Bash, Grep, Glob
-
-**🟠 prompts-guide** (Prompts Specialist)
-- **Use when**: Generating mega-prompts for any LLM
-- **Questions**: 3-4 (preset vs custom, role, format, mode)
-- **Generates**: Production-ready prompt (XML/Claude/ChatGPT/Gemini)
-- **Works with**: prompt-factory skill (69 presets)
-
-**🟢 agents-guide** (Agents Specialist)
-- **Use when**: Building Claude Code Agents/subagents
-- **Questions**: 5-6 (purpose, type, tools, model, field, expertise)
-- **Generates**: Complete agent .md with enhanced YAML + installation help
-- **Tools**: Read, Write, Grep
-
-### Slash Commands (Quick Access)
-
-**Complete workflow**:
-```bash
-/build              # Start building (invokes factory-guide)
-/validate-output    # Check quality
-/install-skill      # Install outputs
-/test-factory       # Test functionality
-/factory-status     # Track progress
-```
-
-**Example workflow**:
-```
-/build skill
-[Answer 4-5 questions]
-→ Skill generated
-
-/validate-output skill generated-skills/my-skill
-→ ✅ Validation passed
-
-/install-skill generated-skills/my-skill
-→ Installation guided
-
-/test-factory skill my-skill
-→ Testing examples provided
-
-/factory-status
-→ Progress tracked
-```
-
-**Complete Documentation**:
-- **Agents**: [.claude/agents/README.md](.claude/agents/README.md)
-- **Commands**: [.claude/commands/README.md](.claude/commands/README.md)
-
----
-
-## Interactive Navigation System
-
-### The 4 Guide Agents
-
-This repository includes **4 interactive guide agents** that help you build Skills, Prompts, and Agents through conversational Q&A:
-
-#### 🟣 factory-guide (Main Orchestrator)
-
-**Purpose**: Main entry point - understands your goal and delegates to the right specialist
-
-**Location**: `.claude/agents/factory-guide.md`
-
-**How to use**:
-```
-I want to build something for my healthcare startup
-```
-
-**What it does**:
-- Greets you and explains 3 options (Skill, Prompt, Agent)
-- Asks 1-2 simple questions to understand your goal
-- Delegates to appropriate specialist agent
-- Provides final summary after specialist completes
-
-**Tools**: Read, Grep (lightweight orchestration)
-**Model**: haiku (fast)
-**Color**: Purple (orchestration)
-
----
-
-#### 🔵 skills-guide (Skills Building Specialist)
-
-**Purpose**: Interactive guide for building custom Claude Skills
-
-**Location**: `.claude/agents/skills-guide.md`
-
-**How to use**:
-```
-Help me build a skill for analyzing customer feedback
-```
-
-**Question flow** (4-5 questions):
-1. **Domain**: What's your business type? (FinTech, Healthcare, E-commerce, etc.)
-2. **Use cases**: What tasks should the skill handle? (2-4 specific examples)
-3. **Implementation**: Python code or prompts only?
-4. **Count**: How many skills to generate? (1-5)
-5. **Requirements**: Any special needs? (optional - HIPAA, specific tech, etc.)
-
-**What it generates**:
-- Complete skill folder (SKILL.md, Python files if needed, samples)
-- HOW_TO_USE.md with invocation examples
-- ZIP file for distribution
-- Validates YAML frontmatter (kebab-case, proper format)
-- Installation instructions (Desktop, Code, Browser)
-- Testing guidance
-
-**Example output**: `generated-skills/customer-feedback-analyzer/`
-
-**Tools**: Read, Write, Bash, Grep, Glob (full file creation)
-**Model**: sonnet (intelligent generation)
-**Color**: Blue (strategic)
-
----
-
-#### 🟠 prompts-guide (Prompt Generation Specialist)
-
-**Purpose**: Navigate the prompt-factory skill to generate mega-prompts
-
-**Location**: `.claude/agents/prompts-guide.md`
-
-**How to use**:
-```
-I need a prompt for a Senior Backend Engineer
-```
-
-**Question flow** (3-4 questions):
-1. **Path**: Quick-start preset (69 options) or custom prompt?
-2. **Selection**: Which preset? (if preset) / What role? (if custom)
-3. **Format**: XML, Claude, ChatGPT, Gemini, or All?
-4. **Mode**: Core (~5K tokens) or Advanced (~12K tokens)?
-
-**What it does**:
-- Guides you to use the prompt-factory skill (already exists)
-- Helps choose from 69 professional presets
-- Explains format differences and use cases
-- Shows how to use generated prompt in different LLMs
-- Validates prompt quality (7-point check)
-
-**Presets include**:
-- Technical: Full-Stack Engineer, DevOps, Mobile, Data Scientist, Security, Cloud, Database, QA
-- Business: Product Manager, Project Manager, Operations, Sales, Marketing, Analyst
-- Executive: CEO, CTO, CMO, COO, CPO, CSO, GM
-- Legal: Counsel, Compliance, Contracts, Regulatory
-- Plus 11 more domains (Finance, HR, Design, Customer, etc.)
-
-**Example output**: Production-ready mega-prompt (5-12K tokens) ready for any LLM
-
-**Tools**: Read, Grep (navigation helper)
-**Model**: haiku (fast guidance)
-**Color**: Orange (specialist)
-
----
-
-#### 🟢 agents-guide (Agent Building Specialist)
-
-**Purpose**: Interactive guide for building custom Claude Code Agents
-
-**Location**: `.claude/agents/agents-guide.md`
-
-**How to use**:
-```
-Build me an agent that reviews code for security vulnerabilities
-```
-
-**Question flow** (5-6 questions):
-1. **Purpose**: What should this agent do? (specific description)
-2. **Type**: Strategic, Implementation, Quality, or Coordination?
-3. **Tools**: Which tools? (based on type, with recommendations)
-4. **Model**: sonnet, opus, haiku, or inherit?
-5. **Field**: What domain? (frontend, backend, testing, product, etc.)
-6. **Expertise**: Beginner, intermediate, or expert?
-
-**What it generates**:
-- Complete agent .md file with enhanced YAML frontmatter
-- System prompt with role, approach, best practices, examples
-- Validates kebab-case naming and YAML format
-- Creates file in .claude/agents/ (project) or ~/.claude/agents/ (user-level)
-- Usage examples and testing guidance
-
-**Agent types explained**:
-- **Strategic** (Blue): Planning/research, lightweight tools, 4-5 can run in parallel
-- **Implementation** (Green): Code writing, full tools, 2-3 coordinated
-- **Quality** (Red): Testing/review, heavy Bash, ONE at a time (never parallel)
-- **Coordination** (Purple): Orchestration, lightweight, manages other agents
-
-**Example output**: `.claude/agents/security-reviewer.md`
-
-**Tools**: Read, Write, Grep (file creation)
-**Model**: sonnet (intelligent generation)
-**Color**: Green (implementation)
-
----
-
-### 5 Slash Commands
-
-**Complete start-to-finish workflow**:
-
-#### 1. /build - Start Building
-```bash
-/build              # Guided (asks what to build)
-/build skill        # Direct to skills-guide
-/build prompt       # Direct to prompts-guide
-/build agent        # Direct to agents-guide
-```
-
-**Purpose**: Main entry point - invokes factory-guide or specialists
-
----
-
-#### 2. /validate-output - Quality Check
-```bash
-/validate-output skill [path]
-/validate-output prompt
-/validate-agent [path]
-```
-
-**Purpose**: Validate YAML frontmatter, naming, format, completeness
-
-**Checks**:
-- ✅ YAML valid (proper format, kebab-case name)
-- ✅ Required files present
-- ✅ No placeholders or TODOs
-- ✅ Quality standards met
-
----
-
-#### 3. /install-skill - Installation Helper
-```bash
-/install-skill [path-to-skill-or-agent]
-```
-
-**Purpose**: Step-by-step installation guidance
-
-**Provides**:
-- Multiple installation methods (Desktop, Code, Browser for skills)
-- Project vs user-level for agents
-- Verification steps
-- Troubleshooting
-
----
-
-#### 4. /test-factory - Quick Test
-```bash
-/test-factory skill [name]
-/test-factory agent [name]
-/test-factory prompt
-```
-
-**Purpose**: Test generated outputs work correctly
-
-**Provides**:
-- Test invocation examples
-- Expected behavior descriptions
-- Verification checklists
-- Troubleshooting steps
-
----
-
-#### 5. /factory-status - Progress Tracker
-```bash
-/factory-status
-```
-
-**Purpose**: See what's built, validated, installed, tested
-
-**Shows**:
-- All skills generated (with status indicators)
-- All agents created (with status)
-- All prompts generated (with status)
-- Overall progress percentage
-- Next recommended actions
-
----
-
-### Complete Workflow Example
-
-**Build a Healthcare Skill (10-15 minutes)**:
-
-```
-Step 1: Start
-> /build skill
-
-skills-guide: "What's your business type?"
-> Healthcare
-
-skills-guide: "What tasks should it handle?"
-> Medical terminology translation, patient education
-
-skills-guide: "Python code or prompts only?"
-> Python
-
-skills-guide: "How many skills?"
-> 1
-
-skills-guide: "Special requirements?"
-> HIPAA compliance, 8th grade reading level
-
-→ Skill generated: generated-skills/medical-translator/
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Step 2: Validate
-> /validate-output skill generated-skills/medical-translator
-
-→ ✅ YAML valid
-→ ✅ Naming correct (kebab-case)
-→ ✅ Files complete (SKILL.md, translator.py, samples)
-→ ✅ Quality passed
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Step 3: Install
-> /install-skill generated-skills/medical-translator
-
-Choose: Option 2 (Claude Code)
-→ Copies to ~/.claude/skills/medical-translator/
-→ Restart Claude Code
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Step 4: Test
-> /test-factory skill medical-translator
-
-Try: @medical-translator
-
-Translate "myocardial infarction" to 8th grade level
-
-→ Works! Skill responds correctly
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Step 5: Track Progress
-> /factory-status
-
-Shows: 1 skill (✅ validated, ✅ installed, ✅ tested)
-→ Complete!
-```
-
-**Result**: Professional healthcare skill ready to use in 15 minutes!
-
----
+**🆕 NEW**: Interactive navigation agents + slash commands for guided skill building! [See Interactive Navigation System](#interactive-navigation-system)
 
 ## Table of Contents
 
@@ -1088,6 +722,45 @@ World-class prompt powerhouse that generates production-ready mega-prompts for a
 **See**: [generated-skills/prompt-factory/](generated-skills/prompt-factory/)
 
 Each includes full implementation, sample data, HOW_TO_USE guide, and ready-to-import ZIP files.
+
+---
+
+## Interactive Navigation System
+
+**The easiest way to build Skills, Prompts, and Agents** - guided conversation with specialized agents!
+
+### Quick Start
+
+```
+I want to build something
+```
+
+→ **factory-guide** asks what you want to build
+→ Delegates to specialist
+→ Specialist asks 3-6 questions
+→ Complete output generated
+
+### The 4 Guide Agents
+
+**🟣 factory-guide** (Orchestrator) - Entry point, delegates to specialists
+**🔵 skills-guide** (Skills) - Build multi-file Claude Skills (4-5 questions)
+**🟠 prompts-guide** (Prompts) - Generate mega-prompts (3-4 questions, 69 presets)
+**🟢 agents-guide** (Agents) - Build Claude Code Agents (5-6 questions)
+
+**Docs**: [.claude/agents/README.md](.claude/agents/README.md)
+
+### 5 Slash Commands
+
+**Workflow**: `/build` → `/validate-output` → `/install-skill` → `/test-factory` → `/factory-status`
+
+**Docs**: [.claude/commands/README.md](.claude/commands/README.md)
+
+### Example: Build Healthcare Skill (15 min)
+```
+/build skill → Answer questions → /validate-output → /install-skill → /test-factory → Done!
+```
+
+---
 
 ## Contributing
 

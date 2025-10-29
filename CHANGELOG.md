@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.0] - 2025-10-29
+
+### Added
+- **Slash Command Factory** skill - Generate custom Claude Code slash commands with 10 powerful presets
+- **Interactive Navigation Agents** (4 agents) - Conversational guides for building Skills, Prompts, Agents, and Commands
+  - factory-guide (orchestrator) - Delegates to appropriate specialist
+  - skills-guide - Builds Claude Skills through 4-5 questions
+  - prompts-guide - Guides prompt-factory usage (69 presets)
+  - agents-guide - Builds Claude Code Agents through 5-6 questions
+- **5 Workflow Slash Commands** - Complete start-to-finish workflow
+  - /build - Start building (invokes orchestrator or specialists)
+  - /validate-output - Quality check with auto-ZIP creation
+  - /install-skill - Installation guidance
+  - /test-factory - Testing examples
+  - /factory-status - Progress tracking
+- **Public Gist** - Slash Command Factory guide for SEO/AEO
+- **10 Slash Command Presets** - Business research, content analysis, medical translation, compliance audit, API building, test automation, docs generation, knowledge extraction, workflow optimization, agent coordination
+
+### Changed
+- **README reorganized** - Navigation system moved to end (before Contributing)
+- **README enhanced** - Added Slash Command Factory (#8 in Generated Skills)
+- **/validate-output** - Now auto-creates ZIP files on successful validation
+- **CLAUDE.md** - Added Slash Command Factory (#11) documentation
+- **GISTS.md** - Added 4th public gist (Slash Command Factory)
+- **Documentation references** - Updated with slash-command-factory links
+
+### Added Documentation
+- `.claude/agents/` - 4 navigation agents (orchestrator + 3 specialists)
+- `.claude/commands/` - 5 workflow commands
+- `generated-skills/slash-command-factory/` - Complete skill with presets
+- `documentation/references/` - Slash command examples from Anthropic
+
+---
+
 ## [2.0.0] - 2025-10-28
 
 ### Added
@@ -22,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Professional standards** - CONTRIBUTING.md, LICENSE (MIT), .editorconfig
 - **.github consolidation** - 6 files merged into single GITHUB_WORKFLOWS_GUIDE.md
 - **.archive structure** - Organized historical documents
+- **Security audit** - Complete security audit and SECURITY.md policy
 
 ### Changed
 - **README enhanced** - Added Complementary Resources (Claude Code Tresor, Claude Skills Library)
