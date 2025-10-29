@@ -34,7 +34,7 @@ Choose from 10 powerful preset commands:
 2. **/research-content** - Multi-platform content trend analysis and SEO strategy
 
 **Healthcare & Compliance**:
-3. **/medical-translate** - Translate medical terminology to 8th-10th grade (German/English)
+3. **/medical-translate** - Translate medical terminology to 8th-10th grade (German/English) 
 4. **/compliance-audit** - HIPAA/GDPR/DSGVO compliance validation
 
 **Development & Integration**:
