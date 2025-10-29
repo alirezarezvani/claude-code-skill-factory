@@ -623,6 +623,36 @@ Copy the generated prompt and use it in:
 
 **See**: [generated-skills/prompt-factory/](generated-skills/prompt-factory/) for complete documentation
 
+### 8. Slash Command Factory
+**Purpose**: Generate custom Claude Code slash commands for workflows, automation, and productivity
+
+**Files**:
+- [SKILL.md](generated-skills/slash-command-factory/SKILL.md)
+- [command_generator.py](generated-skills/slash-command-factory/command_generator.py)
+- [validator.py](generated-skills/slash-command-factory/validator.py)
+- [presets.json](generated-skills/slash-command-factory/presets.json)
+- [HOW_TO_USE.md](generated-skills/slash-command-factory/HOW_TO_USE.md)
+
+**Capabilities**:
+- 10 powerful preset slash commands (business research, content analysis, medical translation, compliance audit, API building, test automation, documentation generation, knowledge extraction, workflow optimization, agent coordination)
+- 5-7 question flow for custom command creation
+- Always uses `$ARGUMENTS` for consistent argument handling
+- Generates properly formatted command .md files with YAML frontmatter
+- Outputs to `generated-commands/[name]/` in user's project
+- Excellent folder organization (all .md in root, standards/examples/scripts/ separate)
+- Validation of YAML frontmatter, argument syntax, and folder structure
+
+**Presets**:
+- Business Intelligence: /research-business, /research-content
+- Healthcare & Compliance: /medical-translate, /compliance-audit
+- Development: /api-build, /test-auto
+- Documentation: /docs-generate, /knowledge-mine
+- Productivity: /workflow-analyze, /batch-agents
+
+**Pattern**: Preset selection OR custom generation (5-7 questions) → YAML frontmatter → validation → organized output
+
+**See**: [HOW_TO_USE.md](generated-skills/slash-command-factory/HOW_TO_USE.md) for complete usage guide
+
 ## Example Skills Included
 
 This repository includes three fully-functional example skills:

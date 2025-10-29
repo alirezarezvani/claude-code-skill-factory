@@ -506,12 +506,22 @@ The `generated-skills/` folder contains complete, production-ready skills create
 - **Pattern**: Agent requirements → YAML validation → agent .md file generation
 - **Template**: Uses `documentation/templates/AGENTS_FACTORY_PROMPT.md` for generation
 
-### 10. Prompt Suite
+### 10. Prompt Factory
 - **Files**: `SKILL.md`, `generate_prompt.py`, `validator.py`, `optimizer.py`, `batch_generator.py`
 - **Purpose**: World-class prompt powerhouse generating production-ready mega-prompts for any role, industry, and task through intelligent question flow
 - **Key Classes**: `PromptGenerator`, `PromptValidator`, `PromptOptimizer`, `BatchPromptGenerator`
 - **Pattern**: 7-question flow → preset selection (69 presets, 15 domains) → quality validation → multi-format output (XML/Claude/ChatGPT/Gemini)
 - **Coverage**: 69 comprehensive presets across Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media domains
+
+### 11. Slash Command Factory
+- **Files**: `SKILL.md`, `command_generator.py`, `validator.py`, `presets.json`, `HOW_TO_USE.md`
+- **Purpose**: Generate custom Claude Code slash commands through 5-7 question flow for business research, content analysis, development automation, compliance checking, and workflow optimization
+- **Key Classes**: `SlashCommandGenerator`, `CommandValidator`
+- **Pattern**: Preset selection (10 powerful commands) OR custom generation → YAML frontmatter creation → validation → organized output to generated-commands/
+- **Coverage**: Business research, content research, medical translation, compliance audit, API building, test automation, docs generation, knowledge extraction, workflow analysis, batch agent coordination
+- **Output**: Commands to user's project `./generated-commands/[command-name]/` with proper folder organization (all .md in root, standards/examples/scripts/ separate)
+- **Arguments**: Always uses `$ARGUMENTS` (never $1, $2, $3 positional)
+- **Documentation**: See [generated-skills/slash-command-factory/HOW_TO_USE.md](../generated-skills/slash-command-factory/HOW_TO_USE.md)
 
 ## Common Development Patterns
 
