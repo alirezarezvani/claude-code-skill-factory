@@ -16,12 +16,13 @@
 
 ## What This Command Does
 
-Validates generated output to ensure:
+Validates generated output and creates distribution files:
 - ✅ YAML frontmatter is correct
 - ✅ Naming conventions followed (kebab-case)
 - ✅ Required files present
 - ✅ Format is proper
 - ✅ Quality standards met
+- ✅ **Creates ZIP file** (if validation passes for skills)
 
 ---
 
@@ -71,10 +72,26 @@ Validating: generated-skills/my-skill/
    - sample_input.json ✓
 ✅ Quality: Documentation complete
 
-🎉 Skill validation PASSED! Ready to install.
+🎉 Skill validation PASSED!
+
+Creating ZIP file for Claude Desktop...
+
+cd generated-skills && zip -r my-skill.zip my-skill/ -x "*.pyc" "*__pycache__*" "*.DS_Store"
+
+✅ ZIP created: generated-skills/my-skill.zip (35KB)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 Ready to use!
+
+**For Claude Desktop** (Easiest):
+Drag and drop: generated-skills/my-skill.zip
+
+**For Claude Code**:
+/install-skill generated-skills/my-skill
 
 Next steps:
-1. /install-skill generated-skills/my-skill
+1. Import ZIP to Claude Desktop OR install to Claude Code
 2. /test-factory my-skill
 ```
 
