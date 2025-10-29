@@ -69,7 +69,7 @@ Choose what to build:
    Best for: ChatGPT/Claude/Gemini custom instructions
 
 3. **Claude Agent** - Specialized subagent for Claude Code workflows
-   Examples: Code reviewer, frontend developer, test runner
+   Examples: Code reviewer, frontend developer, test runner, or any other assigned role
    Best for: Claude Code automation and specialized tasks
 
 Enter 1, 2, or 3 (or describe what you want to build): ___
