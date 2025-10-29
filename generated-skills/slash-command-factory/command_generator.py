@@ -239,3 +239,106 @@ class SlashCommandGenerator:
             folders.append('scripts')
 
         return folders
+
+    def _validate_command_name(self, name: str) -> bool:
+        """
+        Validate command name follows kebab-case convention.
+
+        Rules:
+        - Must be kebab-case (lowercase with hyphens)
+        - Length: 2-4 words maximum
+        - Characters: [a-z0-9-] only
+        - Must start and end with letter/number
+
+        Args:
+            name: Command name to validate
+
+        Returns:
+            True if valid, False otherwise
+        """
+        import re
+        pattern = r'^[a-z0-9]+(-[a-z0-9]+){1,3}$'
+        return bool(re.match(pattern, name))
+
+    def _convert_to_command_name(self, purpose: str) -> str:
+        """
+        Convert user purpose to valid command name following official patterns.
+
+        Examples:
+        - "Review code changes" → "code-review"
+        - "Generate API docs" → "api-document"
+        - "Analyze dependencies" → "deps-analyze"
+
+        Args:
+            purpose: User's command purpose
+
+        Returns:
+            Valid kebab-case command name
+        """
+        import re
+
+        # Extract key words
+        words = purpose.lower().split()
+
+        # Filter stop words
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'for', 'with', 'to', 'from', 'in', 'on'}
+        words = [w for w in words if w not in stop_words]
+
+        # Take first 2-3 meaningful words
+        key_words = words[:3]
+
+        # Clean and join
+        clean_words = [re.sub(r'[^a-z0-9]', '', w) for w in key_words]
+        clean_words = [w for w in clean_words if w]  # Remove empty strings
+
+        command_name = '-'.join(clean_words[:3])  # Max 3 words
+
+        return command_name
+
+    def _determine_structure(self, answers: Dict[str, Any]) -> str:
+        """
+        Determine which official structure pattern to use.
+
+        Returns: 'simple', 'multi-phase', or 'agent-style'
+        """
+        purpose = answers['purpose'].lower()
+
+        # Multi-phase: discovery, analysis, comprehensive
+        multi_phase_keywords = ['discover', 'analyze', 'comprehensive', 'document', 'map', 'audit', 'full', 'complete']
+        if any(word in purpose for word in multi_phase_keywords):
+            return 'multi-phase'
+
+        # Agent-style: expert, specialized, coordinator
+        agent_keywords = ['expert', 'specialist', 'coordinator', 'orchestrate', 'manage', 'coordinate']
+        if any(word in purpose for word in agent_keywords):
+            return 'agent-style'
+
+        # Default: simple
+        return 'simple'
+
+    def _generate_bash_permissions(self, command_type: str, structure: str) -> str:
+        """
+        Generate specific bash permissions (no wildcards).
+
+        Based on official patterns from Anthropic examples.
+
+        Args:
+            command_type: Type of command (git, discovery, analysis, etc.)
+            structure: Structure type (simple, multi-phase, agent-style)
+
+        Returns:
+            Comma-separated list of specific bash commands
+        """
+        patterns = {
+            'git': 'Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*)',
+            'discovery': 'Bash(find:*), Bash(tree:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(du:*)',
+            'analysis': 'Bash(grep:*), Bash(wc:*), Bash(head:*), Bash(tail:*), Bash(cat:*)',
+            'update': 'Bash(git diff:*), Bash(find:*), Bash(grep:*)',
+            'comprehensive': 'Bash(find:*), Bash(tree:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(du:*), Bash(head:*), Bash(tail:*), Bash(cat:*)'
+        }
+
+        # Multi-phase usually needs comprehensive permissions
+        if structure == 'multi-phase':
+            return patterns['comprehensive']
+
+        return patterns.get(command_type, patterns['analysis'])

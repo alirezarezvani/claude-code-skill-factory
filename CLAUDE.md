@@ -404,8 +404,11 @@ This repository is a **Claude Code Skills factory** - a collection of example sk
 
 ```
 claude-code-skills-factory/
-├── claude-skills-instructions.md    # Full documentation from Anthropic blog post
-├── claude-skills-examples/          # Example skills with implementation
+├── README.md                           # Project overview and documentation
+├── CLAUDE.md                           # This file - guidance for Claude Code
+├── claude-skills-instructions.md       # Full Skills documentation from Anthropic
+├── claude-agents-instructions.md       # Full Agents documentation from Anthropic
+├── claude-skills-examples/             # Reference skill implementations
 │   ├── analyzing_financial_statements.md  # Skill: Financial ratio analysis
 │   ├── calculate_ratios.py                # Implementation for ratios
 │   ├── interpret_ratios.py                # Ratio interpretation logic
@@ -415,16 +418,26 @@ claude-code-skills-factory/
 │   ├── brand_guidelines.md                # Skill: Corporate branding
 │   └── apply_brand.py                     # Brand application module
 ├── documentation/
-│   └── templates/
-│       ├── SKILLS_FACTORY_PROMPT.md    # Template for generating Claude Skills
-│       └── AGENTS_FACTORY_PROMPT.md    # Template for generating Claude Code agents
+│   ├── references/                     # Official documentation examples
+│   │   ├── slash-commands-instructions.md
+│   │   ├── slash-command-code-review-example.md
+│   │   ├── slash-command-codebase-analysis-example.md
+│   │   ├── slash-command-open-api-example.md
+│   │   ├── slash-command-update-claude-md-example.md
+│   │   └── slash-commands-ultrathink-example.md
+│   └── templates/                      # Factory prompt templates
+│       ├── SKILLS_FACTORY_PROMPT.md        # Generate Claude Skills (multi-file)
+│       ├── AGENTS_FACTORY_PROMPT.md        # Generate Claude Code Agents (single .md)
+│       ├── PROMPTS_FACTORY_PROMPT.md       # Generate domain prompt builders
+│       └── MASTER_SLASH_COMMANDS_PROMPT.md # Generate slash commands (official patterns)
 └── generated-skills/                   # Production-ready generated skills
-    ├── aws-solution-architect/         # AWS architecture and IaC
-    ├── content-trend-researcher/       # Content research and trend analysis
-    ├── ms365-tenant-manager/           # Microsoft 365 administration
-    ├── psychology-advisor/             # Mental wellness and CBT techniques
-    ├── agent-factory/                  # Claude Code agent generation system
-    └── prompt-factory/                 # World-class prompt generation (69 presets)
+    ├── aws-solution-architect/         # AWS architecture and IaC (53 KB)
+    ├── content-trend-researcher/       # Content research and trend analysis (35 KB)
+    ├── ms365-tenant-manager/           # Microsoft 365 administration (40 KB)
+    ├── psychology-advisor/             # Mental wellness and CBT techniques (31 KB)
+    ├── agent-factory/                  # Claude Code agent generation system (12 KB)
+    ├── prompt-factory/                 # World-class prompt generation - 69 presets (427 KB)
+    └── slash-command-factory/          # Slash command generation - 17 presets (26 KB) 🆕
 ```
 
 ## Skill Architecture
@@ -513,15 +526,21 @@ The `generated-skills/` folder contains complete, production-ready skills create
 - **Pattern**: 7-question flow → preset selection (69 presets, 15 domains) → quality validation → multi-format output (XML/Claude/ChatGPT/Gemini)
 - **Coverage**: 69 comprehensive presets across Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media domains
 
-### 11. Slash Command Factory
-- **Files**: `SKILL.md`, `command_generator.py`, `validator.py`, `presets.json`, `HOW_TO_USE.md`
-- **Purpose**: Generate custom Claude Code slash commands through 5-7 question flow for business research, content analysis, development automation, compliance checking, and workflow optimization
-- **Key Classes**: `SlashCommandGenerator`, `CommandValidator`
-- **Pattern**: Preset selection (10 powerful commands) OR custom generation → YAML frontmatter creation → validation → organized output to generated-commands/
-- **Coverage**: Business research, content research, medical translation, compliance audit, API building, test automation, docs generation, knowledge extraction, workflow analysis, batch agent coordination
+### 11. Slash Command Factory (v2.0)
+- **Files**: `SKILL.md`, `command_generator.py`, `validator.py`, `presets.json`, `HOW_TO_USE.md` (26 KB)
+- **Purpose**: Generate custom Claude Code slash commands through 5-7 question flow for business research, content analysis, development automation, compliance checking, and workflow optimization - following official Anthropic patterns
+- **Key Classes**: `SlashCommandGenerator` (with structure detection, naming validation, bash permission generation), `CommandValidator` (comprehensive four-layer validation)
+- **Pattern**: Preset selection (17 presets: 10 original + 7 official examples) OR custom generation → auto-detect structure pattern → YAML frontmatter creation → strict validation → organized output to generated-commands/
+- **Official Patterns Integrated**:
+  - **Simple Pattern** (code-review): Context → Task (straightforward workflows)
+  - **Multi-Phase Pattern** (codebase-analyze): Discovery → Analysis → Task (complex documentation)
+  - **Agent-Style Pattern** (ultrathink, openapi-sync): Role → Process → Guidelines (expert coordination)
+- **Validation Layers**: Command name (kebab-case, 2-4 words), bash permissions (specific commands only, NEVER wildcard `Bash`), arguments usage ($ARGUMENTS, never $1/$2/$3), YAML structure
+- **Coverage**: Business research, content research, medical translation, compliance audit, API building, test automation, docs generation, knowledge extraction, workflow analysis, batch agent coordination, code review, codebase analysis, OpenAPI sync, ultrathink coordination
 - **Output**: Commands to user's project `./generated-commands/[command-name]/` with proper folder organization (all .md in root, standards/examples/scripts/ separate)
-- **Arguments**: Always uses `$ARGUMENTS` (never $1, $2, $3 positional)
-- **Documentation**: See [generated-skills/slash-command-factory/HOW_TO_USE.md](../generated-skills/slash-command-factory/HOW_TO_USE.md)
+- **Bash Permissions**: Auto-generates specific patterns (git commands, discovery commands, comprehensive commands) - never uses wildcard
+- **Naming Convention**: Automatic kebab-case conversion with validation (verb-noun, noun-verb patterns)
+- **Documentation**: See [generated-skills/slash-command-factory/HOW_TO_USE.md](../generated-skills/slash-command-factory/HOW_TO_USE.md) and [documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md](../documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)
 
 ## Common Development Patterns
 
@@ -588,7 +607,7 @@ When helping users adapt these skills:
 
 ## Templates for Generation
 
-The `documentation/templates/` folder contains three powerful prompt templates:
+The `documentation/templates/` folder contains four powerful prompt templates:
 
 ### SKILLS_FACTORY_PROMPT.md
 - **Purpose**: Generate complete Claude Skills (folders with SKILL.md + Python files)
@@ -608,10 +627,19 @@ The `documentation/templates/` folder contains three powerful prompt templates:
 - **Output**: Complete prompt builder systems with 10-20 role presets, custom 7-question flow, domain compliance rules, and multi-format output (XML/Claude/ChatGPT/Gemini)
 - **Example**: Generate "Healthcare Prompt Builder" with 15 medical role presets, HIPAA compliance, clinical documentation standards
 
+### MASTER_SLASH_COMMANDS_PROMPT.md
+- **Purpose**: Generate custom Claude Code slash commands following official Anthropic patterns
+- **Use for**: Creating slash commands for business automation, development workflows, compliance checking, research, and specialized tasks
+- **Output**: Self-contained .md files with YAML frontmatter, proper bash permissions, $ARGUMENTS usage, organized in generated-commands/ folders
+- **Key Features**: Three official patterns (Simple, Multi-Phase, Agent-Style), strict validation, kebab-case naming, specific bash permissions (never wildcard), $ARGUMENTS standard (never $1, $2, $3)
+- **Location**: Generated commands go in `generated-commands/[command-name]/` (project-level) or `~/.claude/commands/` (user-level)
+- **Based on**: 6 official Anthropic slash command examples in `documentation/references/`
+
 **Key Differences:**
 - **Skills** = Multi-file capabilities (folders with SKILL.md + Python files)
 - **Agents** = Single-file specialists (.md with YAML frontmatter)
 - **Prompts** = Domain-specific prompt generation systems (meta-prompts that create mega-prompts)
+- **Slash Commands** = Self-contained workflow automation (.md with YAML + bash integration)
 
 ## Installation
 
@@ -632,3 +660,4 @@ Users can install these skills and agents:
 - Full documentation: [claude-skills-instructions.md](claude-skills-instructions.md)
 - Anthropic Skills docs: https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview
 - Skills marketplace: https://github.com/anthropics/skills
+

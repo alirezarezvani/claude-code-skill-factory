@@ -1,9 +1,87 @@
 {
+  "code-review": {
+    "name": "code-review",
+    "structure": "simple",
+    "description": "Comprehensive code review with git analysis focusing on quality, security, and performance",
+    "argument-hint": "[component-path]",
+    "allowed-tools": "Read, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*)",
+    "model": null,
+    "command_body": "## Context\n- Current git status: !`git status`\n- Recent changes: !`git diff HEAD~1`\n- Recent commits: !`git log --oneline -5`\n- Current branch: !`git branch --show-current`\n\n## Your task\n\nPerform comprehensive code review focusing on:\n\n1. **Code Quality**: Check readability, maintainability, best practices\n2. **Security**: Look for vulnerabilities or security issues  \n3. **Performance**: Identify potential bottlenecks\n4. **Testing**: Assess test coverage and quality\n5. **Documentation**: Check if code is properly documented\n\nProvide specific, actionable feedback with line-by-line comments where appropriate.\n\n**Success Criteria**:\n- Detailed quality assessment\n- Security vulnerabilities identified\n- Performance improvements suggested\n- Actionable recommendations",
+    "supporting_folders": []
+  },
+
+  "codebase-analyze": {
+    "name": "codebase-analyze",
+    "structure": "multi-phase",
+    "description": "Generate comprehensive codebase analysis and documentation with full discovery",
+    "argument-hint": null,
+    "allowed-tools": "Bash(find:*), Bash(ls:*), Bash(tree:*), Bash(grep:*), Bash(wc:*), Bash(du:*), Bash(head:*), Bash(tail:*), Bash(cat:*)",
+    "model": null,
+    "command_body": "# Comprehensive Codebase Analysis\n\n## Phase 1: Project Discovery\n\n### Directory Structure\n!`find . -type d -not -path \"./node_modules/*\" -not -path \"./.git/*\" | sort`\n\n### Complete File Tree\n!`tree -a -I 'node_modules|.git|dist|build' -L 4`\n\n### File Count and Size Analysis\n- Total files: !`find . -type f -not -path \"./node_modules/*\" | wc -l`\n- Code files: !`find . -name \"*.js\" -o -name \"*.ts\" -o -name \"*.py\" | grep -v node_modules | wc -l`\n- Project size: !`du -sh . --exclude=node_modules --exclude=.git`\n\n## Phase 2: Configuration Analysis\n\n@package.json\n@tsconfig.json  \n@README.md\n\n## Phase 3: Your Task\n\nBased on all discovered information, create comprehensive analysis:\n\n1. **Project Overview**: Type, tech stack, architecture\n2. **Directory Structure**: Explain each major directory\n3. **File Breakdown**: Core files, configs, data layer, UI, tests\n4. **Architecture Deep Dive**: Data flow, design patterns, dependencies\n5. **Technology Stack**: Frameworks, libraries, tools\n6. **Key Insights**: Quality assessment, improvements, recommendations\n\nAt the end, write all output to codebase_analysis.md",
+    "supporting_folders": []
+  },
+
+  "update-docs": {
+    "name": "update-docs",
+    "structure": "simple",
+    "description": "Automatically update CLAUDE.md and documentation files based on recent code changes",
+    "argument-hint": null,
+    "allowed-tools": "Read, Write, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(find:*), Bash(grep:*)",
+    "model": null,
+    "command_body": "# Update Documentation\n\n## Current State\n@CLAUDE.md\n@README.md\n\n## Git Analysis\n\n### Recent Changes\n!`git log --oneline -10`\n!`git diff HEAD~5 --name-only`\n\n### Modified Files\n!`git diff --name-status HEAD~10 | grep \"^M\"`\n\n### New Files\n!`git diff --name-status HEAD~10 | grep \"^A\"`\n\n## Your Task\n\nBased on current documentation and git analysis:\n\n1. **Preserve Important Content**: Keep core descriptions, setup, architecture\n2. **Integrate Recent Changes**: New features, API changes, config updates\n3. **Update Key Sections**: Overview, architecture, setup, API docs, workflow\n4. **Add Recent Updates Section**: Summary of major changes\n\n**Success Criteria**:\n- Documentation reflects current code state\n- Recent changes documented clearly\n- No outdated information\n- Maintains structure and readability",
+    "supporting_folders": []
+  },
+
+  "openapi-sync": {
+    "name": "openapi-sync",
+    "structure": "agent-style",
+    "description": "Synchronize OpenAPI specification with actual API implementation ensuring complete documentation",
+    "argument-hint": null,
+    "allowed-tools": "Read, Write, Edit, Bash(find:*), Bash(grep:*)  ",
+    "model": null,
+    "command_body": "You are an OpenAPI specification expert ensuring synchronization between REST API implementation and documentation.\n\n**Core Responsibilities:**\n\n1. **API Discovery**\n   - Scan API directory structure for controllers, routes, endpoints\n   - Analyze request/response DTOs and schemas\n   - Identify middleware requirements\n\n2. **Specification Maintenance**\n   - Ensure every API endpoint has corresponding OpenAPI path\n   - Document request bodies, response schemas, error responses\n   - Include proper schema definitions for all DTOs\n\n3. **Schema Synchronization**\n   - Map struct tags to OpenAPI schema properties\n   - Convert types to appropriate OpenAPI formats\n   - Handle nullable fields, optional parameters, defaults\n\n4. **Quality Assurance**\n   - Verify all HTTP status codes documented\n   - Ensure error schemas match actual error handling\n   - Validate path parameters consistency\n\n**Working Process:**\n\n1. Analyze current openapi.yml state\n2. Scan API implementation to build endpoint inventory\n3. Compare implementation with specification\n4. Update OpenAPI spec incrementally\n5. Validate structure and schema references\n6. Bump version number if changes made\n\n**Important Considerations:**\n- Pay attention to DTO layer separation\n- Check Gin route definitions and binding tags\n- Document both success and error scenarios\n- Generate realistic examples",
+    "supporting_folders": []
+  },
+
+  "ultrathink": {
+    "name": "ultrathink",
+    "structure": "agent-style",
+    "description": "Orchestrate multiple specialist sub-agents for complex problem-solving with deep analysis",
+    "argument-hint": "[task-description]",
+    "allowed-tools": "Task, Read, Bash(find:*), Bash(grep:*)",
+    "model": null,
+    "command_body": "## Context\n- Task description: $ARGUMENTS\n- Relevant files will be referenced ad-hoc using @ syntax\n\n## Your Role\n\nYou are the Coordinator Agent orchestrating four specialist sub-agents:\n1. Architect Agent – designs high-level approach\n2. Research Agent – gathers external knowledge and precedent\n3. Coder Agent – writes or edits code\n4. Tester Agent – proposes tests and validation strategy\n\n## Process\n\n1. Think step-by-step, laying out assumptions and unknowns\n2. For each sub-agent, clearly delegate task, capture output, summarize insights\n3. Perform \"ultrathink\" reflection combining all insights\n4. If gaps remain, iterate (spawn sub-agents again)\n\n## Output Format\n\n1. **Reasoning Transcript** (optional) – major decision points\n2. **Final Answer** – actionable steps, code edits, commands (Markdown)\n3. **Next Actions** – bullet list of follow-up items\n\n**Success Criteria**:\n- Complex problem decomposed effectively\n- All sub-agents coordinated successfully\n- Comprehensive solution delivered\n- Clear next steps provided",
+    "supporting_folders": []
+  },
+
+  "deps-audit": {
+    "name": "deps-audit",
+    "structure": "simple",
+    "description": "Audit project dependencies for security vulnerabilities, outdated packages, and license issues",
+    "argument-hint": null,
+    "allowed-tools": "Read, Bash(find:*), Bash(grep:*), Bash(wc:*), Bash(cat:*)",
+    "model": null,
+    "command_body": "## Context\n\n### Package Files\n@package.json\n@package-lock.json\n@requirements.txt\n@Gemfile\n@Cargo.toml\n@go.mod\n\n### Dependency Count\n!`find . -name \"package.json\" -o -name \"requirements.txt\" -o -name \"Gemfile\" | wc -l`\n\n## Your Task\n\nPerform comprehensive dependency audit:\n\n1. **Security Vulnerabilities**\n   - Known CVEs in current versions\n   - Severity classification (Critical/High/Medium/Low)\n   - Affected packages and remediation\n\n2. **Outdated Packages**\n   - Packages behind latest stable version\n   - Breaking changes in updates\n   - Update recommendations with priority\n\n3. **License Compliance**\n   - License types for each dependency\n   - Incompatible licenses\n   - Commercial use restrictions\n\n4. **Dependency Health**\n   - Unmaintained packages\n   - Packages with security history\n   - Alternative recommendations\n\n**Success Criteria**:\n- Complete vulnerability assessment\n- Prioritized update recommendations\n- License compliance verified\n- Health report with actionable items",
+    "supporting_folders": []
+  },
+
+  "metrics-report": {
+    "name": "metrics-report",
+    "structure": "simple",
+    "description": "Generate comprehensive codebase metrics report with quality, complexity, and coverage analysis",
+    "argument-hint": null,
+    "allowed-tools": "Bash(find:*), Bash(grep:*), Bash(wc:*), Bash(cat:*), Bash(head:*)",
+    "model": null,
+    "command_body": "## Context\n\n### Code Statistics\n!`find . -name \"*.js\" -o -name \"*.ts\" -o -name \"*.py\" | grep -v node_modules | wc -l`\n!`find . -name \"*.js\" -o -name \"*.ts\" -o -name \"*.py\" | grep -v node_modules | xargs wc -l | tail -1`\n\n### Test Files\n!`find . -name \"*test*\" -o -name \"*spec*\" | grep -v node_modules | wc -l`\n\n### Component Count  \n!`find . -path \"*/components/*\" | wc -l`\n\n## Your Task\n\nGenerate comprehensive metrics report:\n\n1. **Code Volume Metrics**\n   - Total lines of code\n   - Lines per file average\n   - Files by type breakdown\n   - Largest files identification\n\n2. **Complexity Metrics**\n   - Function count and average size\n   - Deep nesting indicators\n   - Long functions (>50 lines)\n   - High complexity areas\n\n3. **Quality Metrics**\n   - Test coverage percentage\n   - Test-to-code ratio\n   - Documentation coverage\n   - Code duplication indicators\n\n4. **Component Metrics**\n   - Component count by type\n   - Component size distribution\n   - Reusability score\n\n**Success Criteria**:\n- Complete metrics calculated\n- Quality trends identified\n- Improvement areas highlighted\n- Visual representation (tables/charts)",
+    "supporting_folders": []
+  },
+
   "research-business": {
     "name": "research-business",
+    "structure": "simple",
     "description": "Comprehensive business and market research with competitor analysis and strategic insights",
     "argument-hint": "[company/market] [industry]",
-    "allowed-tools": "Read, Bash, Grep",
+    "allowed-tools": "Read, Bash(find:*), Bash(grep:*)",
     "model": null,
     "command_body": "Conduct comprehensive business research for \"$ARGUMENTS\":\n\n1. **Market Analysis**:\n   - Market size, growth trends, and dynamics\n   - Key players and market share distribution\n   - Emerging trends and future outlook\n   - Regulatory environment and compliance requirements\n\n2. **Competitive Analysis**:\n   - Direct and indirect competitors\n   - SWOT analysis for top 3-5 competitors\n   - Competitive positioning and differentiation\n   - Pricing strategies and business models\n\n3. **Opportunity Identification**:\n   - Market gaps and underserved segments\n   - Innovation opportunities\n   - Strategic recommendations\n   - Risk assessment\n\n4. **Deliverable**:\n   - Executive summary (2-3 pages)\n   - Detailed market analysis\n   - Competitor profiles\n   - Strategic recommendations with action items\n\n**Success Criteria**:\n- Comprehensive market overview with data-driven insights\n- Actionable competitive intelligence\n- Clear strategic recommendations with prioritization",
     "supporting_folders": []
@@ -11,9 +89,10 @@
 
   "research-content": {
     "name": "research-content",
+    "structure": "simple",
     "description": "Multi-platform content trend analysis for data-driven content strategy and SEO optimization",
     "argument-hint": "[topic] [platforms]",
-    "allowed-tools": "Read, Bash",
+    "allowed-tools": "Read, Bash(find:*)",
     "model": null,
     "command_body": "Analyze content trends for \"$ARGUMENTS\" across multiple platforms:\n\n1. **Platform Analysis** (10+ platforms):\n   - Google Trends: Search volume, rising queries, regional interest\n   - Reddit: Subreddit activity, top posts, discussion themes\n   - YouTube: Video performance, trending content, engagement\n   - Medium: Article trends, claps, reading time\n   - LinkedIn: Professional content, engagement patterns\n   - X (Twitter): Hashtag performance, viral topics\n   - Substack: Newsletter trends, subscriber growth\n   - Blogs: Top-ranking posts, backlink profiles\n\n2. **User Intent Analysis**:\n   - Informational intent (learning, research)\n   - Commercial intent (comparison, evaluation)\n   - Transactional intent (purchase, action)\n\n3. **Content Gap Identification**:\n   - Underserved topics with high demand\n   - Question gaps (what people ask but isn't answered well)\n   - Format opportunities (video vs text vs infographic)\n\n4. **SEO-Optimized Outline**:\n   - H1/H2/H3 structure based on search intent\n   - Keyword integration recommendations\n   - Content length and format suggestions\n   - Platform-specific publishing strategy\n\n**Success Criteria**:\n- Comprehensive trend analysis across 5+ platforms\n- Data-driven content strategy with SEO optimization\n- Actionable outline ready for content creation",
     "supporting_folders": []
@@ -21,6 +100,7 @@
 
   "medical-translate": {
     "name": "medical-translate",
+    "structure": "simple",
     "description": "Translate medical terminology to 8th-10th grade reading level with accuracy validation (German/English)",
     "argument-hint": "[medical-term] [de|en]",
     "allowed-tools": "Read",
@@ -31,6 +111,7 @@
 
   "compliance-audit": {
     "name": "compliance-audit",
+    "structure": "simple",
     "description": "Audit code for HIPAA/GDPR/DSGVO compliance with detailed findings and recommendations",
     "argument-hint": "[code-path] [hipaa|gdpr|dsgvo|all]",
     "allowed-tools": "Read, Grep, Task",
@@ -41,9 +122,10 @@
 
   "api-build": {
     "name": "api-build",
+    "structure": "simple",
     "description": "Generate complete API client integration with error handling, authentication, and comprehensive tests",
     "argument-hint": "[api-name] [endpoints]",
-    "allowed-tools": "Read, Write, Edit, Bash, Task",
+    "allowed-tools": "Read, Write, Edit, Bash(find:*), Task",
     "model": null,
     "command_body": "Generate API client for \"$ARGUMENTS\":\n\n1. **API Client Class**:\n   - Base client with configuration\n   - Authentication handling (API key, OAuth, JWT)\n   - Request/response formatting\n   - Error handling with retries\n   - Rate limiting support\n\n2. **Endpoint Methods**:\n   - Generate method for each endpoint\n   - Type hints for all parameters\n   - Comprehensive docstrings\n   - Input validation\n   - Response parsing\n\n3. **Error Handling**:\n   - Network errors (timeout, connection)\n   - HTTP errors (4xx, 5xx)\n   - Rate limit handling\n   - Retry logic with exponential backoff\n   - Logging and debugging\n\n4. **Testing**:\n   - Unit tests (mock API responses)\n   - Integration tests (real API calls for dev)\n   - Test fixtures and sample data\n   - Coverage >80%\n\n5. **Documentation**:\n   - README with usage examples\n   - API reference for all methods\n   - Authentication setup guide\n   - Error handling documentation\n\n**Success Criteria**:\n- Complete, working API client generated\n- Error handling comprehensive\n- Tests pass with >80% coverage\n- Documentation clear and complete",
     "supporting_folders": ["examples", "scripts"]
@@ -51,9 +133,10 @@
 
   "test-auto": {
     "name": "test-auto",
+    "structure": "simple",
     "description": "Auto-generate comprehensive test suite with unit, integration, and e2e tests plus coverage analysis",
     "argument-hint": "[file-path] [unit|integration|e2e|all]",
-    "allowed-tools": "Read, Write, Bash",
+    "allowed-tools": "Read, Write, Bash(find:*), Bash(grep:*)",
     "model": null,
     "command_body": "Generate test suite for \"$ARGUMENTS\":\n\n1. **Analyze Code**:\n   - Read file/module to test\n   - Identify functions, classes, methods\n   - Determine dependencies and imports\n   - Map test coverage needs\n\n2. **Generate Test Cases**:\n   - **Happy path**: Normal, expected usage\n   - **Edge cases**: Boundary conditions, special inputs\n   - **Error cases**: Invalid inputs, exceptions\n   - **Integration**: Component interactions\n\n3. **Test Implementation**:\n   - Use appropriate framework (pytest, jest, etc.)\n   - Add test fixtures and mocks\n   - Generate sample test data\n   - Add setup/teardown logic\n\n4. **Coverage Analysis**:\n   - Run coverage report\n   - Identify untested code\n   - Recommend additional tests\n   - Target: >80% coverage\n\n5. **Documentation**:\n   - Test file organization\n   - How to run tests\n   - How to interpret results\n\n**Success Criteria**:\n- Comprehensive test suite generated\n- All test types covered (unit/integration/e2e)\n- >80% code coverage achieved\n- Tests pass on first run",
     "supporting_folders": ["examples"]
@@ -61,6 +144,7 @@
 
   "docs-generate": {
     "name": "docs-generate",
+    "structure": "simple",
     "description": "Auto-generate comprehensive documentation including API docs, README, and architecture diagrams",
     "argument-hint": "[code-path] [api|readme|architecture|all]",
     "allowed-tools": "Read, Write, Grep",
@@ -71,6 +155,7 @@
 
   "knowledge-mine": {
     "name": "knowledge-mine",
+    "structure": "simple",
     "description": "Extract and structure insights from documents into FAQs, summaries, and knowledge base articles",
     "argument-hint": "[doc-path] [faq|summary|kb|all]",
     "allowed-tools": "Read, Grep",
@@ -81,6 +166,7 @@
 
   "workflow-analyze": {
     "name": "workflow-analyze",
+    "structure": "simple",
     "description": "Analyze business workflows and provide optimization recommendations with automation opportunities",
     "argument-hint": "[workflow-description]",
     "allowed-tools": "Read, Task",
@@ -89,18 +175,9 @@
     "supporting_folders": []
   },
 
-  "compliance-audit": {
-    "name": "compliance-audit",
-    "description": "Audit code for HIPAA/GDPR/DSGVO compliance with detailed findings and recommendations",
-    "argument-hint": "[code-path] [hipaa|gdpr|dsgvo|all]",
-    "allowed-tools": "Read, Grep, Task",
-    "model": null,
-    "command_body": "Audit \"$ARGUMENTS\" for regulatory compliance:\n\n1. **Determine Standard** (from arguments):\n   - HIPAA (US healthcare)\n   - GDPR (EU data protection)\n   - DSGVO (German data protection)\n   - All (comprehensive check)\n\n2. **HIPAA Compliance Check** (if applicable):\n   - PHI handling: Encryption at rest/transit\n   - Access controls: Authentication, authorization\n   - Audit logging: All PHI access tracked\n   - Breach notification: Procedures in place\n\n3. **GDPR/DSGVO Compliance Check** (if applicable):\n   - Data minimization: Only necessary data collected\n   - Consent management: Explicit consent for processing\n   - Data subject rights: Access, erasure, portability\n   - Retention policies: Automated deletion workflows\n\n4. **Generate Report**:\n   - ✅ Compliant areas\n   - ❌ Non-compliant areas (with severity)\n   - ⚠️ Recommendations for improvement\n   - Priority actions (P0/P1/P2)\n\n**Success Criteria**:\n- Comprehensive compliance assessment completed\n- Clear findings with specific code references\n- Actionable recommendations with priority levels",
-    "supporting_folders": ["standards"]
-  },
-
   "batch-agents": {
     "name": "batch-agents",
+    "structure": "agent-style",
     "description": "Launch and coordinate multiple specialized agents for complex multi-faceted tasks",
     "argument-hint": "[agent-names] [task-description]",
     "allowed-tools": "Task",

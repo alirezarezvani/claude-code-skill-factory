@@ -86,17 +86,27 @@ claude-code-skills-factory/
 │   ├── sensitivity_analysis.py
 │   ├── brand_guidelines.md
 │   └── apply_brand.py
-├── generated-skills/                      # Production-ready generated skills
-│   ├── aws-solution-architect/            # AWS architecture (53 KB)
-│   ├── content-trend-researcher/          # Multi-platform content research (35 KB)
-│   ├── ms365-tenant-manager/              # Microsoft 365 administration (40 KB)
-│   ├── psychology-advisor/                # Mental wellness & CBT techniques (31 KB)
-│   ├── agent-factory/                     # Claude Code agent generation (12 KB)
-│   └── prompt-factory/                    # Prompt generation powerhouse (427 KB)
-└── documentation/
-    └── templates/
-        ├── SKILLS_FACTORY_PROMPT.md       # Template for generating Skills
-        └── AGENTS_FACTORY_PROMPT.md       # Template for generating Agents
+├── documentation/
+│   ├── references/                        # Official documentation examples
+│   │   ├── slash-commands-instructions.md
+│   │   ├── slash-command-code-review-example.md
+│   │   ├── slash-command-codebase-analysis-example.md
+│   │   ├── slash-command-open-api-example.md
+│   │   ├── slash-command-update-claude-md-example.md
+│   │   └── slash-commands-ultrathink-example.md
+│   └── templates/                         # Factory prompt templates
+│       ├── SKILLS_FACTORY_PROMPT.md       # Generate Claude Skills (multi-file)
+│       ├── AGENTS_FACTORY_PROMPT.md       # Generate Claude Code Agents (single .md)
+│       ├── PROMPTS_FACTORY_PROMPT.md      # Generate domain prompt builders
+│       └── MASTER_SLASH_COMMANDS_PROMPT.md # Generate slash commands (official patterns)
+└── generated-skills/                      # Production-ready generated skills
+    ├── aws-solution-architect/            # AWS architecture (53 KB)
+    ├── content-trend-researcher/          # Multi-platform content research (35 KB)
+    ├── ms365-tenant-manager/              # Microsoft 365 administration (40 KB)
+    ├── psychology-advisor/                # Mental wellness & CBT techniques (31 KB)
+    ├── agent-factory/                     # Claude Code agent generation (12 KB)
+    ├── prompt-factory/                    # Prompt generation powerhouse (427 KB)
+    └── slash-command-factory/             # Slash command generation - 17 presets (26 KB)
 ```
 
 ## Quick Start
@@ -258,8 +268,8 @@ Copy the generated prompt and use it in:
 
 **See**: [generated-skills/prompt-factory/](generated-skills/prompt-factory/) for complete documentation
 
-### 8. Slash Command Factory
-**Purpose**: Generate custom Claude Code slash commands for workflows, automation, and productivity
+### 8. Slash Command Factory (v2.0)
+**Purpose**: Generate custom Claude Code slash commands following official Anthropic patterns for workflows, automation, and productivity
 
 **Files**:
 - [SKILL.md](generated-skills/slash-command-factory/SKILL.md)
@@ -269,24 +279,31 @@ Copy the generated prompt and use it in:
 - [HOW_TO_USE.md](generated-skills/slash-command-factory/HOW_TO_USE.md)
 
 **Capabilities**:
-- 10 powerful preset slash commands (business research, content analysis, medical translation, compliance audit, API building, test automation, documentation generation, knowledge extraction, workflow optimization, agent coordination)
-- 5-7 question flow for custom command creation
-- Always uses `$ARGUMENTS` for consistent argument handling
+- **17 preset slash commands** (10 original + 7 official Anthropic examples): business research, content analysis, medical translation, compliance audit, API building, test automation, documentation generation, knowledge extraction, workflow optimization, agent coordination, code review, codebase analysis, OpenAPI sync, ultrathink coordination
+- **Three official command patterns integrated**:
+  - **Simple Pattern** (code-review): Context → Task (straightforward workflows)
+  - **Multi-Phase Pattern** (codebase-analyze): Discovery → Analysis → Task (complex documentation)
+  - **Agent-Style Pattern** (ultrathink, openapi-sync): Role → Process → Guidelines (expert coordination)
+- **5-7 question flow** for custom command creation with auto-detect structure pattern
+- **Comprehensive validation** (4 layers): Command name (kebab-case, 2-4 words), bash permissions (specific commands only, NEVER wildcard `Bash`), arguments usage ($ARGUMENTS, never $1/$2/$3), YAML structure
+- **Smart generation**: Auto-detect command structure, auto-generate bash permissions (git commands, discovery commands, comprehensive commands), automatic kebab-case naming conversion
 - Generates properly formatted command .md files with YAML frontmatter
 - Outputs to `generated-commands/[name]/` in user's project
 - Excellent folder organization (all .md in root, standards/examples/scripts/ separate)
-- Validation of YAML frontmatter, argument syntax, and folder structure
 
-**Presets**:
-- Business Intelligence: /research-business, /research-content
-- Healthcare & Compliance: /medical-translate, /compliance-audit
-- Development: /api-build, /test-auto
-- Documentation: /docs-generate, /knowledge-mine
-- Productivity: /workflow-analyze, /batch-agents
+**Official Presets**:
+- **Business Intelligence**: /research-business, /research-content
+- **Healthcare & Compliance**: /medical-translate, /compliance-audit
+- **Development**: /api-build, /test-auto, /code-review, /openapi-sync
+- **Documentation**: /docs-generate, /knowledge-mine, /update-docs
+- **Analysis**: /codebase-analyze, /deps-audit, /metrics-report
+- **Productivity**: /workflow-analyze, /batch-agents, /ultrathink
 
-**Pattern**: Preset selection OR custom generation (5-7 questions) → YAML frontmatter → validation → organized output
+**Pattern**: Preset selection (17 commands) OR custom generation (5-7 questions) → auto-detect structure pattern → YAML frontmatter creation → strict validation → organized output
 
-**See**: [HOW_TO_USE.md](generated-skills/slash-command-factory/HOW_TO_USE.md) for complete usage guide
+**Based on**: 6 official Anthropic slash command examples in [documentation/references/](documentation/references/)
+
+**See**: [HOW_TO_USE.md](generated-skills/slash-command-factory/HOW_TO_USE.md) for complete usage guide and [MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md) for the master template
 
 ## Example Skills Included
 
@@ -777,11 +794,19 @@ This repository provides examples and templates for creating Claude Skills. The 
 
 ## Version
 
-**Current Version**: 1.2.0
-**Last Updated**: October 23, 2025
-**Compatible With**: Claude Skills (all platforms) and Claude Code Agents
+**Current Version**: 1.3.0
+**Last Updated**: October 29, 2025
+**Compatible With**: Claude Skills (all platforms), Claude Code Agents, and Claude Code Slash Commands
 
-**Latest Changes** (v1.2.0):
+**Latest Changes** (v1.3.0):
+- Added MASTER_SLASH_COMMANDS_PROMPT.md template - Comprehensive master template for generating slash commands following official Anthropic patterns
+- Enhanced Slash Command Factory to v2.0 (26 KB) - Now includes 17 presets (10 original + 7 official Anthropic examples)
+- Integrated three official command structure patterns: Simple (code-review), Multi-Phase (codebase-analyze), Agent-Style (ultrathink, openapi-sync)
+- Added comprehensive four-layer validation: command name (kebab-case), bash permissions (specific only, never wildcard), arguments usage ($ARGUMENTS), YAML structure
+- Added documentation/references/ folder with 6 official Anthropic slash command examples
+- Smart auto-detection of command structure patterns and automatic bash permission generation
+
+**Previous Changes** (v1.2.0):
 - Added Prompt Factory skill (427 KB) - World-class prompt generation with 69 presets across 15 domains
 - Expanded coverage: Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media domains
 - Multi-format output support (XML/Claude/ChatGPT/Gemini)
@@ -793,10 +818,12 @@ This repository provides examples and templates for creating Claude Skills. The 
 **Create Skills**: Use [SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)
 **Create Agents**: Use [AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
 **Create Prompt Builders**: Use [PROMPTS_FACTORY_PROMPT.md](documentation/templates/PROMPTS_FACTORY_PROMPT.md)
+**Create Slash Commands**: Use [MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)
 **See Examples**: Check [claude-skills-examples/](claude-skills-examples/)
 **Generated Skills**: Explore [generated-skills/](generated-skills/)
+**Official Slash Command Examples**: See [documentation/references/](documentation/references/)
 **Read Guide**: See [CLAUDE.md](CLAUDE.md) for repository structure
 **Learn More (Skills)**: Read [claude-skills-instructions.md](claude-skills-instructions.md)
 **Learn More (Agents)**: Read [claude-agents-instructions.md](claude-agents-instructions.md)
 
-**Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills, agents or master prompts for your Claude Code project!
+**Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills, agents, prompts, or slash commands for your Claude Code project!

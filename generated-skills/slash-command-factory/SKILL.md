@@ -23,6 +23,261 @@ This skill helps you create custom slash commands for Claude Code by:
 
 ---
 
+## Official Command Structure Patterns
+
+This skill generates commands following **three official patterns** from Anthropic documentation:
+
+### Pattern A: Simple (Context → Task)
+
+**Best for**: Straightforward tasks with clear input/output
+**Example**: Code review, file updates, simple analysis
+**Official Reference**: code-review.md
+
+**Structure**:
+```markdown
+---
+allowed-tools: Bash(git diff:*), Bash(git log:*)
+description: Purpose description
+---
+
+## Context
+- Current state: !`bash command`
+- Additional data: !`another command`
+
+## Your task
+[Clear instructions with numbered steps]
+[Success criteria]
+```
+
+**When to use**:
+- Simple, focused tasks
+- Quick analysis or reviews
+- Straightforward workflows
+- 1-3 bash commands for context
+
+---
+
+### Pattern B: Multi-Phase (Discovery → Analysis → Task)
+
+**Best for**: Complex discovery and documentation tasks
+**Example**: Codebase analysis, comprehensive audits, system mapping
+**Official Reference**: codebase-analysis.md
+
+**Structure**:
+```markdown
+---
+allowed-tools: Bash(find:*), Bash(tree:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(du:*)
+description: Comprehensive purpose
+---
+
+# Command Title
+
+## Phase 1: Project Discovery
+### Directory Structure
+!`find . -type d | sort`
+
+### File Count Analysis
+!`find . -type f | wc -l`
+
+## Phase 2: Detailed Analysis
+[More discovery commands]
+[File references with @]
+
+## Phase 3: Your Task
+Based on all discovered information, create:
+
+1. **Deliverable 1**
+   - Subsection
+   - Details
+
+2. **Deliverable 2**
+   - Subsection
+   - Details
+
+At the end, write output to [filename].md
+```
+
+**When to use**:
+- Comprehensive analysis needed
+- Multiple discovery phases
+- Large amounts of context gathering
+- 10+ bash commands for data collection
+- Generate detailed documentation files
+
+---
+
+### Pattern C: Agent-Style (Role → Process → Guidelines)
+
+**Best for**: Specialized expert roles and coordination
+**Example**: Domain experts, orchestrators, specialized advisors
+**Official Reference**: openapi-expert.md
+
+**Structure**:
+```markdown
+---
+name: command-name
+description: |
+  Multi-line description for complex purpose
+  explaining specialized role
+color: yellow
+---
+
+You are a [specialized role] focusing on [domain expertise].
+
+**Core Responsibilities:**
+
+1. **Responsibility Area 1**
+   - Specific tasks
+   - Expected outputs
+
+2. **Responsibility Area 2**
+   - Specific tasks
+   - Expected outputs
+
+**Working Process:**
+
+1. [Step 1 in workflow]
+2. [Step 2 in workflow]
+3. [Step 3 in workflow]
+
+**Important Considerations:**
+
+- [Guideline 1]
+- [Guideline 2]
+- [Constraint or best practice]
+
+When you encounter [scenario], [action to take].
+```
+
+**When to use**:
+- Need specialized domain expertise
+- Orchestrating complex workflows
+- Coordinating multiple sub-processes
+- Acting as expert advisor
+- Require specific procedural guidelines
+
+---
+
+## Comprehensive Naming Convention
+
+### Command File Naming Rules
+
+All slash command files MUST follow kebab-case convention:
+
+**Format**: `[verb]-[noun].md`, `[noun]-[verb].md`, or `[domain]-[action].md`
+
+**Rules**:
+1. **Case**: Lowercase only with hyphens as separators
+2. **Length**: 2-4 words maximum
+3. **Characters**: Only `[a-z0-9-]` allowed (letters, numbers, hyphens)
+4. **Start/End**: Must begin and end with letter or number (not hyphen)
+5. **No**: Spaces, underscores, camelCase, TitleCase, or special characters
+
+---
+
+### Conversion Algorithm
+
+**User Input** → **Command Name**
+
+```
+Input: "Analyze customer feedback and generate insights"
+↓
+1. Extract action: "analyze"
+2. Extract target: "feedback"
+3. Combine: "analyze-feedback"
+4. Validate: Matches [a-z0-9-]+ pattern ✓
+5. Output: analyze-feedback.md
+```
+
+**More Examples**:
+- "Review pull requests" → `pr-review.md` or `review-pr.md`
+- "Generate API documentation" → `api-document.md` or `document-api.md`
+- "Update README files" → `update-readme.md` or `readme-update.md`
+- "Audit security compliance" → `security-audit.md` or `compliance-audit.md`
+- "Research market trends" → `research-market.md` or `market-research.md`
+- "Analyze code quality" → `code-analyze.md` or `analyze-code.md`
+
+---
+
+### Official Examples (From Anthropic Docs)
+
+**Correct**:
+- ✅ `code-review.md` (verb-noun)
+- ✅ `codebase-analysis.md` (noun-noun compound)
+- ✅ `update-claude-md.md` (verb-noun-qualifier)
+- ✅ `openapi-expert.md` (domain-role)
+
+**Incorrect**:
+- ❌ `code_review.md` (snake_case - wrong)
+- ❌ `CodeReview.md` (PascalCase - wrong)
+- ❌ `codeReview.md` (camelCase - wrong)
+- ❌ `review.md` (too vague - needs target)
+- ❌ `analyze-customer-feedback-data.md` (too long - >4 words)
+
+---
+
+## Bash Permission Patterns
+
+### Critical Rule: No Wildcards
+
+**❌ NEVER ALLOWED**:
+```yaml
+allowed-tools: Bash
+```
+This wildcard permission is **prohibited** per official Anthropic patterns.
+
+**✅ ALWAYS REQUIRED**:
+```yaml
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*)
+```
+Must specify **exact commands** with wildcards only for subcommands.
+
+---
+
+### Official Permission Patterns
+
+Based on Anthropic's documented examples:
+
+**Git Operations** (code-review, update-docs):
+```yaml
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git branch:*), Bash(git add:*), Bash(git commit:*)
+```
+
+**File Discovery** (codebase-analysis):
+```yaml
+allowed-tools: Bash(find:*), Bash(tree:*), Bash(ls:*), Bash(du:*)
+```
+
+**Content Analysis** (comprehensive discovery):
+```yaml
+allowed-tools: Bash(grep:*), Bash(wc:*), Bash(head:*), Bash(tail:*), Bash(cat:*)
+```
+
+**Data Processing** (custom analysis):
+```yaml
+allowed-tools: Bash(awk:*), Bash(sed:*), Bash(sort:*), Bash(uniq:*)
+```
+
+**Combined Patterns** (multi-phase commands):
+```yaml
+allowed-tools: Bash(find:*), Bash(tree:*), Bash(ls:*), Bash(grep:*), Bash(wc:*), Bash(du:*), Bash(head:*), Bash(tail:*), Bash(cat:*), Bash(touch:*)
+```
+
+---
+
+### Permission Selection Guide
+
+| Command Type | Bash Permissions | Example Commands |
+|--------------|------------------|------------------|
+| **Git Commands** | `git status, git diff, git log, git branch` | code-review, commit-assist |
+| **Discovery** | `find, tree, ls, du` | codebase-analyze, structure-map |
+| **Analysis** | `grep, wc, head, tail, cat` | search-code, count-lines |
+| **Update** | `git diff, find, grep` | update-docs, sync-config |
+| **Data Processing** | `awk, sed, sort, uniq` | parse-data, format-output |
+| **Comprehensive** | All of the above | full-audit, system-analyze |
+
+---
+
 ## Two Paths to Generate Commands
 
 ### Path 1: Quick-Start Presets (30 seconds)
@@ -97,14 +352,23 @@ Available tools:
 - **Read** - Read files
 - **Write** - Create files
 - **Edit** - Modify files
-- **Bash** - Execute shell commands
+- **Bash** - Execute shell commands (MUST specify exact commands)
 - **Grep** - Search code
 - **Glob** - Find files by pattern
 - **Task** - Launch agents
 
-Examples:
-- Research command: Read, Bash (for web research)
+**CRITICAL**: For Bash, you MUST specify exact commands, not wildcards.
+
+**Bash Examples**:
+- ✅ Bash(git status:*), Bash(git diff:*), Bash(git log:*)
+- ✅ Bash(find:*), Bash(tree:*), Bash(ls:*)
+- ✅ Bash(grep:*), Bash(wc:*), Bash(head:*)
+- ❌ Bash (wildcard not allowed per official patterns)
+
+**Tool Combination Examples**:
+- Git command: Read, Bash(git status:*), Bash(git diff:*)
 - Code generator: Read, Write, Edit
+- Discovery command: Bash(find:*), Bash(tree:*), Bash(grep:*)
 - Analysis command: Read, Grep, Task (launch agents)
 
 Your tools (comma-separated): ___"

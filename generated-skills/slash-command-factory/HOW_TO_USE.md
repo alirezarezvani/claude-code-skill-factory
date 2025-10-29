@@ -43,6 +43,47 @@ Create a command for analyzing customer feedback and generating product insights
 
 ---
 
+## Official Command Structures
+
+This skill uses **three official patterns** from Anthropic documentation:
+
+### Simple Pattern (code-review)
+- **Best for**: Straightforward tasks with clear input/output
+- **Structure**: Context → Task
+- **Example Presets**: code-review, deps-audit, metrics-report
+
+### Multi-Phase Pattern (codebase-analyze)
+- **Best for**: Complex discovery and documentation
+- **Structure**: Discovery → Analysis → Task
+- **Example Preset**: codebase-analyze
+
+### Agent-Style Pattern (ultrathink)
+- **Best for**: Specialized expert roles and coordination
+- **Structure**: Role → Process → Guidelines
+- **Example Presets**: ultrathink, openapi-sync, batch-agents
+
+**The skill auto-detects** which pattern fits your command purpose!
+
+---
+
+## Naming Convention
+
+All commands follow **kebab-case** (lowercase with hyphens):
+
+**Valid**:
+- ✅ `code-review`
+- ✅ `api-document`
+- ✅ `update-docs`
+
+**Invalid**:
+- ❌ `code_review` (underscores)
+- ❌ `CodeReview` (CamelCase)
+- ❌ `review` (too short)
+
+The skill **automatically converts** your purpose to valid command names!
+
+---
+
 ## Installation
 
 **After generation**, commands are in: `generated-commands/[command-name]/`

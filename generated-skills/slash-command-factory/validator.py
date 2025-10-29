@@ -1,10 +1,12 @@
 """
 Slash Command Validator
 Validates generated slash command files for proper format.
+Enforces official Anthropic patterns and best practices.
 """
 
 import re
-from typing import Dict, List
+import os
+from typing import Dict, List, Any
 
 
 class CommandValidator:
@@ -155,4 +157,168 @@ class CommandValidator:
         return {
             'valid': len(issues) == 0,
             'issues': issues
+        }
+
+    def validate_bash_permissions(self, allowed_tools: str) -> Dict[str, Any]:
+        """
+        Validate bash permissions are specific (not wildcards).
+
+        Official rule from Anthropic: NEVER use 'Bash' alone - always specify commands.
+
+        Args:
+            allowed_tools: The allowed-tools string from YAML
+
+        Returns:
+            Dict with validation results including errors and warnings
+        """
+        if not allowed_tools:
+            return {'valid': True, 'errors': [], 'warnings': []}
+
+        errors = []
+        warnings = []
+
+        # Check for wildcard Bash (CRITICAL ERROR - not allowed)
+        # Must check if 'Bash' appears without parentheses
+        if re.search(r'\bBash\b(?!\()', allowed_tools):
+            errors.append("❌ CRITICAL: Wildcard 'Bash' not allowed per official patterns. Must specify exact commands: Bash(git status:*)")
+
+        # Extract bash commands
+        bash_commands = re.findall(r'Bash\(([^)]+)\)', allowed_tools)
+
+        # Validate each command against whitelist
+        valid_commands = [
+            'git', 'find', 'tree', 'ls', 'grep', 'wc', 'du',
+            'head', 'tail', 'cat', 'awk', 'sed', 'sort', 'uniq', 'touch'
+        ]
+
+        for cmd in bash_commands:
+            base_cmd = cmd.split(':')[0].strip()
+            if base_cmd not in valid_commands:
+                warnings.append(f"⚠️ Command '{base_cmd}' not in official patterns. Verify necessity.")
+
+        return {
+            'valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings
+        }
+
+    def validate_command_name(self, name: str) -> Dict[str, Any]:
+        """
+        Validate command name follows kebab-case convention.
+
+        Official rules from Anthropic docs:
+        - Must be kebab-case (lowercase with hyphens)
+        - Length: 2-4 words
+        - Characters: [a-z0-9-] only
+        - Must start and end with letter/number
+
+        Args:
+            name: Command name to validate
+
+        Returns:
+            Dict with validation results
+        """
+        errors = []
+
+        # Check format (kebab-case with 2-4 words)
+        if not re.match(r'^[a-z0-9]+(-[a-z0-9]+){1,3}$', name):
+            errors.append(f"❌ Command name '{name}' must be kebab-case with 2-4 words (e.g., 'code-review')")
+
+        # Check length
+        word_count = len(name.split('-'))
+        if word_count < 2:
+            errors.append(f"❌ Command name too short: needs at least 2 words (e.g., 'api-build')")
+        elif word_count > 4:
+            errors.append(f"❌ Command name too long: maximum 4 words, found {word_count}")
+
+        # Check invalid characters
+        if re.search(r'[^a-z0-9-]', name):
+            errors.append(f"❌ Command name contains invalid characters. Use only [a-z0-9-]")
+
+        # Check for underscores (common mistake)
+        if '_' in name:
+            suggested = name.replace('_', '-')
+            errors.append(f"❌ Use hyphens not underscores. Try: '{suggested}'")
+
+        # Check for camelCase or PascalCase
+        if re.search(r'[A-Z]', name):
+            errors.append(f"❌ Command name must be lowercase only. No CamelCase or PascalCase.")
+
+        return {
+            'valid': len(errors) == 0,
+            'errors': errors
+        }
+
+    def validate_arguments_usage(self, command_content: str) -> Dict[str, Any]:
+        """
+        Validate uses $ARGUMENTS (not $1, $2, $3).
+
+        Official pattern from Anthropic: All examples use $ARGUMENTS.
+
+        Args:
+            command_content: Full command file content
+
+        Returns:
+            Dict with validation results
+        """
+        warnings = []
+        errors = []
+
+        # Check for positional arguments (CRITICAL - wrong pattern)
+        positional_matches = re.findall(r'\$[0-9]+', command_content)
+        if positional_matches:
+            errors.append(f"❌ Found positional arguments: {positional_matches}. Official pattern uses $ARGUMENTS")
+
+        # Check for $ARGUMENTS without argument-hint
+        if '$ARGUMENTS' in command_content and 'argument-hint:' not in command_content:
+            warnings.append("⚠️ Uses $ARGUMENTS but missing 'argument-hint' in YAML frontmatter")
+
+        return {
+            'valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings
+        }
+
+    def validate_comprehensive(self, command_name: str, command_content: str, allowed_tools: str) -> Dict[str, Any]:
+        """
+        Run all validations comprehensively.
+
+        Args:
+            command_name: Name of the command
+            command_content: Full command file content
+            allowed_tools: The allowed-tools string
+
+        Returns:
+            Comprehensive validation results
+        """
+        all_errors = []
+        all_warnings = []
+
+        # Validate command name
+        name_result = self.validate_command_name(command_name)
+        if not name_result['valid']:
+            all_errors.extend(name_result['errors'])
+
+        # Validate bash permissions
+        bash_result = self.validate_bash_permissions(allowed_tools)
+        if not bash_result['valid']:
+            all_errors.extend(bash_result['errors'])
+        all_warnings.extend(bash_result['warnings'])
+
+        # Validate arguments usage
+        args_result = self.validate_arguments_usage(command_content)
+        if not args_result['valid']:
+            all_errors.extend(args_result['errors'])
+        all_warnings.extend(args_result['warnings'])
+
+        # Run standard validation
+        standard_result = self.validate(command_content)
+        if not standard_result['valid']:
+            all_errors.extend(standard_result['issues'])
+
+        return {
+            'valid': len(all_errors) == 0,
+            'errors': all_errors,
+            'warnings': all_warnings,
+            'summary': f"{'✅ VALID' if len(all_errors) == 0 else '❌ INVALID'} - {len(all_errors)} errors, {len(all_warnings)} warnings"
         }

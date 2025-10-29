@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2025-10-29
+
+### Added
+- **MASTER_SLASH_COMMANDS_PROMPT.md** - Comprehensive master template (~1500 lines) for generating slash commands following official Anthropic patterns
+- **documentation/references/** folder - 6 official Anthropic slash command examples for pattern reference
+- **Three official command structure patterns** integrated into slash-command-factory:
+  - Simple Pattern (code-review) - Context → Task for straightforward workflows
+  - Multi-Phase Pattern (codebase-analyze) - Discovery → Analysis → Task for complex documentation
+  - Agent-Style Pattern (ultrathink, openapi-sync) - Role → Process → Guidelines for expert coordination
+- **7 new official presets** - code-review, codebase-analyze, update-docs, openapi-sync, ultrathink, deps-audit, metrics-report
+- **Comprehensive four-layer validation** - Command name (kebab-case), bash permissions (specific only), arguments usage ($ARGUMENTS), YAML structure
+- **Smart generation features**:
+  - Auto-detect command structure pattern based on purpose
+  - Auto-generate bash permissions (git, discovery, comprehensive patterns)
+  - Automatic kebab-case naming conversion with validation
+- **Test command** - marketing-research.md generated and validated as demonstration
+
+### Changed
+- **Slash Command Factory enhanced to v2.0** (26 KB)
+  - Expanded from 10 to 17 presets (10 original + 7 official examples)
+  - SKILL.md enhanced with official patterns documentation (~1000 lines)
+  - command_generator.py enhanced with structure detection, naming validation, bash permission generation
+  - validator.py enhanced with comprehensive four-layer validation system
+  - presets.json expanded with 7 new official preset commands
+  - HOW_TO_USE.md updated with pattern guide and naming convention examples
+- **README.md updated** to version 1.3.0
+  - Repository structure diagram includes all 4 templates and documentation/references/
+  - Slash Command Factory section enhanced with v2.0 details
+  - Quick Reference updated with MASTER_SLASH_COMMANDS_PROMPT.md
+  - Version section updated with comprehensive v1.3.0 changelog
+- **CLAUDE.md updated**
+  - Repository structure diagram includes all 4 templates and documentation/references/
+  - Templates for Generation section enhanced with MASTER_SLASH_COMMANDS_PROMPT.md details
+  - Slash Command Factory (#11) description enhanced with comprehensive v2.0 capabilities
+
+### Documentation
+- **Validation strictness** - All generated commands must pass four-layer validation
+- **Bash permission patterns** - Never uses wildcard `Bash`, always specific commands (`Bash(git status:*)`)
+- **Naming convention** - Enforced kebab-case (2-4 words) with automatic conversion algorithm
+- **Arguments standard** - Always `$ARGUMENTS`, never positional `$1, $2, $3`
+
+---
+
 ## [2.1.0] - 2025-10-29
 
 ### Added
@@ -133,5 +176,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-**Current Version**: 2.0.0
-**Last Updated**: October 28, 2025
+**Current Version**: 2.2.0
+**Last Updated**: October 29, 2025
