@@ -32,7 +32,9 @@ jobs:
           fetch-depth: 2
 
       - name: Claude Security Audit (PR diff)
+        id: claude-audit
         uses: anthropics/claude-code-action@v1
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -60,5 +62,23 @@ jobs:
             - Standards: OWASP Top 10, LLM agent hardening
             ```
           claude_args: '--allowed-tools "Bash(gh pr comment:*),Bash(gh pr view:*),Bash(echo:*),Bash(sleep:*)"'
+
+      - name: Note audit skipped (quota/timeout)
+        if: steps.claude-audit.outcome != 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ Security Audit Skipped
+
+              The automated security audit could not complete (likely quota or a transient error).
+
+              - You can retry this workflow from the Actions tab
+              - Proceed with manual security review if urgent
+              `
+            })
 
 
