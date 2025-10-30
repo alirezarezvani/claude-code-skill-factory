@@ -406,8 +406,6 @@ This repository is a **Claude Code Skills factory** - a collection of example sk
 claude-code-skills-factory/
 ├── README.md                           # Project overview and documentation
 ├── CLAUDE.md                           # This file - guidance for Claude Code
-├── claude-skills-instructions.md       # Full Skills documentation from Anthropic
-├── claude-agents-instructions.md       # Full Agents documentation from Anthropic
 ├── claude-skills-examples/             # Reference skill implementations
 │   ├── analyzing_financial_statements.md  # Skill: Financial ratio analysis
 │   ├── calculate_ratios.py                # Implementation for ratios
@@ -418,7 +416,10 @@ claude-code-skills-factory/
 │   ├── brand_guidelines.md                # Skill: Corporate branding
 │   └── apply_brand.py                     # Brand application module
 ├── documentation/
-│   ├── references/                     # Official documentation examples
+│   ├── references/                     # Official documentation and references
+│   │   ├── claude-skills-instructions.md          # Complete Claude Skills documentation
+│   │   ├── claude-agents-instructions.md          # Complete Claude Agents documentation
+│   │   ├── openai-codex-cli-instructions.md       # Complete OpenAI Codex CLI reference
 │   │   ├── slash-commands-instructions.md
 │   │   ├── slash-command-code-review-example.md
 │   │   ├── slash-command-codebase-analysis-example.md
@@ -657,7 +658,8 @@ Users can install these skills and agents:
 
 ## References
 
-- Full documentation: [claude-skills-instructions.md](claude-skills-instructions.md)
+- Claude Skills Guide: [documentation/references/claude-skills-instructions.md](documentation/references/claude-skills-instructions.md)
+- Claude Agents Guide: [documentation/references/claude-agents-instructions.md](documentation/references/claude-agents-instructions.md)
+- OpenAI Codex CLI Reference: [documentation/references/openai-codex-cli-instructions.md](documentation/references/openai-codex-cli-instructions.md)
 - Anthropic Skills docs: https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview
 - Skills marketplace: https://github.com/anthropics/skills
-

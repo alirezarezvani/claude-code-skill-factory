@@ -269,9 +269,10 @@ See [claude-skills-examples/](claude-skills-examples/) for implementation detail
 
 ## 📚 Documentation
 
-- **Skills Guide**: [claude-skills-instructions.md](claude-skills-instructions.md) - Complete Anthropic documentation
-- **Agents Guide**: [claude-agents-instructions.md](generated-skills/agent-factory/HOW_TO_USE.md) - Complete Anthropic documentation
-- **Slash Commands**: [documentation/references/](documentation/references/) - Official Anthropic examples
+- **Skills Guide**: [documentation/references/claude-skills-instructions.md](documentation/references/claude-skills-instructions.md) - Complete Anthropic documentation
+- **Agents Guide**: [documentation/references/claude-agents-instructions.md](documentation/references/claude-agents-instructions.md) - Complete Anthropic documentation
+- **Codex CLI Reference**: [documentation/references/openai-codex-cli-instructions.md](documentation/references/openai-codex-cli-instructions.md) - Complete OpenAI Codex CLI documentation
+- **Slash Commands Examples**: [documentation/references/](documentation/references/) - Official Anthropic examples
 - **Factory Templates**: [documentation/templates/](documentation/templates/) - 4 generation templates
 - **Project Guide**: [CLAUDE.md](CLAUDE.md) - Repository structure and workflows
 - **Interactive Agents**: [.claude/agents/README.md](.claude/agents/README.md) - Guide agent documentation
