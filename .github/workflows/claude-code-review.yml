@@ -91,6 +91,7 @@ jobs:
         if: steps.bypass.outputs.bypass != 'true'
         id: claude-review
         uses: anthropics/claude-code-action@v1
+        continue-on-error: true
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
@@ -111,4 +112,22 @@ jobs:
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.claude.com/en/docs/claude-code/cli-reference for available options
           claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+
+      - name: Post fallback review note (quota/timeout)
+        if: steps.claude-review.outcome != 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ Automated Review Skipped
+
+              The automated Claude review could not complete (likely quota or a transient error).
+
+              - You can retry this workflow from the Actions tab
+              - Proceed with manual review to unblock
+              `
+            })
 
