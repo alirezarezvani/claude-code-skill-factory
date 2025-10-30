@@ -270,7 +270,7 @@ See [claude-skills-examples/](claude-skills-examples/) for implementation detail
 ## 📚 Documentation
 
 - **Skills Guide**: [claude-skills-instructions.md](claude-skills-instructions.md) - Complete Anthropic documentation
-- **Agents Guide**: [claude-agents-instructions.md](claude-agents-instructions.md) - Complete Anthropic documentation
+- **Agents Guide**: [claude-agents-instructions.md](generated-skills/agent-factory/HOW_TO_USE.md) - Complete Anthropic documentation
 - **Slash Commands**: [documentation/references/](documentation/references/) - Official Anthropic examples
 - **Factory Templates**: [documentation/templates/](documentation/templates/) - 4 generation templates
 - **Project Guide**: [CLAUDE.md](CLAUDE.md) - Repository structure and workflows

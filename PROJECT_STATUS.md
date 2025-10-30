@@ -34,10 +34,11 @@
 - **ms365-tenant-manager** (40KB) - M365 administration
 - **agent-factory** (12KB) - Claude Code agent generation
 
-### Templates (3 factory systems)
+### Templates (4 factory systems)
 - SKILLS_FACTORY_PROMPT.md - Generate multi-file capabilities
 - AGENTS_FACTORY_PROMPT.md - Generate single-file specialists
 - PROMPTS_FACTORY_PROMPT.md - Generate domain-specific prompt builders
+- MASTER_SLASH_COMMANDS_PROMPT.md - Generate specific Slash Commands
 
 ### Documentation
 - README.md (31KB) - Main documentation
