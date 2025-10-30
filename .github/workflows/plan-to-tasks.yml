@@ -24,6 +24,17 @@ jobs:
       can_proceed: ${{ steps.check.outputs.can_proceed }}
 
     steps:
+      - name: Check Workflow Kill Switch
+        id: killswitch
+        run: |
+          if [ -f ".github/WORKFLOW_KILLSWITCH" ]; then
+            STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
+            if [ "$STATUS" = "DISABLED" ]; then
+              echo "can_proceed=false" >> $GITHUB_OUTPUT
+              echo "🛑 Workflows disabled by kill switch"
+              exit 0
+            fi
+          fi
       - name: Circuit Breaker - Check Rate Limits
         id: check
         run: |
@@ -61,6 +72,15 @@ Workflow will retry when limits recover."
       id-token: write
 
     steps:
+      - name: Check Workflow Kill Switch
+        run: |
+          if [ -f ".github/WORKFLOW_KILLSWITCH" ]; then
+            STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
+            if [ "$STATUS" = "DISABLED" ]; then
+              echo "🛑 Workflows disabled by kill switch"
+              exit 0
+            fi
+          fi
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

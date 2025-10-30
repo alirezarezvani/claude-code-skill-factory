@@ -1,0 +1,64 @@
+name: Security Audit (Claude)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: security-audit-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - name: Check Workflow Kill Switch
+        run: |
+          if [ -f ".github/WORKFLOW_KILLSWITCH" ]; then
+            STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
+            if [ "$STATUS" = "DISABLED" ]; then
+              echo "🛑 Workflows disabled by kill switch"
+              exit 0
+            fi
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Claude Security Audit (PR diff)
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            # Security Audit (PR #${{ github.event.pull_request.number }})
+
+            Review the PR diff for security risks with a focus on OWASP Top 10, secrets exposure, supply-chain risks, and dangerous command patterns.
+
+            Provide concise, actionable findings with exact file:line references and minimal remediations. Only report meaningful issues (avoid noise).
+
+            Output (post as a PR comment via gh):
+            ```markdown
+            ## 🔒 Security Audit (Claude)
+            Severity summary: [Critical: X, High: Y, Medium: Z, Low: W]
+            ---
+            ### Findings
+            1) [Severity] [file:line] – [title]
+               - Risk: ...
+               - Recommendation: ...
+            [repeat per finding]
+            ---
+            Notes:
+            - Scope: PR diff only
+            - Standards: OWASP Top 10, LLM agent hardening
+            ```
+          claude_args: '--allowed-tools "Bash(gh pr comment:*),Bash(gh pr view:*),Bash(echo:*),Bash(sleep:*)"'
+
+

@@ -22,6 +22,15 @@ jobs:
       id-token: write        # Required for OIDC authentication
 
     steps:
+      - name: Check Workflow Kill Switch
+        run: |
+          if [ -f ".github/WORKFLOW_KILLSWITCH" ]; then
+            STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
+            if [ "$STATUS" = "DISABLED" ]; then
+              echo "🛑 Workflows disabled by kill switch"
+              exit 0
+            fi
+          fi
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

@@ -26,6 +26,15 @@ jobs:
       issue_number: ${{ steps.check.outputs.issue_number }}
 
     steps:
+        - name: Check Workflow Kill Switch
+          run: |
+            if [ -f ".github/WORKFLOW_KILLSWITCH" ]; then
+              STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
+              if [ "$STATUS" = "DISABLED" ]; then
+                echo "🛑 Workflows disabled by kill switch"
+                exit 0
+              fi
+            fi
       - name: Determine Sync Direction
         id: check
         run: |
@@ -151,7 +160,7 @@ jobs:
             ```bash
             PROJECT_ITEM=$(gh api graphql -f query='
               query {
-                repository(owner: "alirezarezvani", name: "claude-code-skill-factory") {
+                repository(owner: "alirezarezvani", name: "claude-code-skills-factory") {
                   issue(number: ${{ github.event.issue.number }}) {
                     projectItems(first: 10) {
                       nodes {
@@ -171,7 +180,7 @@ jobs:
 
               PROJECT_ITEM=$(gh api graphql -f query='
                 query {
-                  repository(owner: "alirezarezvani", name: "claude-code-skill-factory") {
+                  repository(owner: "alirezarezvani", name: "claude-code-skills-factory") {
                     issue(number: ${{ github.event.issue.number }}) {
                       projectItems(first: 10) {
                         nodes {
