@@ -1,0 +1,17 @@
+{
+  "matcher": {},
+  "hooks": [
+    {
+      "type": "command",
+      "command": "# Detect test framework and run tests\nif ! command -v pytest &> /dev/null; then\n    exit 0\nfi\n\n# Run the appropriate test command\npytest -v || exit 0",
+      "timeout": 120
+    }
+  ],
+  "_metadata": {
+    "generated_by": "hook-factory",
+    "generated_at": "2025-10-30T19:09:43.580085Z",
+    "template": "subagent_stop_test_runner",
+    "language": "typescript",
+    "hook_name": "run-tests-when-agent-completes-typescript"
+  }
+}

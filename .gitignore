@@ -1,6 +1,9 @@
+.cursor/*
 .editorconfig
-claude-agents-instructions.md
-claude-agents-examples/
+claude-code-plugins-examples/
+claude-hooks-examples/
+claude-skills-examples/
+claude-agents-examples
 claude-skills-examples/*
 !claude-skills-examples/CLAUDE.md
 generated-skills/psychology-advisor/
@@ -34,7 +37,6 @@ generated-skills/health-sdk-builder-2025.zip
 generated-skills-test/
 SESSION_SUMMARY_2025-10-27.md
 TEST_CLAUDE_REVIEW.md.archive/
-generated-skills/slash-command-factory.backup-20251029-161058/
 .archive/
 # Python
 __pycache__/

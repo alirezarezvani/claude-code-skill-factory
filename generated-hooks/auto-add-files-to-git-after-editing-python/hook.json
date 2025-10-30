@@ -1,0 +1,22 @@
+{
+  "matcher": {
+    "tool_names": [
+      "Write",
+      "Edit"
+    ]
+  },
+  "hooks": [
+    {
+      "type": "command",
+      "command": "# Check if this is a git repository\nif ! git rev-parse --git-dir &> /dev/null; then\n    exit 0\nfi\n\n# Check if file path is available\nif [ -z \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n    exit 0\nfi\n\n# Stage the file\ngit add \"$CLAUDE_TOOL_FILE_PATH\" 2>/dev/null || exit 0",
+      "timeout": 60
+    }
+  ],
+  "_metadata": {
+    "generated_by": "hook-factory",
+    "generated_at": "2025-10-30T19:09:43.684828Z",
+    "template": "post_tool_use_git_add",
+    "language": "python",
+    "hook_name": "auto-add-files-to-git-after-editing-python"
+  }
+}

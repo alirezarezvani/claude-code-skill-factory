@@ -83,6 +83,7 @@ Generate new capabilities using these templates:
 | **Agents** | Single-file specialists | .md with YAML frontmatter | `~/.claude/agents/` |
 | **Prompts** | Meta-prompt systems | Domain-specific prompt builders | Use as template |
 | **Slash Commands** | Workflow automation | .md with YAML + bash | `~/.claude/commands/` |
+| **Hooks** | Event-driven automation | hook.json + README.md | `.claude/settings.json` or `~/.claude/settings.json` |
 
 **Templates Location**: [documentation/templates/](documentation/templates/)
 
@@ -127,6 +128,15 @@ Generate new capabilities using these templates:
 4. Install to `.claude/commands/` or `generated-commands/`
 5. Test with `/command-name [args]`
 
+### Create a Hook
+
+1. Use `/build-hook` slash command or invoke `hooks-guide` agent
+2. Answer 5-7 questions about hook purpose and behavior
+3. Generated files: `generated-hooks/[hook-name]/hook.json` + README.md
+4. Install to `.claude/settings.json` (project) or `~/.claude/settings.json` (user)
+5. Restart Claude Code to activate hook
+6. Test hook with relevant events
+
 ### Work with GitHub Issues
 
 1. Read [.github/CLAUDE.md](.github/CLAUDE.md) for workflow requirements
@@ -143,6 +153,7 @@ Generate new capabilities using these templates:
 
 - **[Claude Skills Guide](documentation/references/claude-skills-instructions.md)** - Complete Anthropic documentation
 - **[Claude Agents Guide](documentation/references/claude-agents-instructions.md)** - Complete Anthropic documentation
+- **[Claude Hooks Guide](documentation/references/claude-hooks-instructions.md)** - Complete Anthropic hooks documentation
 - **[OpenAI Codex CLI Reference](documentation/references/openai-codex-cli-instructions.md)** - Complete CLI documentation
 
 ### Templates

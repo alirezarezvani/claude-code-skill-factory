@@ -1,0 +1,18 @@
+{
+  "matcher": {
+    "source": ["startup", "resume"]
+  },
+  "hooks": [
+    {
+      "type": "command",
+      "command": "# Load project context\nif [ -f TODO.md ]; then\n    echo \"# Project TODO List\"\n    cat TODO.md\nelse\n    echo \"No TODO.md found\"\nfi",
+      "timeout": 60
+    }
+  ],
+  "_metadata": {
+    "generated_by": "hook-factory",
+    "template": "session_start_context_loader",
+    "language": "all",
+    "hook_name": "load-context"
+  }
+}
