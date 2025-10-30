@@ -809,18 +809,18 @@ This repository provides examples and templates for creating Claude Skills. The 
 
 ## Quick Reference
 
-**Create Skills**: Use [SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)
-**Create Agents**: Use [AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
-**Create Prompt Builders**: Use [PROMPTS_FACTORY_PROMPT.md](documentation/templates/PROMPTS_FACTORY_PROMPT.md)
-**Create Slash Commands**: Use [MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)
-**See Examples**: Check [claude-skills-examples/](claude-skills-examples/)
-**Generated Skills**: Explore [generated-skills/](generated-skills/)
-**Official Slash Command Examples**: See [documentation/references/](documentation/references/)
-**Read Guide**: See [CLAUDE.md](CLAUDE.md) for repository structure
-**Learn More (Skills)**: Read [claude-skills-instructions.md](claude-skills-instructions.md)
-**Learn More (Agents)**: Read [claude-agents-instructions.md](claude-agents-instructions.md)
+- **Create Skills**: Use [SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)
+- **Create Agents**: Use [AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
+- **Create Prompt Builders**: Use [PROMPTS_FACTORY_PROMPT.md](documentation/templates/PROMPTS_FACTORY_PROMPT.md)
+- **Create Slash Commands**: Use [MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)
+- **See Examples**: Check [claude-skills-examples/](claude-skills-examples/)
+- **Generated Skills**: Explore [generated-skills/](generated-skills/)
+- **Official Slash Command Examples**: See [documentation/references/](documentation/references/)
+- **Read Guide**: See [CLAUDE.md](CLAUDE.md) for repository structure
+- **Learn More (Skills)**: Read [claude-skills-instructions.md](claude-skills-instructions.md)
+- **Learn More (Agents)**: Read [claude-agents-instructions.md](claude-agents-instructions.md)
 
-**Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills, agents, prompts, or slash commands for your Claude Code project!
+- **Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills, agents, prompts, or slash commands for your Claude Code project!
 
 ## Star History
 
