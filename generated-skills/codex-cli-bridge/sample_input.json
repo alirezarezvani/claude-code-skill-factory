@@ -1,0 +1,53 @@
+{
+  "action": "generate-agents-md",
+  "project_root": "/Users/example/projects/my-claude-project",
+  "options": {
+    "validate_codex": true,
+    "auto_init": true,
+    "include_mcp": true,
+    "skill_detail_level": "relevant"
+  },
+  "description": "Sample input for generating AGENTS.md from a Claude Code project",
+  "expected_behavior": {
+    "step_1": "Validate Codex CLI installed and CLAUDE.md exists",
+    "step_2": "Parse CLAUDE.md and scan project structure (skills, agents, documentation)",
+    "step_3": "Generate AGENTS.md with reference-based approach (no file duplication)",
+    "step_4": "Write AGENTS.md to project root",
+    "output_file": "/Users/example/projects/my-claude-project/AGENTS.md"
+  },
+  "sample_project_structure": {
+    "root": "/Users/example/projects/my-claude-project",
+    "files": [
+      "CLAUDE.md",
+      "README.md",
+      "package.json"
+    ],
+    "folders": [
+      ".claude/skills/",
+      ".claude/agents/",
+      "documentation/",
+      "src/"
+    ],
+    "skills": [
+      {
+        "name": "data-visualizer",
+        "type": "functional",
+        "location": ".claude/skills/data-visualizer",
+        "python_files": ["chart_generator.py", "dashboard.py"]
+      },
+      {
+        "name": "brand-guidelines",
+        "type": "prompt-based",
+        "location": ".claude/skills/brand-guidelines",
+        "python_files": []
+      }
+    ],
+    "agents": [
+      {
+        "name": "code-reviewer",
+        "location": ".claude/agents/code-reviewer.md",
+        "tools": ["Read", "Grep", "Bash"]
+      }
+    ]
+  }
+}

@@ -27,6 +27,7 @@ A comprehensive toolkit for generating production-ready Claude Skills and Claude
   - [6. Microsoft 365 Tenant Manager](#6-microsoft-365-tenant-manager)
   - [7. Prompt Factory](#7-prompt-factory)
   - [8. Slash Command Factory](#8-slash-command-factory)
+  - [9. Codex CLI Bridge](#9-codex-cli-bridge)
 - [Key Features](#key-features)
 - [Skill Architecture Patterns](#skill-architecture-patterns)
 - [Best Practices](#best-practices)
@@ -75,8 +76,13 @@ Agents are **focused** (one responsibility), **efficient** (separate context win
 claude-code-skills-factory/
 ├── README.md                              # This file
 ├── CLAUDE.md                              # Repository guidance for Claude Code
+├── AGENTS.md                              # Codex CLI documentation (auto-generated)
 ├── claude-skills-instructions.md          # Full Skills documentation from Anthropic
 ├── claude-agents-instructions.md          # Full Agents documentation from Anthropic
+├── .claude/
+│   └── commands/                          # Slash commands
+│       ├── sync-agents-md.md              # Regenerate AGENTS.md from CLAUDE.md
+│       └── codex-exec.md                  # Execute Codex CLI commands
 ├── claude-skills-examples/                # Reference skill implementations
 │   ├── analyzing_financial_statements.md
 │   ├── calculate_ratios.py
@@ -106,7 +112,8 @@ claude-code-skills-factory/
     ├── psychology-advisor/                # Mental wellness & CBT techniques (31 KB)
     ├── agent-factory/                     # Claude Code agent generation (12 KB)
     ├── prompt-factory/                    # Prompt generation powerhouse (427 KB)
-    └── slash-command-factory/             # Slash command generation - 17 presets (26 KB)
+    ├── slash-command-factory/             # Slash command generation - 17 presets (26 KB)
+    └── codex-cli-bridge/                  # Claude Code ↔ Codex CLI interoperability (48 KB)
 ```
 
 ## Quick Start
@@ -304,6 +311,41 @@ Copy the generated prompt and use it in:
 **Based on**: 6 official Anthropic slash command examples in [documentation/references/](documentation/references/)
 
 **See**: [HOW_TO_USE.md](generated-skills/slash-command-factory/HOW_TO_USE.md) for complete usage guide and [MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md) for the master template
+
+### 9. Codex CLI Bridge
+**Purpose**: Seamless interoperability between Claude Code and OpenAI Codex CLI for cross-tool team collaboration
+
+**Files**:
+- [SKILL.md](generated-skills/codex-cli-bridge/SKILL.md)
+- [bridge.py](generated-skills/codex-cli-bridge/bridge.py) - Main orchestrator
+- [safety_mechanism.py](generated-skills/codex-cli-bridge/safety_mechanism.py) - Environment validation
+- [claude_parser.py](generated-skills/codex-cli-bridge/claude_parser.py) - CLAUDE.md parser
+- [project_analyzer.py](generated-skills/codex-cli-bridge/project_analyzer.py) - Project structure analysis
+- [agents_md_generator.py](generated-skills/codex-cli-bridge/agents_md_generator.py) - AGENTS.md generation
+- [skill_documenter.py](generated-skills/codex-cli-bridge/skill_documenter.py) - Skill documentation
+- [codex_executor.py](generated-skills/codex-cli-bridge/codex_executor.py) - Codex CLI helpers
+- [README.md](generated-skills/codex-cli-bridge/README.md), [HOW_TO_USE.md](generated-skills/codex-cli-bridge/HOW_TO_USE.md)
+
+**Capabilities**:
+- **CLAUDE.md → AGENTS.md translation** - Automatic generation of Codex CLI-compatible documentation
+- **Reference-based architecture** - Links to existing files, no content duplication
+- **Skill documentation for Codex users** - Different approaches for functional vs prompt-based skills
+- **Safety mechanisms** - Auto-validates Codex CLI installation, auto-runs /init if CLAUDE.md missing
+- **Codex execution helpers** - Python wrappers for Codex CLI commands (always uses `codex exec`, intelligent model selection)
+- **Slash command integration** - `/sync-agents-md` and `/codex-exec` commands
+- **Cross-tool compatibility** - Enables teams to use both Claude Code and Codex CLI seamlessly
+
+**Use Cases**:
+- Cross-tool teams (Claude Code + Codex CLI users)
+- Project migration (Claude Code ↔ Codex CLI)
+- CI/CD integration (auto-sync AGENTS.md when CLAUDE.md changes)
+- Skills marketplace (universal compatibility)
+
+**Pattern**: Safety validation → CLAUDE.md parsing → project analysis → AGENTS.md generation → reference-based documentation
+
+**Output**: AGENTS.md file in project root with complete skill documentation, workflow patterns, and command reference for Codex CLI users
+
+**See**: [HOW_TO_USE.md](generated-skills/codex-cli-bridge/HOW_TO_USE.md) for comprehensive usage guide and examples
 
 ## Example Skills Included
 

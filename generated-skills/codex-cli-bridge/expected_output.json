@@ -1,0 +1,97 @@
+{
+  "output_file": "AGENTS.md",
+  "location": "/Users/example/projects/my-claude-project/AGENTS.md",
+  "file_size_estimate": "15-25 KB",
+  "line_count_estimate": "400-800 lines",
+  "format": "Markdown",
+  "structure": {
+    "header": {
+      "project_name": "my-claude-project",
+      "project_type": "GREENFIELD_NEW",
+      "description": "Brief project description from CLAUDE.md"
+    },
+    "quick_reference": {
+      "skills_count": 2,
+      "agents_count": 1,
+      "functional_skills": 1,
+      "prompt_skills": 1
+    },
+    "sections": [
+      "Project Overview",
+      "Available Skills",
+      "Project Structure",
+      "Workflow Patterns",
+      "MCP Integration",
+      "Command Reference",
+      "Common Operations",
+      "Best Practices"
+    ],
+    "skills_documentation": [
+      {
+        "skill_name": "data-visualizer",
+        "type": "functional",
+        "documentation_includes": [
+          "Description",
+          "Location (relative path)",
+          "Python scripts list with links",
+          "Codex CLI usage examples (bash execution)"
+        ],
+        "usage_example": "cd .claude/skills/data-visualizer\npython chart_generator.py --help"
+      },
+      {
+        "skill_name": "brand-guidelines",
+        "type": "prompt-based",
+        "documentation_includes": [
+          "Description",
+          "Location (relative path)",
+          "Codex CLI usage examples (prompt reference)"
+        ],
+        "usage_example": "codex exec -m gpt-5 -s read-only \"Using brand-guidelines at .claude/skills/brand-guidelines/SKILL.md, review this copy\""
+      }
+    ],
+    "workflow_translations": [
+      {
+        "claude_command": "/code-review",
+        "codex_equivalent": "codex exec -m gpt-5 -s read-only \"Review this codebase for quality, security, and performance issues\""
+      },
+      {
+        "claude_command": "/test",
+        "codex_equivalent": "codex exec -m gpt-5-codex -s workspace-write \"Run all tests and analyze failures\""
+      }
+    ],
+    "command_reference_table": {
+      "columns": ["Operation", "Claude Code", "Codex CLI"],
+      "rows": [
+        ["Start session", "claude", "codex exec"],
+        ["Resume session", "/resume-work", "codex exec resume --last"],
+        ["Code review", "/code-review", "codex exec \"review code\""],
+        ["Run tests", "/test", "codex exec \"run tests\""]
+      ]
+    }
+  },
+  "key_features": [
+    "Reference-based (no file duplication - all links to existing files)",
+    "Most relevant usage method per skill type",
+    "Always uses 'codex exec' not plain 'codex'",
+    "Includes MCP server documentation (if configured)",
+    "Command reference table (Claude Code ↔ Codex CLI)",
+    "Workflow pattern translations",
+    "Best practices for Codex CLI users"
+  ],
+  "validation": {
+    "all_file_references_valid": true,
+    "all_links_working": true,
+    "codex_commands_tested": true,
+    "syntax_valid": true
+  },
+  "sample_excerpt": "# AGENTS.md\n\n**Project**: my-claude-project\n**Purpose**: [Project description]\n**Type**: GREENFIELD_NEW\n**Codex CLI Compatibility**: Full support\n\n---\n\n## Quick Reference\n\n**Project Statistics**:\n- **Skills**: 2 total (1 functional, 1 prompt-based)\n- **Agents**: 1 total\n\n**For Codex CLI Users**:\n- Skills documented with Codex CLI usage examples\n- Use `codex exec` commands (never plain `codex`)\n- Python scripts can be executed directly\n\n---\n\n## Available Skills\n\n### Functional Skills (1)\n\n#### data-visualizer\n\n**Description**: Interactive data visualization and chart generation\n\n**Location**: `.claude/skills/data-visualizer/`\n**Documentation**: [.claude/skills/data-visualizer/SKILL.md](.claude/skills/data-visualizer/SKILL.md)\n\n**Python Scripts**:\n- [chart_generator.py](.claude/skills/data-visualizer/chart_generator.py)\n- [dashboard.py](.claude/skills/data-visualizer/dashboard.py)\n\n**Using with Codex CLI**:\n\n```bash\n# Execute Python scripts directly\ncd .claude/skills/data-visualizer\npython chart_generator.py --help\n```\n\n### Prompt-Based Skills (1)\n\n#### brand-guidelines\n\n**Description**: Corporate branding and style guidelines\n\n**Location**: `.claude/skills/brand-guidelines/`\n**Documentation**: [.claude/skills/brand-guidelines/SKILL.md](.claude/skills/brand-guidelines/SKILL.md)\n\n**Using with Codex CLI**:\n\n```bash\n# Reference in Codex prompt\ncodex exec -m gpt-5 -s read-only \\\n  \"Using brand-guidelines at .claude/skills/brand-guidelines/SKILL.md,\n  review this marketing copy for brand consistency\"\n```",
+  "success_indicators": {
+    "agents_md_created": true,
+    "all_skills_documented": true,
+    "all_agents_documented": true,
+    "file_references_valid": true,
+    "codex_commands_work": true,
+    "size_appropriate": true,
+    "ready_for_codex_cli": true
+  }
+}
