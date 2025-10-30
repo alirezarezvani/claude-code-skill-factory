@@ -1,396 +1,6 @@
-# CLAUDE.md
+# CLAUDE.md - Skills Factory Orchestration
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
----
-
-## 🚨 MANDATORY WORKFLOW REQUIREMENT
-
-**CRITICAL**: All work on this project MUST follow this workflow. **NO EXCEPTIONS.**
-
-### Required Process for Every User Request
-
-1. **PLAN MODE FIRST**
-   - Use plan mode to create a detailed implementation plan
-   - Break down the work into clear, actionable steps
-   - **KEEP PLANS SMALL: 5-10 tasks maximum**
-   - Estimate effort and identify potential challenges
-
-2. **GET USER APPROVAL**
-   - Present the plan to the user
-   - Wait for explicit approval before proceeding
-   - Address any questions or concerns
-
-3. **CREATE GITHUB ISSUE**
-   - Create a GitHub issue with the `plan` label
-   - Include the approved plan in the issue body
-   - Use markdown checkboxes for tasks: `- [ ] Task name`
-   - **MAXIMUM 5-10 TASKS** - The plan-to-issues automation creates one issue per task
-   - **For large initiatives**: Create multiple small plan issues, NOT one giant plan
-
-4. **AUTOMATION CREATES SUBTASKS**
-   - GitHub workflow creates individual issues for each task
-   - All subtasks are linked to the parent issue
-   - All added to project board for tracking
-   - **WARNING**: 40+ tasks = API rate limits and issue spam
-
-5. **START IMPLEMENTATION**
-   - Begin work on subtasks in priority order
-   - Update issue status as you progress
-   - Reference issue numbers in commits
-
-### Why This Matters
-
-- ✅ **Proper tracking**: Every task is tracked in GitHub issues and project board
-- ✅ **Clear planning**: Prevents scope creep and ensures thoughtful approach
-- ✅ **Team visibility**: Everyone can see what's being worked on
-- ✅ **Audit trail**: Complete history of decisions and implementation
-- ✅ **Automation leverage**: Uses the excellent GitHub automation built into this repo
-
-### Example Workflows
-
-**✅ CORRECT - Small Plan (5 tasks)**:
-```
-User: "Add a new skill for data visualization"
-
-1. Enter plan mode
-2. Create plan with 5 tasks:
-   - Research data visualization libraries
-   - Design SKILL.md structure
-   - Implement Python visualization classes
-   - Create sample data and HOW_TO_USE.md
-   - Test with real data
-3. Present plan to user, get approval
-4. Create GitHub issue with 'plan' label containing 5 tasks
-5. Automation creates 5 subtask issues
-6. Begin implementation
-```
-
-**❌ WRONG - Too Many Tasks**:
-```
-User: "Create comprehensive Wiki documentation"
-
-DON'T DO THIS:
-- Create issue with 40+ tasks in checkboxes
-- Results in 40+ GitHub issues created
-- Hits API rate limits
-- Creates issue spam
-
-DO THIS INSTEAD:
-- Break into 3-4 small plan issues:
-  - Plan #1: Wiki Foundation (5 tasks)
-  - Plan #2: Core Wiki Pages (6 tasks)
-  - Plan #3: Advanced Documentation (5 tasks)
-```
-
-**GOLDEN RULE: 5-10 TASKS MAXIMUM PER PLAN ISSUE**
-
----
-
-## 📋 Task Hierarchy (Plan → Task → Subtask)
-
-### Three-Level Structure
-
-```
-PLAN ISSUE (#100)                      - Epic or feature
-  ├─ TASK #101 (5-10 tasks)           - Major work item
-  │   ├─ SUBTASK #103 (0-5 subtasks)  - Atomic work
-  │   ├─ SUBTASK #104
-  │   └─ SUBTASK #105
-  ├─ TASK #102
-  │   ├─ SUBTASK #106
-  │   └─ SUBTASK #107
-  └─ TASK #108
-```
-
-### Level 1: PLAN Issues
-- **Purpose**: High-level feature or epic
-- **Task Count**: 5-10 tasks (enforced by plan-validator workflow)
-- **Labels**: `plan`, `plan-validated`
-- **Created**: Manually by team
-- **Format**:
-  ```markdown
-  ## Goal
-  [What we're building and why]
-
-  ## Tasks
-  - [ ] Task 1: Clear, actionable description
-  - [ ] Task 2: Clear, actionable description
-  - [ ] Task 3-10: ...
-
-  ## Acceptance Criteria
-  - [ ] Criterion 1
-  - [ ] Criterion 2
-  ```
-
-### Level 2: TASK Issues
-- **Purpose**: Major work item (can be completed independently)
-- **Title**: "Task: [description]" (auto-generated)
-- **Labels**: `task`, `plan-item`, `skip-triage`
-- **Created**: Automatically by plan-to-tasks workflow
-- **Parent**: Always linked to parent PLAN
-- **Subtasks**: Optional (0-5 subtasks, triggered by `needs-subtasks` label)
-- **Scope**: Focused piece of work (1-3 days)
-
-### Level 3: SUBTASK Issues
-- **Purpose**: Atomic work unit (smallest unit)
-- **Title**: "Subtask: [description]" (auto-generated)
-- **Labels**: `subtask`, `skip-triage`
-- **Created**: Automatically by task-to-subtasks workflow
-- **Parent**: Linked to parent TASK and grandparent PLAN
-- **Scope**: Single, focused piece of work (1-3 hours)
-- **Maximum**: 5 subtasks per task (enforced)
-
-### Workflow States & Labels
-
-**Triage Control**:
-- `skip-triage` - Skips automatic classification (removed when ready)
-- `needs-subtasks` - Triggers subtask creation (on TASK issues only)
-
-**Status Tracking** (synced with project board):
-- `status: triage` - Needs classification
-- `status: backlog` - Planned but not ready
-- `status: ready` - Ready to start
-- `status: in-progress` - Actively being worked on
-- `status: in-review` - Under review
-- `status: done` - Completed (auto-applied when issue closed)
-
-### Smart Bidirectional Synchronization
-
-**Workflow**: `.github/workflows/smart-sync.yml`
-
-The smart-sync workflow replaces the old issue-to-project-sync and project-to-issue-sync workflows with a single, intelligent system that prevents sync loops and respects rate limits.
-
-**Key Features**:
-- ✅ **10-second debouncing**: Prevents rapid back-and-forth updates
-- ✅ **Circuit breaker**: Checks rate limits before executing (requires 50+ remaining)
-- ✅ **Direction detection**: Automatically determines sync direction based on event source
-- ✅ **Silent operation**: No notification spam (updates without comments)
-- ✅ **Loop prevention**: One-way sync logic prevents ping-pong loops
-
-**How It Works**:
-
-1. **Event Triggers**:
-   - Issue labeled/closed/reopened → Syncs Issue → Project Board
-   - Project board status changed → Syncs Project Board → Issue
-
-2. **Safety Checks**:
-   - Rate limit check (circuit breaker)
-   - 10-second debounce delay
-   - Concurrency control (cancel in-progress runs)
-
-3. **Sync Operations**:
-
-   **Issue → Project Board**:
-   - Adds issue to project if not present
-   - Maps issue status labels to project board columns
-   - Updates project board status field
-   - Closes/reopens based on issue state
-
-   **Project Board → Issue**:
-   - Removes old status labels
-   - Adds new status label based on project board column
-   - Closes issue if moved to "Done"
-   - Reopens issue if moved from "Done"
-
-4. **Status Mapping**:
-   ```
-   Issue Label          ↔  Project Board Column
-   ─────────────────────────────────────────────
-   status: triage       ↔  To triage
-   status: backlog      ↔  Backlog
-   status: ready        ↔  Ready
-   status: in-progress  ↔  In Progress
-   status: in-review    ↔  In Review
-   status: done         ↔  Done
-   (closed state)       ↔  Done
-   ```
-
-**Best Practices**:
-- ✅ DO: Change status on project board OR issue (not both at once)
-- ✅ DO: Wait 10 seconds between rapid status changes
-- ✅ DO: Use status labels for tracking (they sync automatically)
-- ❌ DON'T: Manually update both issue and project board (creates duplicate syncs)
-- ❌ DON'T: Make rapid status changes (triggers rate limit protection)
-
-**Troubleshooting**:
-- If sync appears stuck: Check rate limits with `gh api rate_limit`
-- If status out of sync: Manually trigger by re-labeling or moving on board
-- If getting rate limit warnings: Wait for cooldown (syncs will resume automatically)
-
-### Monitoring & Automation
-
-**Three Powerful Automation Workflows**:
-
-#### 1. Workflow Health Monitor (`.github/workflows/workflow-health.yml`)
-
-Automated system health monitoring every 6 hours.
-
-**What It Monitors**:
-- ✅ GitHub API rate limits (REST & GraphQL)
-- ✅ Workflow success rates (last 24 hours)
-- ✅ Task hierarchy statistics (Plans, Tasks, Subtasks)
-
-**Alerting**:
-- Creates health alert issues when problems detected
-- **Critical**: Rate limits <20% OR success rate <70%
-- **Warning**: Rate limits <40% OR success rate <85%
-
-**Manual Trigger**: Go to Actions → Workflow Health Monitor → Run workflow
-
-**What You Get**:
-```
-📊 Rate Limits: REST 85% | GraphQL 82%
-📈 Workflows: 47 runs, 94% success rate
-🏗️ Hierarchy: 3 plans (2 open), 18 tasks (12 open), 23 subtasks (15 open)
-```
-
-#### 2. Plan Auto-Close (`.github/workflows/plan-auto-close.yml`)
-
-Automatically closes plan issues when all tasks are completed.
-
-**How It Works**:
-1. Triggers when any TASK issue is closed
-2. Checks if task belongs to a PLAN
-3. Counts remaining open tasks for that plan
-4. If all tasks done → automatically closes plan with celebration comment
-5. Posts progress updates at 25%, 50%, 75% milestones
-
-**Benefits**:
-- ✅ No manual plan closure needed
-- ✅ Automatic completion tracking
-- ✅ Progress milestone notifications
-- ✅ Clear completion summaries
-
-**Example Comment**:
-```markdown
-## ✅ Plan Completed
-
-All 8 tasks have been completed! This plan is now being automatically closed.
-
-📊 Completion Summary
-- Total Tasks: 8
-- Completed: 8
-- Success Rate: 100%
-
-🎉 What's Next?
-- Review completed work
-- Archive or reference for future projects
-```
-
-#### 3. Hierarchy Dashboard (`.github/workflows/hierarchy-dashboard.yml`)
-
-Generates visual Plan→Task→Subtask tree in [HIERARCHY.md](../../HIERARCHY.md).
-
-**Updates**:
-- Every 12 hours (scheduled)
-- When issues are created, closed, or labeled
-- Manual trigger via workflow dispatch
-
-**What It Shows**:
-- Overview table with completion percentages
-- Visual tree of all active plans with tasks and subtasks
-- Progress bars for each plan
-- Recently completed plans (last 10)
-
-**Example Tree**:
-```
-📋 Plan #55: Create Wiki Documentation
-Progress: 5/8 tasks (62%)
-
-├─ ✅ #58: Create Wiki Home page
-│  ├─ ✅ #60: Design page structure
-│  └─ ✅ #61: Write content
-├─ 🔲 #59: Add skill documentation
-├─ ✅ #62: Create navigation
-```
-
-**Quick Links**: [View Current Dashboard](../../HIERARCHY.md)
-
-### How to Use the Hierarchy
-
-**Creating a Plan**:
-1. Create issue with `plan` label
-2. Add 5-10 tasks in checklist format
-3. Validation workflow checks count & rate limits
-4. If valid, adds `plan-validated` label
-5. Plan-to-tasks workflow creates TASK issues automatically
-
-**Breaking Down a Task**:
-1. Open a TASK issue
-2. Add `needs-subtasks` label
-3. Create checklist in task body (max 5 items)
-4. Task-to-subtasks workflow creates SUBTASK issues automatically
-
-**Working on Tasks/Subtasks**:
-1. Remove `skip-triage` label when ready for classification
-2. Auto-triage workflow classifies and prioritizes
-3. Move to "In Progress" on project board when starting work
-4. Close issue when done (auto-syncs to "Done" on board)
-
-### Best Practices
-
-**Plan Issues**:
-- ✅ DO: Keep to 5-10 tasks
-- ✅ DO: Make tasks independent when possible
-- ✅ DO: Write clear, actionable task descriptions
-- ❌ DON'T: Create 20+ task plans (split into multiple plans)
-- ❌ DON'T: Make tasks too vague or too detailed
-
-**Task Issues**:
-- ✅ DO: Add `needs-subtasks` if task is complex
-- ✅ DO: Keep subtask count to 5 or fewer
-- ✅ DO: Link to parent PLAN in description
-- ❌ DON'T: Create subtasks manually (use automation)
-- ❌ DON'T: Skip the `skip-triage` label removal step
-
-**Subtask Issues**:
-- ✅ DO: Keep scope small and focused (1-3 hours)
-- ✅ DO: Link to both parent TASK and grandparent PLAN
-- ✅ DO: Close promptly when completed
-- ❌ DON'T: Create sub-subtasks (3 levels max)
-- ❌ DON'T: Make subtasks too granular
-
-### Examples
-
-**Good Plan (7 tasks)**:
-```markdown
-## Goal
-Implement user authentication system
-
-## Tasks
-- [ ] Design login UI components
-- [ ] Implement JWT authentication backend
-- [ ] Add password reset flow
-- [ ] Create user profile management
-- [ ] Implement session handling
-- [ ] Add OAuth integration (Google, GitHub)
-- [ ] Write authentication tests
-
-## Acceptance Criteria
-- [ ] Users can log in with email/password
-- [ ] JWT tokens expire after 24h
-- [ ] OAuth integration works
-- [ ] 90%+ test coverage
-```
-
-**Good Task with Subtasks** (Task #101):
-```markdown
-Title: Task: Design login UI components
-Labels: task, plan-item, needs-subtasks
-
-## Description
-Create all UI components needed for user authentication
-
-## Subtasks
-- [ ] Create LoginForm component
-- [ ] Create SignupForm component
-- [ ] Add form validation
-- [ ] Design password strength indicator
-- [ ] Create forgot password UI
-```
-
-This creates 5 subtask issues automatically.
+This file provides top-level guidance for working with this Claude Code Skills Factory repository.
 
 ---
 
@@ -400,266 +10,200 @@ This repository is a **Claude Code Skills factory** - a collection of example sk
 
 **Key Point**: This is NOT a development project itself. It's a reference repository that users can customize and extend for their own projects. Focus on helping users understand, adapt, and create their own skills based on these examples.
 
+---
+
+## Modular CLAUDE.md Architecture
+
+This repository uses **modular CLAUDE.md files** for different contexts. Claude automatically loads the appropriate file based on your working directory.
+
+### Navigation Map
+
+| Location | Purpose | When Claude Loads It |
+|----------|---------|---------------------|
+| **[.github/CLAUDE.md](.github/CLAUDE.md)** | GitHub workflows, task hierarchy, automation | Working with GitHub issues, PRs, workflows |
+| **[claude-skills-examples/CLAUDE.md](claude-skills-examples/CLAUDE.md)** | Skill architecture patterns, examples | Browsing or modifying example skills |
+| **[generated-skills/CLAUDE.md](generated-skills/CLAUDE.md)** | Production-ready skills catalog | Exploring or installing generated skills |
+| **[documentation/CLAUDE.md](documentation/CLAUDE.md)** | Templates and references structure | Working with templates or documentation |
+
+**How It Works**: Claude loads the most relevant CLAUDE.md based on your current task context, giving you focused guidance without information overload.
+
+---
+
 ## Repository Structure
 
 ```
 claude-code-skills-factory/
-├── README.md                           # Project overview and documentation
-├── CLAUDE.md                           # This file - guidance for Claude Code
-├── claude-skills-examples/             # Reference skill implementations
-│   ├── analyzing_financial_statements.md  # Skill: Financial ratio analysis
-│   ├── calculate_ratios.py                # Implementation for ratios
-│   ├── interpret_ratios.py                # Ratio interpretation logic
-│   ├── creating-financial-models.md       # Skill: DCF & financial modeling
-│   ├── dcf_model.py                       # DCF valuation engine
-│   ├── sensitivity_analysis.py            # Sensitivity testing framework
-│   ├── brand_guidelines.md                # Skill: Corporate branding
-│   └── apply_brand.py                     # Brand application module
+├── README.md                    # Project overview and quick start
+├── CLAUDE.md                    # This file - orchestration layer
+├── .github/
+│   ├── CLAUDE.md               # GitHub workflows & task hierarchy
+│   └── workflows/              # Automation (smart-sync, plan-auto-close, etc.)
+├── claude-skills-examples/
+│   ├── CLAUDE.md               # Skill patterns & architecture
+│   └── *.md, *.py              # Reference skill implementations
 ├── documentation/
-│   ├── references/                     # Official documentation and references
-│   │   ├── claude-skills-instructions.md          # Complete Claude Skills documentation
-│   │   ├── claude-agents-instructions.md          # Complete Claude Agents documentation
-│   │   ├── openai-codex-cli-instructions.md       # Complete OpenAI Codex CLI reference
-│   │   ├── slash-commands-instructions.md
-│   │   ├── slash-command-code-review-example.md
-│   │   ├── slash-command-codebase-analysis-example.md
-│   │   ├── slash-command-open-api-example.md
-│   │   ├── slash-command-update-claude-md-example.md
-│   │   └── slash-commands-ultrathink-example.md
-│   └── templates/                      # Factory prompt templates
-│       ├── SKILLS_FACTORY_PROMPT.md        # Generate Claude Skills (multi-file)
-│       ├── AGENTS_FACTORY_PROMPT.md        # Generate Claude Code Agents (single .md)
-│       ├── PROMPTS_FACTORY_PROMPT.md       # Generate domain prompt builders
-│       └── MASTER_SLASH_COMMANDS_PROMPT.md # Generate slash commands (official patterns)
-└── generated-skills/                   # Production-ready generated skills
-    ├── aws-solution-architect/         # AWS architecture and IaC (53 KB)
-    ├── content-trend-researcher/       # Content research and trend analysis (35 KB)
-    ├── ms365-tenant-manager/           # Microsoft 365 administration (40 KB)
-    ├── psychology-advisor/             # Mental wellness and CBT techniques (31 KB)
-    ├── agent-factory/                  # Claude Code agent generation system (12 KB)
-    ├── prompt-factory/                 # World-class prompt generation - 69 presets (427 KB)
-    └── slash-command-factory/          # Slash command generation - 17 presets (26 KB) 🆕
+│   ├── CLAUDE.md               # Templates & references guide
+│   ├── references/             # Official docs (Skills, Agents, Codex CLI)
+│   └── templates/              # Factory templates (SKILLS, AGENTS, PROMPTS, SLASH_COMMANDS)
+└── generated-skills/
+    ├── CLAUDE.md               # Production skills catalog
+    └── */                      # Production-ready skills (AWS, Prompt Factory, etc.)
 ```
 
-## Skill Architecture
-
-Each skill follows a standard pattern:
-
-### Skill Definition (.md file)
-- **Frontmatter**: `name` and `description` in YAML format
-- **Capabilities**: What the skill can do
-- **Input Requirements**: What data/format is needed
-- **Output Formats**: What the skill produces
-- **Scripts**: Python files that implement functionality
-- **Best Practices**: Guidelines for using the skill
-
-### Implementation (.py files)
-- **Class-based structure**: Main class encapsulates functionality
-- **Type hints**: Full typing for clarity and IDE support
-- **Safe operations**: Error handling (e.g., `safe_divide` to avoid division by zero)
-- **Modular design**: Separate concerns (calculate vs interpret, model vs analyze)
-
-## Example Skills Included
-
-### 1. Analyzing Financial Statements
-- **Files**: `analyzing_financial_statements.md`, `calculate_ratios.py`, `interpret_ratios.py`
-- **Purpose**: Calculate and interpret financial ratios (profitability, liquidity, leverage, efficiency, valuation)
-- **Key Class**: `FinancialRatioCalculator` - accepts financial statement data, calculates all major ratios
-- **Pattern**: Calculation engine + interpretation layer
-
-### 2. Creating Financial Models
-- **Files**: `creating-financial-models.md`, `dcf_model.py`, `sensitivity_analysis.py`
-- **Purpose**: DCF valuation, Monte Carlo simulation, sensitivity analysis, scenario planning
-- **Key Class**: `DCFModel` - builds complete discounted cash flow models
-- **Pattern**: Historical data → projections → valuation with multiple analysis methods
-
-### 3. Applying Brand Guidelines
-- **Files**: `brand_guidelines.md`, `apply_brand.py`
-- **Purpose**: Apply consistent corporate branding to documents (colors, fonts, layouts)
-- **Key Class**: `BrandFormatter` - applies Acme Corporation brand standards
-- **Pattern**: Brand definition (colors, fonts, layouts) + application logic
-
-## Generated Skills (Production-Ready)
-
-The `generated-skills/` folder contains complete, production-ready skills created using the Skills Factory Prompt:
-
-### 4. AWS Solution Architect
-- **Files**: `SKILL.md`, `architecture_designer.py`, `cost_optimizer.py`, `serverless_stack.py`
-- **Purpose**: Expert AWS architecture design for startups - serverless, scalable, cost-effective infrastructure
-- **Key Classes**: `ArchitectureDesigner`, `CostOptimizer`, `ServerlessStackBuilder`
-- **Pattern**: Architecture design → IaC templates → cost optimization
-
-### 5. Content Trend Researcher
-- **Files**: `SKILL.md`, `trend_analyzer.py`, `intent_analyzer.py`, `platform_insights.py`, `outline_generator.py`
-- **Purpose**: Multi-platform trend analysis and data-driven content outline generation
-- **Key Classes**: `TrendAnalyzer`, `IntentAnalyzer`, `PlatformInsights`, `OutlineGenerator`
-- **Pattern**: Trend analysis → intent analysis → content gap discovery → outline generation
-
-### 6. Microsoft 365 Tenant Manager
-- **Files**: `SKILL.md`, `tenant_setup.py`, `user_management.py`, `powershell_generator.py`
-- **Purpose**: Comprehensive M365 tenant administration and PowerShell automation
-- **Key Classes**: `TenantManager`, `UserLifecycle`, `PowerShellScriptGenerator`
-- **Pattern**: Configuration requirements → PowerShell scripts → validation checklists
-
-### 7. Psychology Advisor
-- **Files**: `SKILL.md`, `cbt_techniques.py`, `mindfulness_tools.py`, `stress_assessment.py`
-- **Purpose**: Evidence-based psychological advisory with CBT techniques, mindfulness exercises, and stress management
-- **Key Classes**: `CBTTechniques`, `MindfulnessTools`, `StressAssessment`
-- **Pattern**: Cognitive distortion detection → thought reframing → coping strategies → practice plans
-
-### 8. Content Trend Researcher
-- **Files**: `SKILL.md`, `trend_analyzer.py`, `intent_analyzer.py`, `platform_insights.py`, `outline_generator.py`
-- **Purpose**: Multi-platform trend analysis (Google, Reddit, YouTube, Medium, LinkedIn, X, etc.) and data-driven article outline generation
-- **Key Classes**: `TrendAnalyzer`, `IntentAnalyzer`, `PlatformInsights`, `OutlineGenerator`
-- **Pattern**: Platform trend analysis → user intent analysis → content gaps → SEO-optimized outlines
-
-### 9. Agent Factory
-- **Files**: `SKILL.md`, `agent_generator.py`
-- **Purpose**: Generate custom Claude Code agents/sub-agents with enhanced YAML frontmatter, tool patterns, and MCP integration
-- **Key Classes**: `AgentGenerator`
-- **Pattern**: Agent requirements → YAML validation → agent .md file generation
-- **Template**: Uses `documentation/templates/AGENTS_FACTORY_PROMPT.md` for generation
-
-### 10. Prompt Factory
-- **Files**: `SKILL.md`, `generate_prompt.py`, `validator.py`, `optimizer.py`, `batch_generator.py`
-- **Purpose**: World-class prompt powerhouse generating production-ready mega-prompts for any role, industry, and task through intelligent question flow
-- **Key Classes**: `PromptGenerator`, `PromptValidator`, `PromptOptimizer`, `BatchPromptGenerator`
-- **Pattern**: 7-question flow → preset selection (69 presets, 15 domains) → quality validation → multi-format output (XML/Claude/ChatGPT/Gemini)
-- **Coverage**: 69 comprehensive presets across Technical, Business, Legal, Finance, HR, Design, Customer, Executive, Manufacturing, R&D, Regulatory, Specialized-Technical, Research, Creative-Media domains
-
-### 11. Slash Command Factory (v2.0)
-- **Files**: `SKILL.md`, `command_generator.py`, `validator.py`, `presets.json`, `HOW_TO_USE.md` (26 KB)
-- **Purpose**: Generate custom Claude Code slash commands through 5-7 question flow for business research, content analysis, development automation, compliance checking, and workflow optimization - following official Anthropic patterns
-- **Key Classes**: `SlashCommandGenerator` (with structure detection, naming validation, bash permission generation), `CommandValidator` (comprehensive four-layer validation)
-- **Pattern**: Preset selection (17 presets: 10 original + 7 official examples) OR custom generation → auto-detect structure pattern → YAML frontmatter creation → strict validation → organized output to generated-commands/
-- **Official Patterns Integrated**:
-  - **Simple Pattern** (code-review): Context → Task (straightforward workflows)
-  - **Multi-Phase Pattern** (codebase-analyze): Discovery → Analysis → Task (complex documentation)
-  - **Agent-Style Pattern** (ultrathink, openapi-sync): Role → Process → Guidelines (expert coordination)
-- **Validation Layers**: Command name (kebab-case, 2-4 words), bash permissions (specific commands only, NEVER wildcard `Bash`), arguments usage ($ARGUMENTS, never $1/$2/$3), YAML structure
-- **Coverage**: Business research, content research, medical translation, compliance audit, API building, test automation, docs generation, knowledge extraction, workflow analysis, batch agent coordination, code review, codebase analysis, OpenAPI sync, ultrathink coordination
-- **Output**: Commands to user's project `./generated-commands/[command-name]/` with proper folder organization (all .md in root, standards/examples/scripts/ separate)
-- **Bash Permissions**: Auto-generates specific patterns (git commands, discovery commands, comprehensive commands) - never uses wildcard
-- **Naming Convention**: Automatic kebab-case conversion with validation (verb-noun, noun-verb patterns)
-- **Documentation**: See [generated-skills/slash-command-factory/HOW_TO_USE.md](../generated-skills/slash-command-factory/HOW_TO_USE.md) and [documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md](../documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)
-
-## Common Development Patterns
-
-### 1. Data Structure
-Skills use dictionaries for flexible data input:
-```python
-financial_data = {
-    'income_statement': {...},
-    'balance_sheet': {...},
-    'cash_flow': {...},
-    'market_data': {...}
-}
-```
-
-### 2. Safe Operations
-All calculations use safe divide patterns:
-```python
-def safe_divide(self, numerator: float, denominator: float, default: float = 0.0) -> float:
-    if denominator == 0:
-        return default
-    return numerator / denominator
-```
-
-### 3. Type Annotations
-Full typing for clarity:
-```python
-def calculate_profitability_ratios(self) -> Dict[str, float]:
-```
-
-### 4. Configuration Constants
-Brand/style information stored as class constants:
-```python
-COLORS = {
-    'primary': {'acme_blue': {'hex': '#0066CC', 'rgb': (0, 102, 204)}},
-    ...
-}
-```
-
-## How Skills Work
-
-1. **Skill Discovery**: Claude scans available skills based on task description
-2. **Minimal Loading**: Only loads necessary files when skill matches
-3. **Execution**: Runs Python scripts using Claude's code execution environment
-4. **Composability**: Multiple skills can work together
-5. **Portability**: Same skill works across Claude apps, Claude Code, and API
-
-## Customization Guidelines
-
-When helping users adapt these skills:
-
-1. **Modify the frontmatter**: Change `name` and `description` to match their use case
-2. **Update brand constants**: Replace Acme Corporation with their company details
-3. **Adjust calculations**: Modify ratio calculations or financial assumptions for their industry
-4. **Add new capabilities**: Extend classes with additional methods
-5. **Simplify**: Remove unnecessary features they won't use
+---
 
 ## Key Principles
 
-- **Don't overengineer**: Skills should be as simple as possible while solving the problem
-- **Edit existing**: When making changes, prefer editing existing skill files over creating new ones
-- **Validate inputs**: Always check for missing/invalid data before calculations
-- **Document assumptions**: Financial models especially need clear assumption documentation
-- **Industry context**: Many calculations (ratios, valuations) require industry-specific interpretation
+### 1. Don't Overengineer
+Skills should be as simple as possible while solving the problem. Avoid unnecessary complexity.
 
-## Templates for Generation
+### 2. Edit Existing Files
+Prefer editing existing skill files over creating new ones. This maintains consistency and reduces clutter.
 
-The `documentation/templates/` folder contains four powerful prompt templates:
+### 3. Validate Inputs
+Always check for missing/invalid data before calculations. Use safe operations (e.g., `safe_divide` to avoid division by zero).
 
-### SKILLS_FACTORY_PROMPT.md
-- **Purpose**: Generate complete Claude Skills (folders with SKILL.md + Python files)
-- **Use for**: Creating capabilities like financial analysis, content research, data processing
-- **Output**: Skill folders with SKILL.md, Python files, samples, and ZIP files
-- **Location**: Skills go in `.claude/skills/` or `~/.claude/skills/`
+### 4. Document Assumptions
+Financial models and domain-specific calculations need clear assumption documentation.
 
-### AGENTS_FACTORY_PROMPT.md
-- **Purpose**: Generate Claude Code agents/sub-agents (single .md files)
-- **Use for**: Creating specialized agents like code reviewers, developers, testers
-- **Output**: Agent .md files with enhanced YAML frontmatter (color, field, expertise, MCP tools)
-- **Location**: Agents go in `.claude/agents/` or `~/.claude/agents/`
+### 5. Industry Context
+Many calculations (ratios, valuations, metrics) require industry-specific interpretation.
 
-### PROMPTS_FACTORY_PROMPT.md
-- **Purpose**: Generate domain-specific prompt builders (complete prompt generation systems)
-- **Use for**: Creating specialized prompt builders for specific industries (Healthcare, Legal, FinTech, etc.)
-- **Output**: Complete prompt builder systems with 10-20 role presets, custom 7-question flow, domain compliance rules, and multi-format output (XML/Claude/ChatGPT/Gemini)
-- **Example**: Generate "Healthcare Prompt Builder" with 15 medical role presets, HIPAA compliance, clinical documentation standards
+---
 
-### MASTER_SLASH_COMMANDS_PROMPT.md
-- **Purpose**: Generate custom Claude Code slash commands following official Anthropic patterns
-- **Use for**: Creating slash commands for business automation, development workflows, compliance checking, research, and specialized tasks
-- **Output**: Self-contained .md files with YAML frontmatter, proper bash permissions, $ARGUMENTS usage, organized in generated-commands/ folders
-- **Key Features**: Three official patterns (Simple, Multi-Phase, Agent-Style), strict validation, kebab-case naming, specific bash permissions (never wildcard), $ARGUMENTS standard (never $1, $2, $3)
-- **Location**: Generated commands go in `generated-commands/[command-name]/` (project-level) or `~/.claude/commands/` (user-level)
-- **Based on**: 6 official Anthropic slash command examples in `documentation/references/`
+## Quick Reference
 
-**Key Differences:**
-- **Skills** = Multi-file capabilities (folders with SKILL.md + Python files)
-- **Agents** = Single-file specialists (.md with YAML frontmatter)
-- **Prompts** = Domain-specific prompt generation systems (meta-prompts that create mega-prompts)
-- **Slash Commands** = Self-contained workflow automation (.md with YAML + bash integration)
+### Factory Templates
 
-## Installation
+Generate new capabilities using these templates:
 
-Users can install these skills and agents:
+| Template | Purpose | Output | Location |
+|----------|---------|--------|----------|
+| **Skills** | Multi-file capabilities | SKILL.md + Python files | `~/.claude/skills/` |
+| **Agents** | Single-file specialists | .md with YAML frontmatter | `~/.claude/agents/` |
+| **Prompts** | Meta-prompt systems | Domain-specific prompt builders | Use as template |
+| **Slash Commands** | Workflow automation | .md with YAML + bash | `~/.claude/commands/` |
+
+**Templates Location**: [documentation/templates/](documentation/templates/)
+
+### Installation Locations
 
 **Skills**:
-- **Claude Code**: Copy skill folder to `~/.claude/skills/`
-- **Claude Apps**: Use the "skill-creator" skill to import
-- **API**: Use the `/v1/skills` endpoint
+- Project-level: `.claude/skills/[skill-name]/`
+- User-level: `~/.claude/skills/[skill-name]/`
 
 **Agents**:
-- **Claude Code Project**: Copy .md file to `.claude/agents/`
-- **Claude Code Personal**: Copy .md file to `~/.claude/agents/`
-- **CLI**: Use `--agents` flag for session-specific agents
+- Project-level: `.claude/agents/[agent-name].md`
+- User-level: `~/.claude/agents/[agent-name].md`
 
-## References
+**Slash Commands**:
+- Project-level: `generated-commands/[command-name]/`
+- User-level: `~/.claude/commands/[command-name]/`
 
-- Claude Skills Guide: [documentation/references/claude-skills-instructions.md](documentation/references/claude-skills-instructions.md)
-- Claude Agents Guide: [documentation/references/claude-agents-instructions.md](documentation/references/claude-agents-instructions.md)
-- OpenAI Codex CLI Reference: [documentation/references/openai-codex-cli-instructions.md](documentation/references/openai-codex-cli-instructions.md)
-- Anthropic Skills docs: https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview
-- Skills marketplace: https://github.com/anthropics/skills
+---
+
+## Common Workflows
+
+### Create a New Skill
+
+1. Review examples in `claude-skills-examples/`
+2. Use `documentation/templates/SKILLS_FACTORY_PROMPT.md`
+3. Generate skill with SKILL.md + Python files
+4. Install to `.claude/skills/` or `~/.claude/skills/`
+5. Test with relevant task
+
+### Create a New Agent
+
+1. Review `documentation/templates/AGENTS_FACTORY_PROMPT.md`
+2. Generate agent .md file with YAML frontmatter
+3. Install to `.claude/agents/` or `~/.claude/agents/`
+4. Test with `--agents` flag or automatic delegation
+
+### Create a Slash Command
+
+1. Review official examples in `documentation/references/`
+2. Use `documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md`
+3. Generate command with YAML + bash permissions
+4. Install to `.claude/commands/` or `generated-commands/`
+5. Test with `/command-name [args]`
+
+### Work with GitHub Issues
+
+1. Read [.github/CLAUDE.md](.github/CLAUDE.md) for workflow requirements
+2. Create plan issue with `plan` label (5-10 tasks max)
+3. Automation creates TASK and SUBTASK issues
+4. Work on tasks in priority order
+5. Close issues when complete (auto-syncs to project board)
+
+---
+
+## Key Files to Know
+
+### Documentation
+
+- **[Claude Skills Guide](documentation/references/claude-skills-instructions.md)** - Complete Anthropic documentation
+- **[Claude Agents Guide](documentation/references/claude-agents-instructions.md)** - Complete Anthropic documentation
+- **[OpenAI Codex CLI Reference](documentation/references/openai-codex-cli-instructions.md)** - Complete CLI documentation
+
+### Templates
+
+- **[SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)** - Generate multi-file skills
+- **[AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)** - Generate single-file agents
+- **[PROMPTS_FACTORY_PROMPT.md](documentation/templates/PROMPTS_FACTORY_PROMPT.md)** - Generate domain prompt builders
+- **[MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)** - Generate slash commands
+
+### Examples
+
+- **[Example Skills](claude-skills-examples/)** - Financial analysis, branding, DCF models
+- **[Generated Skills](generated-skills/)** - AWS architect, Prompt factory, Content researcher, etc.
+
+---
+
+## Getting Help
+
+### Context-Specific Guidance
+
+Navigate to the relevant folder and Claude will load the appropriate CLAUDE.md:
+
+- **GitHub workflows?** → Open [.github/CLAUDE.md](.github/CLAUDE.md)
+- **Skill patterns?** → Open [claude-skills-examples/CLAUDE.md](claude-skills-examples/CLAUDE.md)
+- **Production skills?** → Open [generated-skills/CLAUDE.md](generated-skills/CLAUDE.md)
+- **Templates?** → Open [documentation/CLAUDE.md](documentation/CLAUDE.md)
+
+### External Resources
+
+- **Anthropic Skills Docs**: https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview
+- **Skills Marketplace**: https://github.com/anthropics/skills
+- **Claude Code Docs**: https://docs.claude.com/en/docs/claude-code
+- **OpenAI Codex CLI**: https://developers.openai.com/codex/cli
+
+---
+
+## File Organization
+
+### What Goes Where
+
+**Root Directory** (this level):
+- README.md - Project overview
+- CLAUDE.md - This orchestration file
+- CHANGELOG.md - Version history
+- CONTRIBUTING.md - Contribution guidelines
+
+**NO .md files in root except the ones above** - All other documentation goes in appropriate subfolders with their own CLAUDE.md files.
+
+### Subfolder CLAUDE.md Files
+
+Each major folder has its own CLAUDE.md for focused guidance:
+
+- `.github/CLAUDE.md` - 303 lines of GitHub-specific guidance
+- `claude-skills-examples/CLAUDE.md` - Skill architecture and patterns
+- `generated-skills/CLAUDE.md` - Production skills catalog
+- `documentation/CLAUDE.md` - Templates and references
+
+**Benefit**: You get exactly the guidance you need, when you need it, without scrolling through 665 lines.
+
+---
+
+**Version**: 2.0 (Modular Architecture)
+**Last Updated**: October 30, 2025
+**Lines**: ~155 (down from 665, 77% reduction)
