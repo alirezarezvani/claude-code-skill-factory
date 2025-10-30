@@ -27,8 +27,6 @@
 
 ### Production Skills (6 ready-to-use)
 - **prompt-factory** (403KB) - 69 presets, 15 domains, multi-LLM
-- **health-sdk-builder** (92KB) - Healthcare apps, HIPAA/GDPR/DSGVO/PTV 10
-- **psychology-advisor** (31KB) - CBT, mindfulness, stress management
 - **aws-solution-architect** (53KB) - Serverless, IaC, cost optimization
 - **content-trend-researcher** (35KB) - Multi-platform trend analysis
 - **ms365-tenant-manager** (40KB) - M365 administration
@@ -43,7 +41,6 @@
 ### Documentation
 - README.md (31KB) - Main documentation
 - CLAUDE.md (25KB) - Project guidance
-- GISTS.md (9KB) - SEO/AEO strategy
 - .github/GITHUB_WORKFLOWS_GUIDE.md (25KB) - Complete automation guide
 - CONTRIBUTING.md - Contribution guidelines
 - CHANGELOG.md - Version history
