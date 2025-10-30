@@ -33,7 +33,7 @@ generated-skills-test/
 SESSION_SUMMARY_2025-10-27.md
 TEST_CLAUDE_REVIEW.md.archive/
 generated-skills/slash-command-factory.backup-20251029-161058/
-.archive/*
+.archive/
 
 # Python
 __pycache__/

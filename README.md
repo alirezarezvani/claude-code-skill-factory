@@ -677,12 +677,6 @@ All three repositories work seamlessly with Claude AI and Claude Code across all
 
 ---
 
-### Star History
-
-Track the growth and adoption of the Claude Code ecosystem:
-
-[![Star History Chart](https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor,alirezarezvani/claude-skills&type=Date)](https://star-history.com/#alirezarezvani/claude-code-skills-factory&alirezarezvani/claude-code-tresor&alirezarezvani/claude-skills&Date)
-
 **Legend**:
 - 🔵 **claude-code-skills-factory** - This repository (Skills & Agents Factory)
 - 🟢 **claude-code-tresor** - Development workflow utilities
@@ -827,3 +821,13 @@ This repository provides examples and templates for creating Claude Skills. The 
 **Learn More (Agents)**: Read [claude-agents-instructions.md](claude-agents-instructions.md)
 
 **Ready to build?** Open a prompt template, fill in your details, and start generating production-ready skills, agents, prompts, or slash commands for your Claude Code project!
+
+## Star History
+
+<a href="https://www.star-history.com/#alirezarezvani/claude-code-skills-factory&alirezarezvani/claude-code-tresor&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor&type=date&legend=top-left" />
+ </picture>
+</a>
