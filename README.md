@@ -2,16 +2,62 @@
 
 A comprehensive toolkit for generating production-ready Claude Skills and Claude Code Agents at scale. This repository provides templates, examples, and powerful prompt engineering systems to create custom skills and specialized agents for Claude AI across all platforms.
 
-## Overview
+## 🚀 Quick Start (3 Shortcuts)
 
-This factory enables you to:
-- **Generate Claude Skills** - Multi-file capabilities with Python implementations
-- **Generate Claude Code Agents** - Single-file specialist assistants
-- **Generate Production Prompts** - World-class mega-prompts for any role/industry
-- **Generate Slash Commands** - Custom workflow automation following official Anthropic patterns
-- **Bridge Tools** - Interoperability between Claude Code and OpenAI Codex CLI
+### Shortcut 1: Interactive Builder (Fastest)
+```
+I want to build something
+```
+The **factory-guide** agent asks what you need and delegates to specialist guides.
 
-## Main Capabilities
+### Shortcut 2: Use Slash Commands
+```bash
+/build skill              # Interactive skill builder
+/build agent             # Interactive agent builder
+/build prompt            # Interactive prompt builder
+```
+
+### Shortcut 3: Use Ready-Made Skills
+```bash
+# Install Prompt Factory (69 professional presets)
+cp -r generated-skills/prompt-factory ~/.claude/skills/
+
+# Ask Claude
+"I need a prompt for [role name]"
+```
+
+---
+
+## 📋 Built-in Commands
+
+This toolkit includes **7 slash commands** and **4 interactive agents** to streamline your workflow:
+
+### Workflow Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `/build` | Interactive builder (skill/agent/prompt) | `/build skill` |
+| `/validate-output` | Validate generated output + auto-ZIP | `/validate-output` |
+| `/install-skill` | Installation guidance | `/install-skill` |
+| `/test-factory` | Run test examples | `/test-factory` |
+| `/factory-status` | Check system status | `/factory-status` |
+| `/sync-agents-md` | Generate AGENTS.md from CLAUDE.md | `/sync-agents-md` |
+| `/codex-exec` | Execute Codex CLI commands | `/codex-exec analysis "task"` |
+
+### Interactive Guide Agents
+
+| Agent | Purpose | Activation |
+|-------|---------|-----------|
+| **factory-guide** | Orchestrator - delegates to specialists | "I want to build something" |
+| **skills-guide** | Build Claude Skills (4-5 questions) | "Build a skill" |
+| **prompts-guide** | Use Prompt Factory (69 presets) | "Generate a prompt" |
+| **agents-guide** | Build Claude Code Agents (5-6 questions) | "Create an agent" |
+
+See [.claude/agents/README.md](.claude/agents/README.md) and [.claude/commands/README.md](.claude/commands/README.md) for complete documentation.
+
+---
+
+## 🎯 Main Capabilities
 
 ### 1. Skills Factory
 Generate complete, production-ready Claude Skills with:
@@ -22,6 +68,7 @@ Generate complete, production-ready Claude Skills with:
 - ZIP packages for easy distribution
 
 **Template**: [SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)
+**Shortcut**: `/build skill` or "I want to build a skill"
 
 ### 2. Agents Factory
 Create specialized Claude Code Agents with:
@@ -31,6 +78,7 @@ Create specialized Claude Code Agents with:
 - Tool access configuration
 
 **Template**: [AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
+**Shortcut**: `/build agent` or "I want to create an agent"
 
 ### 3. Prompt Factory
 Generate mega-prompts for any role with:
@@ -40,6 +88,7 @@ Generate mega-prompts for any role with:
 - Core & Advanced modes
 
 **Ready-to-use Skill**: [generated-skills/prompt-factory/](generated-skills/prompt-factory/)
+**Shortcut**: Install skill, then "I need a prompt for [role]"
 
 ### 4. Slash Command Factory
 Create custom slash commands with:
@@ -49,6 +98,7 @@ Create custom slash commands with:
 - Auto-generated bash permissions
 
 **Template**: [MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)
+**Shortcut**: Use template directly or `/build` with custom workflow
 
 ### 5. Codex CLI Bridge
 Enable Claude Code ↔ Codex CLI interoperability with:
@@ -58,57 +108,82 @@ Enable Claude Code ↔ Codex CLI interoperability with:
 - Cross-tool team collaboration support
 
 **Skill**: [generated-skills/codex-cli-bridge/](generated-skills/codex-cli-bridge/)
+**Shortcut**: `/sync-agents-md` to sync documentation
 
-## Quick Start
+---
 
-### Generate a Claude Skill
+## 🔄 Complete Workflow Examples
 
-1. Open [SKILLS_FACTORY_PROMPT.md](documentation/templates/SKILLS_FACTORY_PROMPT.md)
-2. Fill in your business type, use cases, and requirements at the bottom
-3. Copy the entire prompt and paste into Claude (any platform)
-4. Receive complete skill package with code, docs, and samples
+### Example 1: Build a Skill in 2 Minutes
+```bash
+# Step 1: Start builder
+/build skill
 
-### Generate a Claude Agent
+# Step 2: Answer 4-5 questions
+# (Claude guides you through the process)
 
-1. Open [AGENTS_FACTORY_PROMPT.md](documentation/templates/AGENTS_FACTORY_PROMPT.md)
-2. Fill in agent details (name, type, field, tools, model)
-3. Copy and paste into Claude
-4. Install the generated .md file to `.claude/agents/`
+# Step 3: Validate output
+/validate-output
 
-### Use the Prompt Factory
+# Step 4: Install
+/install-skill
 
-1. Install: `cp -r generated-skills/prompt-factory ~/.claude/skills/`
-2. Ask Claude: "I need a prompt for [role name]"
-3. Answer 5-7 questions
-4. Receive production-ready mega-prompt in your preferred format
-
-### Interactive Guide System
-
-The fastest way to build skills, agents, or prompts:
-
-```
-I want to build something
+# Done! Your skill is ready to use
 ```
 
-The **factory-guide** agent will ask what you need and delegate to specialist guides. Or use slash commands:
+### Example 2: Generate Cross-Platform Prompt
+```bash
+# Step 1: Install Prompt Factory (one-time)
+cp -r generated-skills/prompt-factory ~/.claude/skills/
 
-- `/build` - Interactive skill/agent/prompt builder
-- `/validate-output` - Validate generated output
-- `/install-skill` - Install to appropriate location
-- `/factory-status` - Check system status
+# Step 2: Ask Claude
+"I need a prompt for a Senior DevOps Engineer"
 
-See [.claude/agents/README.md](.claude/agents/README.md) and [.claude/commands/README.md](.claude/commands/README.md) for details.
+# Step 3: Answer 5-7 questions
+# (Select format: XML, Claude, ChatGPT, or Gemini)
 
-## Repository Structure
+# Done! Copy and paste into your preferred LLM
+```
+
+### Example 3: Sync for Codex CLI Team
+```bash
+# Step 1: Ensure CLAUDE.md exists in your project
+# (If missing, run /init first)
+
+# Step 2: Generate AGENTS.md for Codex CLI users
+/sync-agents-md
+
+# Step 3: Commit to repo
+git add AGENTS.md
+git commit -m "docs: Add AGENTS.md for Codex CLI compatibility"
+
+# Done! Codex CLI users can now reference your skills
+```
+
+---
+
+## 📁 Repository Structure
 
 ```
 claude-code-skills-factory/
 ├── README.md                              # This file
 ├── CLAUDE.md                              # Repository guidance
 ├── AGENTS.md                              # Codex CLI documentation (auto-generated)
+├── CHANGELOG.md                           # Version history
 ├── .claude/
-│   ├── agents/                            # Guide agents (factory-guide, skills-guide, etc.)
-│   └── commands/                          # Slash commands (/build, /sync-agents-md, etc.)
+│   ├── agents/                            # 4 interactive guide agents
+│   │   ├── factory-guide.md              # Orchestrator
+│   │   ├── skills-guide.md               # Skills builder
+│   │   ├── prompts-guide.md              # Prompts generator
+│   │   └── agents-guide.md               # Agents creator
+│   └── commands/                          # 7 slash commands
+│       ├── build.md                       # Interactive builder
+│       ├── validate-output.md             # Validation + ZIP
+│       ├── install-skill.md               # Installation guide
+│       ├── test-factory.md                # Test runner
+│       ├── factory-status.md              # Status checker
+│       ├── sync-agents-md.md              # CLAUDE.md → AGENTS.md
+│       └── codex-exec.md                  # Codex CLI executor
 ├── claude-skills-examples/                # 3 reference implementations
 ├── documentation/
 │   ├── references/                        # Official Anthropic examples
@@ -124,35 +199,49 @@ claude-code-skills-factory/
     └── codex-cli-bridge/                  # Claude Code ↔ Codex CLI bridge
 ```
 
-## Production Skills Included
+---
+
+## 🎁 Production Skills Included
 
 All skills include complete implementation, documentation, samples, and distribution packages:
 
-1. **AWS Solution Architect** (53 KB) - Serverless architecture, IaC templates, cost optimization
-   - [View Skill](generated-skills/aws-solution-architect/)
+### 1. AWS Solution Architect (53 KB)
+Serverless architecture, IaC templates, cost optimization
+- [View Skill](generated-skills/aws-solution-architect/)
 
-2. **Content Trend Researcher** (35 KB) - Multi-platform trend analysis, SEO-optimized outlines
-   - [View Skill](generated-skills/content-trend-researcher/)
+### 2. Content Trend Researcher (35 KB)
+Multi-platform trend analysis, SEO-optimized outlines
+- [View Skill](generated-skills/content-trend-researcher/)
 
-3. **Microsoft 365 Tenant Manager** (40 KB) - M365 administration, PowerShell automation
-   - [View Skill](generated-skills/ms365-tenant-manager/)
+### 3. Microsoft 365 Tenant Manager (40 KB)
+M365 administration, PowerShell automation
+- [View Skill](generated-skills/ms365-tenant-manager/)
 
-4. **Psychology Advisor** (31 KB) - Evidence-based mental wellness, CBT techniques
-   - [View Skill](generated-skills/psychology-advisor/)
+### 4. Psychology Advisor (31 KB)
+Evidence-based mental wellness, CBT techniques
+- [View Skill](generated-skills/psychology-advisor/)
 
-5. **Agent Factory** (12 KB) - Generate custom Claude Code agents with enhanced YAML
-   - [View Skill](generated-skills/agent-factory/)
+### 5. Agent Factory (12 KB)
+Generate custom Claude Code agents with enhanced YAML
+- [View Skill](generated-skills/agent-factory/)
 
-6. **Prompt Factory** (427 KB) - 69 professional presets, multi-format output, 7-point validation
-   - [View Skill](generated-skills/prompt-factory/)
+### 6. Prompt Factory (427 KB)
+69 professional presets, multi-format output, 7-point validation
+- [View Skill](generated-skills/prompt-factory/)
+- **Most Popular** - Install first for instant productivity
 
-7. **Slash Command Factory** (26 KB) - 17 presets, official Anthropic patterns, 4-layer validation
-   - [View Skill](generated-skills/slash-command-factory/)
+### 7. Slash Command Factory (26 KB)
+17 presets, official Anthropic patterns, 4-layer validation
+- [View Skill](generated-skills/slash-command-factory/)
 
-8. **Codex CLI Bridge** (48 KB) - Claude Code ↔ Codex CLI interoperability, AGENTS.md generation
-   - [View Skill](generated-skills/codex-cli-bridge/)
+### 8. Codex CLI Bridge (48 KB) 🆕
+Claude Code ↔ Codex CLI interoperability, AGENTS.md generation
+- [View Skill](generated-skills/codex-cli-bridge/)
+- **New** - Enables cross-tool team collaboration
 
-## Reference Examples
+---
+
+## 💡 Reference Examples
 
 Three fully-functional example skills demonstrating different patterns:
 
@@ -162,25 +251,35 @@ Three fully-functional example skills demonstrating different patterns:
 
 See [claude-skills-examples/](claude-skills-examples/) for implementation details.
 
-## Key Features
+---
+
+## ✨ Key Features
 
 - **Production-Ready Output** - Proper YAML frontmatter, type-annotated Python, error handling
-- **Composable Design** - Skills work together in workflows
+- **Interactive Workflows** - Guided conversations through 4 specialist agents
+- **Built-in Automation** - 7 slash commands for common tasks
 - **Complete Packaging** - Documentation, samples, ZIP files included
 - **Smart Detection** - Automatically determines when Python code is needed vs prompt-only
 - **Multi-Format Support** - XML, Claude, ChatGPT, Gemini output formats
 - **Official Patterns** - Based on Anthropic documentation and examples
 - **Cross-Platform** - Works with Claude AI (desktop/browser), Claude Code, and API
+- **Cross-Tool Compatibility** - Bridge to OpenAI Codex CLI
 
-## Documentation
+---
+
+## 📚 Documentation
 
 - **Skills Guide**: [claude-skills-instructions.md](claude-skills-instructions.md) - Complete Anthropic documentation
 - **Agents Guide**: [claude-agents-instructions.md](claude-agents-instructions.md) - Complete Anthropic documentation
 - **Slash Commands**: [documentation/references/](documentation/references/) - Official Anthropic examples
 - **Factory Templates**: [documentation/templates/](documentation/templates/) - 4 generation templates
 - **Project Guide**: [CLAUDE.md](CLAUDE.md) - Repository structure and workflows
+- **Interactive Agents**: [.claude/agents/README.md](.claude/agents/README.md) - Guide agent documentation
+- **Slash Commands**: [.claude/commands/README.md](.claude/commands/README.md) - Command reference
 
-## Complementary Resources
+---
+
+## 🔗 Complementary Resources
 
 **Claude Code Tresor** - [alirezarezvani/claude-code-tresor](https://github.com/alirezarezvani/claude-code-tresor)
 - Ready-to-use development workflow tools (8 skills, 8 agents, 4 slash commands)
@@ -197,14 +296,18 @@ See [claude-skills-examples/](claude-skills-examples/) for implementation detail
 - **Tresor**: Deploy ready-made development workflow tools
 - **Skills Library**: Adopt domain-specific professional expertise
 
-## External Resources
+---
+
+## 🌐 External Resources
 
 - **Anthropic Skills Docs**: https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview
 - **Skills Marketplace**: https://github.com/anthropics/skills
 - **Engineering Blog**: https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
 - **API Documentation**: https://docs.claude.com/en/api/skills-guide
 
-## Contributing
+---
+
+## 🤝 Contributing
 
 This is a reference repository. To contribute:
 1. Fork the repository
@@ -213,21 +316,26 @@ This is a reference repository. To contribute:
 4. Include complete implementation with samples
 5. Submit a pull request
 
-## License
+---
+
+## 📄 License
 
 This repository provides examples and templates for creating Claude Skills. The skills you generate using these templates are yours to use as you see fit.
 
-## Version
+---
+
+## 📊 Version
 
 **Current Version**: 1.4.0
 **Last Updated**: October 30, 2025
 **Compatible With**: Claude Skills (all platforms), Claude Code Agents, Claude Code Slash Commands
 
 **Latest Changes** (v1.4.0):
-- Added Codex CLI Bridge skill for Claude Code ↔ OpenAI Codex CLI interoperability
-- Added `/sync-agents-md` and `/codex-exec` slash commands
-- AGENTS.md auto-generation capability for cross-tool compatibility
-- Consolidated README.md for better focus on main capabilities
+- ✨ Added **Codex CLI Bridge** skill for Claude Code ↔ OpenAI Codex CLI interoperability
+- ✨ Added `/sync-agents-md` and `/codex-exec` slash commands
+- ✨ AGENTS.md auto-generation capability for cross-tool compatibility
+- 📝 Consolidated README.md for better focus on main capabilities and shortcuts
+- 🚀 Enhanced Quick Start with 3 shortcuts and workflow examples
 
 **Previous Changes** (v1.3.0):
 - MASTER_SLASH_COMMANDS_PROMPT.md template with official Anthropic patterns
@@ -239,11 +347,11 @@ This repository provides examples and templates for creating Claude Skills. The 
 - Multi-format output (XML/Claude/ChatGPT/Gemini)
 - 7-point quality validation system
 
+**See**: [CHANGELOG.md](CHANGELOG.md) for complete version history
+
 ---
 
-**Ready to build?** Choose a factory template, fill in your details, and start generating production-ready skills, agents, prompts, or slash commands!
-
-## Star History
+## 📈 Star History
 
 <a href="https://www.star-history.com/#alirezarezvani/claude-code-skills-factory&alirezarezvani/claude-code-tresor&type=date&legend=top-left">
  <picture>
@@ -252,3 +360,7 @@ This repository provides examples and templates for creating Claude Skills. The 
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor&type=date&legend=top-left" />
  </picture>
 </a>
+
+---
+
+**Ready to build?** Try one of the shortcuts above, or explore the [factory templates](documentation/templates/) to start generating production-ready skills, agents, prompts, or slash commands!

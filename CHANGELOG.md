@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2025-10-30
+
+### Added
+- **Codex CLI Bridge** skill (48 KB) - Seamless interoperability between Claude Code and OpenAI Codex CLI
+  - Reference-based architecture (no file duplication)
+  - Automatic CLAUDE.md → AGENTS.md translation
+  - Cross-tool team collaboration support
+- **7 Python modules** for bridge functionality:
+  - bridge.py - Main orchestrator with CLI interface
+  - safety_mechanism.py - Environment validation (Codex CLI + CLAUDE.md checks)
+  - claude_parser.py - CLAUDE.md parser with YAML frontmatter support
+  - project_analyzer.py - Project structure and metadata analysis
+  - agents_md_generator.py - Template-based AGENTS.md generation
+  - skill_documenter.py - Different approaches for functional vs prompt-based skills
+  - codex_executor.py - Codex CLI helpers (always uses 'codex exec')
+- **2 new slash commands**:
+  - /sync-agents-md - Regenerate AGENTS.md from CLAUDE.md (integrates with /init, /update-claude, /check-docs)
+  - /codex-exec - Execute Codex CLI commands with proper syntax (analysis, edit, search, resume types)
+- **AGENTS.md generation** - Auto-generates Codex CLI-compatible documentation from CLAUDE.md
+  - 19 KB output for claude-code-skills-factory (629 lines, 13 skills, 59 agents)
+  - Workflow pattern translations (Claude commands → Codex equivalents)
+  - Command reference table (Claude Code ↔ Codex CLI)
+  - MCP integration documentation
+- **Safety mechanisms**:
+  - Auto-validates Codex CLI installation
+  - Auto-runs /init if CLAUDE.md missing (with user notification)
+  - Minimal CLAUDE.md fallback generation
+  - Comprehensive error handling
+- **Package distribution** - package.sh script creates distributable ZIP (48 KB) with SHA256 checksum
+
+### Changed
+- **README.md completely revised** for better focus on shortcuts and efficiency
+  - Added "Quick Start (3 Shortcuts)" section at top
+  - Added "Built-in Commands" section with tables for 7 slash commands and 4 interactive agents
+  - Added "Complete Workflow Examples" with 3 real-world scenarios
+  - Enhanced Repository Structure with detailed .claude/ breakdown
+  - Improved Production Skills section with "Most Popular" and "New" badges
+  - Added emojis for better scannability
+  - Reduced from 876 to 367 lines while adding more practical content
+- **Repository structure** - Added AGENTS.md to root and new slash commands to .claude/commands/
+
+### Documentation
+- **Use Cases**: Cross-tool teams, project migration, CI/CD integration, skills marketplace compatibility
+- **Model selection helpers**: gpt-5 (general reasoning) vs gpt-5-codex (code editing)
+- **Sandbox modes**: read-only, workspace-write, danger-full-access
+- **Workflow integration**: /sync-agents-md integrates with existing Claude Code commands
+- **Complete documentation** (6 files): SKILL.md, README, HOW_TO_USE, INSTALL, CHANGELOG, samples
+
+### Fixed
+- Consolidated README.md for 58% reduction in length (876 → 367 lines) while adding practical shortcuts
+- Better focus on built-in commands and workflow efficiency
+
+---
+
 ## [2.2.0] - 2025-10-29
 
 ### Added
@@ -176,5 +230,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-**Current Version**: 2.2.0
-**Last Updated**: October 29, 2025
+**Current Version**: 1.4.0
+**Last Updated**: October 30, 2025
