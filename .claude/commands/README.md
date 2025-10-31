@@ -370,8 +370,35 @@ Commands:
 
 ---
 
-**Last Updated**: October 28, 2025
-**Version**: 1.0.0
+---
+
+## 🧭 Git & Governance Commands
+
+| Command | Purpose |
+|---------|---------|
+| **/ci-guard** | Trigger commit/branch guard workflow |
+| **/review** | Run local review checks + CI visibility |
+| **/security-scan** | Run local security checks + workflow |
+| **/run-release** | Launch release orchestrator workflow |
+| **/sync-branch** | Rebase feature branch onto main |
+| **/sync-todos-to-github** | Convert TodoWrite tasks to GitHub plan issue |
+
+### Git Helpers (`.claude/commands/git/`)
+
+| Command | Description |
+|---------|-------------|
+| **git/cm** | Stage & commit (no push) |
+| **git/cp** | Stage, commit, push |
+| **git/pr** | Create pull request |
+| **git/rv** | Local review gate |
+| **git/sc** | Local security gate |
+
+Always run git helpers before triggering slash commands to surface results in CI and GitHub checks.
+
+---
+
+**Last Updated**: October 31, 2025
+**Version**: 1.1.0
 **Status**: ✅ Ready to use
 
-**Build amazing Skills, Prompts, and Agents with simple commands!** 🏭
+**Build amazing Skills, Prompts, Agents, and stay release-ready with simple commands!** 🏭
