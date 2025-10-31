@@ -17,6 +17,7 @@
 Shows comprehensive status of your factory work:
 - Skills generated (in generated-skills/)
 - Agents created (in .claude/agents/ or ~/.claude/agents/)
+- Hooks generated (in generated-hooks/)
 - Prompts generated (in conversation)
 - Validation status
 - Installation status
@@ -62,6 +63,31 @@ Factory Status Report
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+🔧 Claude Hooks Generated (3)
+
+1. auto-format-python
+   Location: generated-hooks/auto-format-python/
+   Event Type: PostToolUse
+   Language: Python (Black formatter)
+   Status: ✅ Validated ✅ Installed (user-level)
+   Next: Test by editing a .py file
+
+2. test-runner-js
+   Location: generated-hooks/test-runner-js/
+   Event Type: SubagentStop
+   Language: JavaScript (Jest)
+   Status: ✅ Validated ⏳ Not installed yet
+   Next: /install-hook generated-hooks/test-runner-js
+
+3. git-auto-add
+   Location: generated-hooks/git-auto-add/
+   Event Type: PostToolUse
+   Language: Generic (Git)
+   Status: ⏳ Not validated yet
+   Next: /validate-output hook generated-hooks/git-auto-add
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🎯 Mega-Prompts Generated (1)
 
 1. Senior Backend Engineer Prompt
@@ -74,33 +100,42 @@ Factory Status Report
 
 📊 Summary
 
-Total Generated: 4 outputs
-Validated: 3/4 (75%)
-Installed: 2/4 (50%)
-Tested: 0/4 (0%)
+Total Generated: 7 outputs (2 skills, 1 agent, 3 hooks, 1 prompt)
+Validated: 5/7 (71%)
+Installed: 3/7 (43%)
+Tested: 0/7 (0%)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🎯 Recommended Next Steps
 
-1. Install financial-reports skill:
+1. Validate git-auto-add hook:
+   /validate-output hook generated-hooks/git-auto-add
+
+2. Install test-runner-js hook:
+   /install-hook generated-hooks/test-runner-js
+
+3. Install financial-reports skill:
    /install-skill generated-skills/financial-reports
 
-2. Test healthcare-analyzer skill:
+4. Test healthcare-analyzer skill:
    /test-factory skill healthcare-analyzer
 
-3. Test Senior Backend Engineer prompt:
+5. Test auto-format-python hook:
+   Edit a .py file and check if Black runs
+
+6. Test Senior Backend Engineer prompt:
    Copy to Claude.ai and try a test request
 
-4. Test code-reviewer agent:
+7. Test code-reviewer agent:
    Make some code changes and see if it auto-invokes
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Need help?
-- Build more: /build
+- Build more: /build skill|prompt|agent|hook
 - Validate: /validate-output [type] [path]
-- Install: /install-skill [path]
+- Install: /install-skill [path] or /install-hook [path]
 - Test: /test-factory [type] [name]
 ```
 
@@ -132,6 +167,18 @@ ls ~/.claude/agents/*.md
 - Analyzes recent conversation
 - Looks for generated prompts (XML, Claude, ChatGPT, Gemini formats)
 - Checks token count announcements
+
+**For Hooks**:
+```bash
+# Check generated-hooks/ directory
+ls generated-hooks/*/hook.json
+
+# Check if installed (user-level)
+grep -r "hook.json" ~/.claude/settings.json
+
+# Check if installed (project-level)
+grep -r "hook.json" .claude/settings.json
+```
 
 ---
 
@@ -166,7 +213,7 @@ ls ~/.claude/agents/*.md
 Factory Status Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-No skills, prompts, or agents generated yet.
+No skills, prompts, agents, or hooks generated yet.
 
 Ready to start building?
 
@@ -177,6 +224,7 @@ Or be specific:
 /build skill     - Build a custom Claude Skill
 /build prompt    - Generate a mega-prompt
 /build agent     - Create a Claude Code Agent
+/build hook      - Create a Claude Code Hook
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -287,9 +335,10 @@ Output: 1 skill, ✅ complete (validated, installed, tested)
 
 ## Related Commands
 
-- `/build` - Generate skills/prompts/agents
+- `/build` - Generate skills/prompts/agents/hooks
 - `/validate-output` - Check quality
-- `/install-skill` - Install outputs
+- `/install-skill` - Install skills
+- `/install-hook` - Install hooks
 - `/test-factory` - Test functionality
 
 ---
