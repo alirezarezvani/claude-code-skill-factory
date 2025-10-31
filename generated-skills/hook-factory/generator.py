@@ -248,17 +248,24 @@ class HookGenerator:
             language: Programming language
 
         Returns:
-            Hook name in kebab-case
+            Hook name in kebab-case (sanitized for filesystem safety)
         """
         # Convert to lowercase and replace spaces with hyphens
         name = template_name.lower().replace(' ', '-')
 
-        # Remove special characters
+        # Remove special characters (only keep alphanumeric and hyphens)
         name = re.sub(r'[^a-z0-9-]', '', name)
 
         # Add language if not already in name
         if language and language not in name:
             name = f"{name}-{language}"
+
+        # Ensure no path traversal sequences
+        name = name.replace('..', '').strip('/')
+
+        # Validate final name is safe
+        if not re.match(r'^[a-z0-9-]+$', name):
+            raise ValueError(f"Generated hook name '{name}' contains invalid characters")
 
         return name
 

@@ -169,8 +169,21 @@ class HookFactory:
         Returns:
             Dictionary with file paths
         """
+        # Validate hook_name for path traversal
+        hook_name = self._sanitize_hook_name(package.hook_name)
+
         # Create output directory
-        output_dir = self.output_base / package.hook_name
+        output_dir = self.output_base / hook_name
+
+        # Validate path is within output_base (prevent path traversal)
+        try:
+            output_dir = output_dir.resolve()
+            output_base_resolved = self.output_base.resolve()
+            if not str(output_dir).startswith(str(output_base_resolved)):
+                raise ValueError(f"Invalid hook name: path traversal detected in '{package.hook_name}'")
+        except (ValueError, OSError) as e:
+            raise ValueError(f"Invalid hook name: {str(e)}")
+
         output_dir.mkdir(parents=True, exist_ok=True)
 
         files = {}
@@ -192,6 +205,35 @@ class HookFactory:
             'hook_name': package.hook_name,
             'files': files
         }
+
+    def _sanitize_hook_name(self, hook_name: str) -> str:
+        """
+        Sanitize hook name to prevent path traversal attacks.
+
+        Args:
+            hook_name: Raw hook name from user input
+
+        Returns:
+            Sanitized hook name safe for filesystem
+
+        Raises:
+            ValueError: If hook name contains invalid characters
+        """
+        import re
+
+        # Check for path traversal attempts
+        if '..' in hook_name:
+            raise ValueError(f"Invalid hook name: '..' not allowed in '{hook_name}'")
+
+        # Check for absolute paths
+        if hook_name.startswith('/') or (len(hook_name) > 1 and hook_name[1] == ':'):
+            raise ValueError(f"Invalid hook name: absolute paths not allowed in '{hook_name}'")
+
+        # Only allow alphanumeric, hyphens, underscores
+        if not re.match(r'^[a-zA-Z0-9_-]+$', hook_name):
+            raise ValueError(f"Invalid hook name: only alphanumeric, hyphens, and underscores allowed in '{hook_name}'")
+
+        return hook_name
 
     def list_templates(self) -> None:
         """List all available templates."""

@@ -395,10 +395,40 @@ def validate_hook_file(file_path: str) -> ValidationResult:
     Returns:
         ValidationResult
     """
+    from pathlib import Path
+
     validator = HookValidator()
 
     try:
-        with open(file_path, 'r') as f:
+        # Validate file path for path traversal
+        file_path_obj = Path(file_path).resolve()
+
+        # Only allow reading from safe directories (generated-hooks, examples, etc.)
+        # This prevents reading arbitrary system files
+        safe_directories = [
+            Path.cwd() / 'generated-hooks',
+            Path.cwd() / 'examples',
+            Path.cwd() / 'generated-skills' / 'hook-factory' / 'examples'
+        ]
+
+        # Check if file is within any safe directory
+        is_safe = any(
+            str(file_path_obj).startswith(str(safe_dir.resolve()))
+            for safe_dir in safe_directories
+        )
+
+        if not is_safe:
+            return ValidationResult(
+                is_valid=False,
+                is_safe=False,
+                issues=[ValidationIssue(
+                    severity='error',
+                    message=f'Security: File path outside allowed directories: {file_path}',
+                    fix_suggestion='Only validate files in generated-hooks/, examples/, or hook-factory/examples/'
+                )]
+            )
+
+        with open(file_path_obj, 'r') as f:
             content = f.read()
 
         # Validate JSON syntax
