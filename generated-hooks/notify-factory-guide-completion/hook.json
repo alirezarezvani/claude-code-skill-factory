@@ -1,0 +1,18 @@
+{
+  "matcher": {},
+  "hooks": [
+    {
+      "type": "command",
+      "command": "#!/bin/bash\n\n# Check if we're on macOS (required for afplay and osascript)\nif [[ \"$OSTYPE\" != \"darwin\"* ]]; then\n    exit 0\nfi\n\n# Check if this is a subagent completion and if transcript exists\nif [ -z \"$CLAUDE_TRANSCRIPT_PATH\" ]; then\n    # Fallback: use session transcript path if available\n    TRANSCRIPT_PATH=\"$HOME/.claude/transcripts/latest.json\"\nelse\n    TRANSCRIPT_PATH=\"$CLAUDE_TRANSCRIPT_PATH\"\nfi\n\n# Check if transcript file exists\nif [ ! -f \"$TRANSCRIPT_PATH\" ]; then\n    exit 0\nfi\n\n# Check if factory-guide agent was used in the last few lines\n# Look for agent invocation in transcript (last 50 lines to be efficient)\nif tail -50 \"$TRANSCRIPT_PATH\" 2>/dev/null | grep -qi \"factory-guide\"; then\n    # Play ping sound\n    afplay /System/Library/Sounds/Ping.aiff 2>/dev/null &\n    \n    # Send macOS notification\n    osascript -e 'display notification \"The factory-guide agent has completed its task.\" with title \"Claude Code\" sound name \"Ping\"' 2>/dev/null &\n    \n    # Optional: Log the completion\n    echo \"[$(date '+%Y-%m-%d %H:%M:%S')] factory-guide agent completed\" >> \"$HOME/.claude/agent-notifications.log\"\nfi\n\nexit 0",
+      "timeout": 10
+    }
+  ],
+  "_metadata": {
+    "generated_by": "hook-factory",
+    "generated_at": "2025-10-30T19:30:00Z",
+    "template": "custom",
+    "event_type": "SubagentStop",
+    "hook_name": "notify-factory-guide-completion",
+    "description": "Sends macOS notification with ping sound when factory-guide agent completes a task"
+  }
+}

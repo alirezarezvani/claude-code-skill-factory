@@ -1,0 +1,202 @@
+{
+  "post_tool_use_format": {
+    "metadata": {
+      "name": "Auto-Format Code After Editing",
+      "description": "Automatically format code files after editing with language-specific formatters",
+      "use_cases": [
+        "Auto-format Python files with black",
+        "Auto-format JavaScript/TypeScript with prettier",
+        "Auto-format Rust with rustfmt"
+      ],
+      "complexity": "beginner",
+      "safety_notes": "Must complete in <5 seconds. Uses silent failure mode.",
+      "event_type": "PostToolUse",
+      "timing": "Triggers immediately after Write/Edit tools complete"
+    },
+    "template": {
+      "matcher": {
+        "tool_names": ["Write", "Edit"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Check if {{TOOL}} is installed\nif ! command -v {{TOOL}} &> /dev/null; then\n    exit 0\nfi\n\n# Format the file based on type\n{{FORMAT_LOGIC}}",
+          "timeout": 60
+        }
+      ]
+    },
+    "variables": {
+      "TOOL": {
+        "description": "Formatting tool to use",
+        "options": {
+          "python": "black",
+          "javascript": "prettier",
+          "typescript": "prettier",
+          "rust": "rustfmt",
+          "go": "gofmt"
+        }
+      },
+      "FORMAT_LOGIC": {
+        "description": "Language-specific formatting logic",
+        "patterns": {
+          "python": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.py ]]; then\n    black \"$CLAUDE_TOOL_FILE_PATH\" || exit 0\nfi",
+          "javascript": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.js ]] || [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.jsx ]]; then\n    prettier --write \"$CLAUDE_TOOL_FILE_PATH\" || exit 0\nfi",
+          "typescript": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.ts ]] || [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.tsx ]]; then\n    prettier --write \"$CLAUDE_TOOL_FILE_PATH\" || exit 0\nfi",
+          "rust": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.rs ]]; then\n    rustfmt \"$CLAUDE_TOOL_FILE_PATH\" || exit 0\nfi",
+          "go": "if [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.go ]]; then\n    gofmt -w \"$CLAUDE_TOOL_FILE_PATH\" || exit 0\nfi"
+        }
+      },
+      "FILE_PATTERNS": {
+        "description": "Glob patterns for target files",
+        "options": {
+          "python": ["**/*.py"],
+          "javascript": ["**/*.js", "**/*.jsx"],
+          "typescript": ["**/*.ts", "**/*.tsx"],
+          "rust": ["**/*.rs"],
+          "go": ["**/*.go"]
+        }
+      }
+    }
+  },
+  "post_tool_use_git_add": {
+    "metadata": {
+      "name": "Auto-Add Files to Git After Editing",
+      "description": "Automatically stage modified files with git after editing",
+      "use_cases": [
+        "Auto-stage all edited files",
+        "Auto-stage specific file types",
+        "Simplify git workflow"
+      ],
+      "complexity": "beginner",
+      "safety_notes": "Read git status before staging. Uses silent failure mode.",
+      "event_type": "PostToolUse",
+      "timing": "Triggers immediately after Write/Edit tools complete"
+    },
+    "template": {
+      "matcher": {
+        "tool_names": ["Write", "Edit"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Check if this is a git repository\nif ! git rev-parse --git-dir &> /dev/null; then\n    exit 0\nfi\n\n# Check if file path is available\nif [ -z \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n    exit 0\nfi\n\n# Stage the file\ngit add \"$CLAUDE_TOOL_FILE_PATH\" 2>/dev/null || exit 0",
+          "timeout": 60
+        }
+      ]
+    },
+    "variables": {
+      "FILE_FILTER": {
+        "description": "Optional filter for which files to auto-add",
+        "options": {
+          "all": "Stage all edited files",
+          "code_only": "Stage only code files (*.py, *.js, *.ts, etc.)",
+          "exclude_tests": "Stage all except test files"
+        },
+        "default": "all"
+      }
+    }
+  },
+  "subagent_stop_test_runner": {
+    "metadata": {
+      "name": "Run Tests When Agent Completes",
+      "description": "Automatically run tests after agent completes work",
+      "use_cases": [
+        "Run unit tests after code changes",
+        "Run integration tests",
+        "Quality gate before continuing"
+      ],
+      "complexity": "intermediate",
+      "safety_notes": "Can be slower (tests take time). Runs once per agent completion.",
+      "event_type": "SubagentStop",
+      "timing": "Triggers once when agent finishes its task"
+    },
+    "template": {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Detect test framework and run tests\n{{TEST_DETECTION_LOGIC}}\n\n# Run the appropriate test command\n{{TEST_COMMAND}} || exit 0",
+          "timeout": 120
+        }
+      ]
+    },
+    "variables": {
+      "TEST_FRAMEWORK": {
+        "description": "Testing framework to use",
+        "options": {
+          "python": "pytest",
+          "javascript": "jest",
+          "typescript": "jest",
+          "rust": "cargo",
+          "go": "go"
+        }
+      },
+      "TEST_DETECTION_LOGIC": {
+        "description": "Logic to detect which test framework to use",
+        "patterns": {
+          "python": "if ! command -v pytest &> /dev/null; then\n    exit 0\nfi",
+          "javascript": "if ! command -v npm &> /dev/null; then\n    exit 0\nfi\nif [ ! -f package.json ]; then\n    exit 0\nfi",
+          "rust": "if ! command -v cargo &> /dev/null; then\n    exit 0\nfi",
+          "go": "if ! command -v go &> /dev/null; then\n    exit 0\nfi"
+        }
+      },
+      "TEST_COMMAND": {
+        "description": "Command to run tests",
+        "patterns": {
+          "python": "pytest -v",
+          "javascript": "npm test",
+          "rust": "cargo test",
+          "go": "go test ./..."
+        }
+      }
+    }
+  },
+  "session_start_context_loader": {
+    "metadata": {
+      "name": "Load Project Context at Session Start",
+      "description": "Load project-specific context when Claude Code session starts",
+      "use_cases": [
+        "Load TODO list",
+        "Display project status",
+        "Show recent git changes",
+        "Load custom project instructions"
+      ],
+      "complexity": "beginner",
+      "safety_notes": "Read-only operations recommended. Fast execution required.",
+      "event_type": "SessionStart",
+      "timing": "Triggers once when session begins or resumes"
+    },
+    "template": {
+      "matcher": {
+        "source": ["startup", "resume"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Load project context\n{{CONTEXT_LOAD_LOGIC}}",
+          "timeout": 60
+        }
+      ]
+    },
+    "variables": {
+      "CONTEXT_FILE": {
+        "description": "File to load for context",
+        "options": {
+          "todo": "TODO.md",
+          "agents": "AGENTS.md",
+          "project_status": "PROJECT_STATUS.md",
+          "custom": "CONTEXT.md"
+        }
+      },
+      "CONTEXT_LOAD_LOGIC": {
+        "description": "Logic to load and display context",
+        "patterns": {
+          "todo": "if [ -f TODO.md ]; then\n    echo \"# Project TODO List\"\n    cat TODO.md\nelse\n    echo \"No TODO.md found\"\nfi",
+          "agents": "if [ -f AGENTS.md ]; then\n    echo \"# Agent Configuration\"\n    cat AGENTS.md\nelse\n    echo \"No AGENTS.md found\"\nfi",
+          "project_status": "if [ -f PROJECT_STATUS.md ]; then\n    echo \"# Project Status\"\n    cat PROJECT_STATUS.md\nelse\n    echo \"No PROJECT_STATUS.md found\"\nfi",
+          "git_status": "if git rev-parse --git-dir &> /dev/null; then\n    echo \"# Git Status\"\n    git status --short\nelse\n    echo \"Not a git repository\"\nfi"
+        }
+      }
+    }
+  }
+}

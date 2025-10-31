@@ -1,0 +1,22 @@
+{
+  "matcher": {
+    "tool_names": [
+      "Write",
+      "Edit"
+    ]
+  },
+  "hooks": [
+    {
+      "type": "command",
+      "command": "# Check if black is installed\nif ! command -v black &> /dev/null; then\n    exit 0\nfi\n\n# Format the file based on type\nif [[ \"$CLAUDE_TOOL_FILE_PATH\" == *.py ]]; then\n    black \"$CLAUDE_TOOL_FILE_PATH\" || exit 0\nfi",
+      "timeout": 60
+    }
+  ],
+  "_metadata": {
+    "generated_by": "hook-factory",
+    "generated_at": "2025-10-30T19:09:35.671008Z",
+    "template": "post_tool_use_format",
+    "language": "python",
+    "hook_name": "auto-format-code-after-editing-python"
+  }
+}

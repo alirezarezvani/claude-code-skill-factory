@@ -30,13 +30,14 @@ cp -r generated-skills/prompt-factory ~/.claude/skills/
 
 ## 📋 Built-in Commands
 
-This toolkit includes **7 slash commands** and **4 interactive agents** to streamline your workflow:
+This toolkit includes **8 slash commands** and **5 interactive agents** to streamline your workflow:
 
 ### Workflow Commands
 
 | Command | Purpose | Example |
 |---------|---------|---------|
-| `/build` | Interactive builder (skill/agent/prompt) | `/build skill` |
+| `/build` | Interactive builder (skill/agent/prompt/hook) | `/build skill` |
+| `/build-hook` | Build Claude Code hooks (Q&A) | `/build-hook` |
 | `/validate-output` | Validate generated output + auto-ZIP | `/validate-output` |
 | `/install-skill` | Installation guidance | `/install-skill` |
 | `/test-factory` | Run test examples | `/test-factory` |
@@ -52,6 +53,7 @@ This toolkit includes **7 slash commands** and **4 interactive agents** to strea
 | **skills-guide** | Build Claude Skills (4-5 questions) | "Build a skill" |
 | **prompts-guide** | Use Prompt Factory (69 presets) | "Generate a prompt" |
 | **agents-guide** | Build Claude Code Agents (5-6 questions) | "Create an agent" |
+| **hooks-guide** | Build Claude Code Hooks (5-7 questions) | "Build a hook" |
 
 See [.claude/agents/README.md](.claude/agents/README.md) and [.claude/commands/README.md](.claude/commands/README.md) for complete documentation.
 
@@ -171,13 +173,15 @@ claude-code-skills-factory/
 ├── AGENTS.md                              # Codex CLI documentation (auto-generated)
 ├── CHANGELOG.md                           # Version history
 ├── .claude/
-│   ├── agents/                            # 4 interactive guide agents
+│   ├── agents/                            # 5 interactive guide agents
 │   │   ├── factory-guide.md              # Orchestrator
 │   │   ├── skills-guide.md               # Skills builder
 │   │   ├── prompts-guide.md              # Prompts generator
-│   │   └── agents-guide.md               # Agents creator
-│   └── commands/                          # 7 slash commands
+│   │   ├── agents-guide.md               # Agents creator
+│   │   └── hooks-guide.md                # Hooks builder
+│   └── commands/                          # 8 slash commands
 │       ├── build.md                       # Interactive builder
+│       ├── build-hook.md                  # Hook builder
 │       ├── validate-output.md             # Validation + ZIP
 │       ├── install-skill.md               # Installation guide
 │       ├── test-factory.md                # Test runner
@@ -196,7 +200,8 @@ claude-code-skills-factory/
     ├── agent-factory/                     # Agent generation system
     ├── prompt-factory/                    # Prompt generation powerhouse
     ├── slash-command-factory/             # Slash command generation
-    └── codex-cli-bridge/                  # Claude Code ↔ Codex CLI bridge
+    ├── codex-cli-bridge/                  # Claude Code ↔ Codex CLI bridge
+    └── hook-factory/                      # Claude Code hooks automation
 ```
 
 ---
@@ -234,10 +239,15 @@ Generate custom Claude Code agents with enhanced YAML
 17 presets, official Anthropic patterns, 4-layer validation
 - [View Skill](generated-skills/slash-command-factory/)
 
-### 8. Codex CLI Bridge (48 KB) 🆕
+### 8. Codex CLI Bridge (48 KB)
 Claude Code ↔ Codex CLI interoperability, AGENTS.md generation
 - [View Skill](generated-skills/codex-cli-bridge/)
-- **New** - Enables cross-tool team collaboration
+- Enables cross-tool team collaboration
+
+### 9. Hook Factory (85 KB) 🆕
+Build custom Claude Code hooks through interactive Q&A with comprehensive safety validation
+- [View Skill](generated-skills/hook-factory/)
+- **New** - Workflow automation with 4 core patterns and production-ready examples
 
 ---
 

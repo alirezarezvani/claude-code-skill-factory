@@ -1,0 +1,16 @@
+{
+  "matcher": {},
+  "hooks": [
+    {
+      "type": "command",
+      "command": "# Detect test framework and run tests\nif ! command -v pytest &> /dev/null; then\n    exit 0\nfi\n\n# Run the appropriate test command\npytest -v || exit 0",
+      "timeout": 120
+    }
+  ],
+  "_metadata": {
+    "generated_by": "hook-factory",
+    "template": "subagent_stop_test_runner",
+    "language": "python",
+    "hook_name": "test-runner"
+  }
+}
