@@ -2,6 +2,11 @@
 
 **Interactive guide for creating custom hooks with Q&A workflow and automatic validation.**
 
+> **Note**: This command is also available as `/build hook` for consistency with other factories (skills, agents, prompts). Both work identically - use whichever you prefer!
+>
+> - **Consistent pattern**: `/build hook` (recommended)
+> - **Alias**: `/build-hook` (this command)
+
 ---
 
 ## Usage

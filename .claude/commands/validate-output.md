@@ -1,4 +1,4 @@
-# /validate-output - Validate Generated Skills, Prompts, or Agents
+# /validate-output - Validate Generated Skills, Prompts, Agents, or Hooks
 
 **Check that your generated output is properly formatted and ready to use.**
 
@@ -10,6 +10,7 @@
 /validate-output skill [path]
 /validate-output prompt
 /validate-agent [path]
+/validate-output hook [path]
 ```
 
 ---
@@ -219,6 +220,105 @@ Or invoke manually:
 
 ---
 
+## Validate a Hook
+
+```
+/validate-output hook generated-hooks/my-hook
+```
+
+**Checks**:
+
+1. **JSON Structure**:
+```json
+{
+  "matcher": { ... },  ✅ Valid object
+  "hooks": [ ... ]     ✅ Non-empty array
+}
+```
+
+2. **Safety Patterns**:
+- ✅ Tool detection present (`command -v tool`)
+- ✅ Silent failure mode (`|| exit 0`)
+- ✅ No destructive operations (no `rm -rf`, `git push --force`)
+- ✅ File path validation (quoted paths, no `..`)
+
+3. **Event Type Validation**:
+- ✅ Appropriate timeout for event type
+- ✅ Matcher appropriate for event (empty for SessionStart, SubagentStop)
+- ✅ Command complexity matches event timing
+
+4. **Hook Commands**:
+- ✅ No path traversal attempts
+- ✅ External tools have detection wrappers
+- ✅ Error handling present
+- ✅ Commands are safe (no dangerous patterns)
+
+**Output**:
+```
+Validating: generated-hooks/my-hook/hook.json
+
+✅ JSON Structure: Valid
+   - matcher object: ✓
+   - hooks array: 1 command ✓
+✅ Safety Patterns: All present
+   - Tool detection: ✓
+   - Silent failure: ✓
+   - No destructive ops: ✓
+   - Path safety: ✓
+✅ Event Type: PostToolUse
+   - Timeout: 60s (appropriate ✓)
+   - Matcher: tool_names + paths ✓
+✅ Security: PASSED
+   - No path traversal ✓
+   - Proper quoting ✓
+   - Error handling ✓
+
+🎉 Hook validation PASSED!
+
+Security Score: 5/5
+━━━━━━━━━━━━━━━━━━━━
+✅ Tool detection present
+✅ Silent failure mode
+✅ No destructive operations
+✅ Path safety validated
+✅ Error handling complete
+
+Next steps:
+1. /install-hook generated-hooks/my-hook
+2. Restart Claude Code
+3. Test by triggering the hook event
+```
+
+**Validation using hook-factory validator**:
+```bash
+python3 generated-skills/hook-factory/validator.py generated-hooks/my-hook/hook.json
+```
+
+**If Issues Found**:
+```
+Validating: generated-hooks/bad-hook/hook.json
+
+❌ JSON Structure: Invalid
+   Issue: "matcher" is string, should be object
+   Fix: Change to {"tool_names": ["Write"]}
+
+❌ Safety Patterns: Missing
+   Issue: No tool detection for "black" command
+   Fix: Add "command -v black" check
+
+❌ Security: FAILED
+   Issue: Path traversal detected (..)
+   Fix: Remove ".." from file paths
+
+⚠️ Event Type: Mismatched
+   Issue: SubagentStop with tool_names matcher
+   Fix: SubagentStop should have empty matcher {}
+
+Validation FAILED. Fix issues and run /validate-output again.
+```
+
+---
+
 ## Quick Validation
 
 **Just ran an agent that generated output?**
@@ -234,11 +334,12 @@ Claude will check the most recently generated skill in the conversation.
 ## When to Use
 
 **Use /validate-output**:
-- ✅ After generating any skill/prompt/agent
+- ✅ After generating any skill/prompt/agent/hook
 - ✅ Before installing
 - ✅ Before sharing with team
 - ✅ If something doesn't work as expected
 - ✅ To learn proper formatting
+- ✅ For hooks: CRITICAL before installation (security check)
 
 **Benefits**:
 - Catch formatting errors early
@@ -250,8 +351,9 @@ Claude will check the most recently generated skill in the conversation.
 
 ## Related Commands
 
-- `/build` - Generate skills/prompts/agents
-- `/install-skill` - Install after validation passes
+- `/build` - Generate skills/prompts/agents/hooks
+- `/install-skill` - Install skills after validation passes
+- `/install-hook` - Install hooks after validation passes
 - `/test-factory` - Test installed skills/agents
 - `/factory-status` - See all validated outputs
 

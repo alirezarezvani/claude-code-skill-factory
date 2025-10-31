@@ -13,8 +13,9 @@ The **factory-guide** agent asks what you need and delegates to specialist guide
 ### Shortcut 2: Use Slash Commands
 ```bash
 /build skill              # Interactive skill builder
-/build agent             # Interactive agent builder
-/build prompt            # Interactive prompt builder
+/build agent              # Interactive agent builder
+/build prompt             # Interactive prompt builder
+/build hook               # Interactive hook builder
 ```
 
 ### Shortcut 3: Use Ready-Made Skills
@@ -30,18 +31,19 @@ cp -r generated-skills/prompt-factory ~/.claude/skills/
 
 ## 📋 Built-in Commands
 
-This toolkit includes **8 slash commands** and **5 interactive agents** to streamline your workflow:
+This toolkit includes **10 slash commands** and **5 interactive agents** to streamline your workflow:
 
 ### Workflow Commands
 
 | Command | Purpose | Example |
 |---------|---------|---------|
-| `/build` | Interactive builder (skill/agent/prompt/hook) | `/build skill` |
-| `/build-hook` | Build Claude Code hooks (Q&A) | `/build-hook` |
-| `/validate-output` | Validate generated output + auto-ZIP | `/validate-output` |
-| `/install-skill` | Installation guidance | `/install-skill` |
+| `/build` | Interactive builder (skill/agent/prompt/hook) | `/build skill` or `/build hook` |
+| `/build-hook` | Build Claude Code hooks (Q&A, alias) | `/build-hook` |
+| `/validate-output` | Validate generated output + auto-ZIP | `/validate-output hook [path]` |
+| `/install-skill` | Install skills to Claude Code | `/install-skill [path]` |
+| `/install-hook` | Install hooks to settings | `/install-hook [path] [user\|project]` |
 | `/test-factory` | Run test examples | `/test-factory` |
-| `/factory-status` | Check system status | `/factory-status` |
+| `/factory-status` | Check system status (all factories) | `/factory-status` |
 | `/sync-agents-md` | Generate AGENTS.md from CLAUDE.md | `/sync-agents-md` |
 | `/codex-exec` | Execute Codex CLI commands | `/codex-exec analysis "task"` |
 
@@ -92,7 +94,19 @@ Generate mega-prompts for any role with:
 **Ready-to-use Skill**: [generated-skills/prompt-factory/](generated-skills/prompt-factory/)
 **Shortcut**: Install skill, then "I need a prompt for [role]"
 
-### 4. Slash Command Factory
+### 4. Hooks Factory
+Generate Claude Code hooks for workflow automation with:
+- 7 event types (SessionStart, PostToolUse, SubagentStop, etc.)
+- Safety validation (tool detection, silent failure, no destructive ops)
+- Language-specific templates (Python/Black, JS/Prettier, Rust/rustfmt, Go/gofmt)
+- Interactive Q&A generation (5-7 questions)
+- Automatic security checks before installation
+
+**Template**: [HOOKS_FACTORY_PROMPT.md](documentation/templates/HOOKS_FACTORY_PROMPT.md)
+**Implementation**: [generated-skills/hook-factory/](generated-skills/hook-factory/)
+**Shortcut**: `/build hook` or "I want to build a hook"
+
+### 5. Slash Command Factory
 Create custom slash commands with:
 - 17 preset commands (business, development, documentation, analysis)
 - Three official Anthropic patterns (Simple, Multi-Phase, Agent-Style)
@@ -102,7 +116,7 @@ Create custom slash commands with:
 **Template**: [MASTER_SLASH_COMMANDS_PROMPT.md](documentation/templates/MASTER_SLASH_COMMANDS_PROMPT.md)
 **Shortcut**: Use template directly or `/build` with custom workflow
 
-### 5. Codex CLI Bridge
+### 6. Codex CLI Bridge
 Enable Claude Code ↔ Codex CLI interoperability with:
 - Automatic CLAUDE.md → AGENTS.md translation
 - Reference-based architecture (no duplication)
