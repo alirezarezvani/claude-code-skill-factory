@@ -31,7 +31,7 @@ cp -r generated-skills/prompt-factory ~/.claude/skills/
 
 ## 📋 Built-in Commands
 
-This toolkit includes **10 slash commands** and **5 interactive agents** to streamline your workflow:
+This toolkit includes **11 slash commands** and **5 interactive agents** to streamline your workflow:
 
 ### Workflow Commands
 
