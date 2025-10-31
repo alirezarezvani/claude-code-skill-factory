@@ -31,7 +31,7 @@ cp -r generated-skills/prompt-factory ~/.claude/skills/
 
 ## 📋 Built-in Commands
 
-This toolkit includes **11 slash commands** and **5 interactive agents** to streamline your workflow:
+This toolkit includes **10 slash commands** and **5 interactive agents** to streamline your workflow:
 
 ### Workflow Commands
 
@@ -46,6 +46,7 @@ This toolkit includes **11 slash commands** and **5 interactive agents** to stre
 | `/factory-status` | Check system status (all factories) | `/factory-status` |
 | `/sync-agents-md` | Generate AGENTS.md from CLAUDE.md | `/sync-agents-md` |
 | `/codex-exec` | Execute Codex CLI commands | `/codex-exec analysis "task"` |
+| `/sync-todos-to-github` | Convert TodoWrite tasks to GitHub issues | `/sync-todos-to-github "Sprint 12"` |
 
 ### Interactive Guide Agents
 
