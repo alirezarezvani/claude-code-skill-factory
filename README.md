@@ -379,13 +379,7 @@ This repository provides examples and templates for creating Claude Skills. The 
 
 ## 📈 Star History
 
-<a href="https://www.star-history.com/#alirezarezvani/claude-code-skills-factory&alirezarezvani/claude-code-tresor&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skills-factory,alirezarezvani/claude-code-tresor&type=date&legend=top-left" />
- </picture>
-</a>
+[![Star History Chart](https://api.star-history.com/svg?repos=alirezarezvani/claude-code-skill-factory&type=date&legend=bottom-right)](https://star-history.com/#alirezarezvani/claude-code-skill-factory&Date)
 
 ---
 
