@@ -45,3 +45,4 @@ __pycache__/
 *.so
 .Python
 openai-codex-cli-intsructions.md
+memory-bank/
