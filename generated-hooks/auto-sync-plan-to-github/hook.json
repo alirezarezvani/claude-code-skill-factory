@@ -1,0 +1,31 @@
+{
+  "name": "auto-sync-plan-to-github",
+  "description": "Automatically sync approved plan to GitHub issues with file references",
+  "version": "1.0.0",
+  "author": "Claude Code Skills Factory",
+  "triggers": [
+    {
+      "event": "ExitPlanMode",
+      "command": "bash",
+      "args": [
+        "-c",
+        "bash \"$(dirname \"$0\")/sync-plan.sh\" \"$PLAN_CONTENT\" \"$PLAN_TITLE\""
+      ],
+      "timeout": 30000,
+      "background": false
+    }
+  ],
+  "settings": {
+    "enabled": true,
+    "autoSync": true,
+    "includeFileReferences": true,
+    "minTasks": 5,
+    "maxTasks": 10,
+    "repository": "alirezarezvani/claude-code-skill-factory"
+  },
+  "permissions": {
+    "github": ["issues:write"],
+    "filesystem": ["read"],
+    "network": ["github.com"]
+  }
+}

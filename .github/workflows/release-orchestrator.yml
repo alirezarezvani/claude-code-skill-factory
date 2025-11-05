@@ -1,0 +1,120 @@
+---
+name: Release Orchestrator
+
+'on':
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Semantic version to tag (e.g., v1.4.0)
+        required: true
+      target:
+        description: Branch or commit to release from
+        default: main
+        required: true
+  repository_dispatch:
+    types: [run-release]
+
+jobs:
+  prepare:
+    name: Prepare release artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      target: ${{ steps.meta.outputs.target }}
+    steps:
+      - name: Resolve inputs
+        id: meta
+        run: |
+          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            VERSION="${{ github.event.client_payload.version }}"
+            TARGET="${{ github.event.client_payload.target || github.event.repository.default_branch }}"
+          else
+            VERSION="${{ inputs.version }}"
+            TARGET="${{ inputs.target }}"
+          fi
+
+          if [[ -z "$VERSION" ]]; then
+            echo "::error::Version input is required."
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.meta.outputs.target }}
+
+      - name: Gather release metadata
+        run: |
+          git fetch --tags --force
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          echo "Previous tag: ${LAST_TAG:-<none>}"
+
+          if [[ -n "$LAST_TAG" ]]; then
+            git log "$LAST_TAG"..HEAD --pretty=format:"- %s" > release-notes.md
+          else
+            git log --pretty=format:"- %s" > release-notes.md
+          fi
+
+          if [[ ! -s release-notes.md ]]; then
+            echo "- Initial release" > release-notes.md
+          fi
+
+          printf '\nGenerated on %s\n' "$(date -u)" >> release-notes.md
+
+      - name: Upload release notes artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+
+  publish:
+    name: Tag & draft release
+    needs: prepare
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.prepare.outputs.target }}
+
+      - name: Download release notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+
+      - name: Create annotated tag
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+          TARGET: ${{ needs.prepare.outputs.target }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout "$TARGET"
+          git tag -a "$VERSION" -F release-notes.md || {
+            echo "Tag $VERSION already exists. Skipping tag creation.";
+            exit 0;
+          }
+          git push origin "$VERSION"
+
+      - name: Draft GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          gh release view "$VERSION" >/dev/null 2>&1 && {
+            echo "Release $VERSION already exists.";
+            exit 0;
+          }
+          gh release create "$VERSION" --draft --notes-file release-notes.md

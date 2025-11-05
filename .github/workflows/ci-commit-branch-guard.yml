@@ -1,0 +1,78 @@
+---
+name: Commit & Branch Guard
+
+'on':
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch to validate
+        required: false
+  repository_dispatch:
+    types: [ci-guard]
+
+jobs:
+  guard:
+    name: Validate commits and branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Resolve ref
+        id: ref
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ github.event.inputs.ref }}" ]]; then
+            echo "target_ref=${{ github.event.inputs.ref }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "repository_dispatch" && -n "${{ github.event.client_payload.ref }}" ]]; then
+            echo "target_ref=${{ github.event.client_payload.ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "target_ref=${{ github.head_ref || github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.ref.outputs.target_ref }}
+
+      - name: Validate branch naming convention
+        env:
+          BRANCH_NAME: ${{ steps.ref.outputs.target_ref }}
+        run: |
+          echo "Validating branch name: $BRANCH_NAME"
+          if [[ "$BRANCH_NAME" =~ ^(feat|fix|docs|chore|refactor|test|build|ci|perf|style|hotfix|release)/[a-z0-9][a-z0-9-]*$ ]]; then
+            exit 0
+          fi
+          if [[ "$BRANCH_NAME" =~ ^(dependabot|renovate)/.+$ ]]; then
+            echo "Branch is managed by automation ($BRANCH_NAME). Allowing."
+            exit 0
+          fi
+          echo "::error::Branch '$BRANCH_NAME' does not match required pattern."
+          echo "Allowed prefixes: feat/, fix/, docs/, chore/, refactor/, test/, build/, ci/, perf/, style/, hotfix/, release/, dependabot/, renovate/."
+          exit 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install commitlint
+        run: |
+          npm install --no-save @commitlint/cli@18.6.0 @commitlint/config-conventional@18.6.0
+
+      - name: Fetch default branch
+        run: |
+          git fetch origin ${{ github.event.repository.default_branch }} --depth=1
+
+      - name: Run commitlint
+        env:
+          TARGET_REF: ${{ steps.ref.outputs.target_ref }}
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}"
+          else
+            BASE_REF=$(git merge-base origin/${{ github.event.repository.default_branch }} "$TARGET_REF")
+            npx commitlint --from "$BASE_REF" --to "$TARGET_REF"
+          fi

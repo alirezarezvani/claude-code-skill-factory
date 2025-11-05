@@ -1,0 +1,90 @@
+---
+name: Git Governance Audit
+
+'on':
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch: {}
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run governance checks
+        id: audit
+        run: |
+          STATUS="pass"
+          REPORT=""
+
+          REQUIRED_FILES=(
+            ".claude/commands/git/cm.md"
+            ".claude/commands/git/cp.md"
+            ".claude/commands/git/pr.md"
+            ".claude/commands/git/rv.md"
+            ".claude/commands/git/sc.md"
+          )
+
+          MISSING=()
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [[ ! -s "$file" ]]; then
+              MISSING+=("$file")
+            fi
+          done
+
+          if [[ ${#MISSING[@]} -gt 0 ]]; then
+            STATUS="fail"
+            REPORT+=$'Missing Claude git command files:\n'
+            for file in "${MISSING[@]}"; do
+              REPORT+="- $file\n"
+            done
+          fi
+
+          if ! grep -q '/ci-guard' .claude/commands/README.md; then
+            STATUS="fail"
+            REPORT+=$'Slash command documentation missing /ci-guard reference\n'
+          fi
+          if ! grep -q '/review' .claude/commands/README.md; then
+            STATUS="fail"
+            REPORT+=$'Slash command documentation missing /review reference\n'
+          fi
+
+          if [[ ! -s .github/commit-template.txt ]]; then
+            STATUS="fail"
+            REPORT+=$'Commit template missing (.github/commit-template.txt)\n'
+          fi
+
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          printf '%s' "$REPORT" > audit-report.txt
+
+      - name: Upload audit report
+        if: steps.audit.outputs.status == 'fail'
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-governance-audit
+          path: audit-report.txt
+
+      - name: Create or update drift issue
+        if: steps.audit.outputs.status == 'fail'
+        run: |
+          TITLE="Git governance audit failed - $(date -u +%Y-%m-%d)"
+          BODY=$(printf 'Automated audit detected the following issues:\n\n%s\n\nSee attached artifact for details.' "$(cat audit-report.txt)")
+          EXISTING=$(gh issue list --label workflow-health --search "$TITLE" --json number --jq '.[0].number')
+          if [[ -z "$EXISTING" ]]; then
+            gh issue create --title "$TITLE" --body "$BODY" --label "workflow-health,priority: medium"
+          else
+            gh issue comment "$EXISTING" --body "$BODY"
+          fi
+
+      - name: Fail job when audit fails
+        if: steps.audit.outputs.status == 'fail'
+        run: exit 1
