@@ -37,7 +37,7 @@ jobs:
           echo "🏗️ Generating task hierarchy dashboard..."
 
           # Initialize markdown file
-          cat > HIERARCHY.md << 'EOH'
+          cat > HIERARCHY.md << EOH
 # Task Hierarchy Dashboard
 
 **Last Updated**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
@@ -121,7 +121,8 @@ EOH
                   echo "├─ $task_icon #$task_num: $task_title" >> HIERARCHY.md
 
                   # Get subtasks for this task
-                  SUBTASKS=$(gh issue list --label "subtask" --state all --limit 100 --json number,title,state,body | jq -c ".[] | select(.body | contains(\"#$task_num\"))")
+                  SUBTASKS=$(gh issue list --label "subtask" --state all --limit 100 \
+                    --json number,title,state,body | jq -c ".[] | select(.body | contains(\"#$task_num\"))")
 
                   if [ -n "$SUBTASKS" ]; then
                     subtask_count=$(echo "$SUBTASKS" | wc -l)

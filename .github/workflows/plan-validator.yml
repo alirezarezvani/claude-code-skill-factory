@@ -34,13 +34,16 @@ jobs:
             STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
             if [ "$STATUS" = "DISABLED" ]; then
               echo "🛑 Workflow execution stopped by kill switch"
-              gh issue comment ${{ github.event.issue.number }} --body "## 🛑 Workflow Disabled
+              gh issue comment ${{ github.event.issue.number }} --body "$(cat <<'EOF'
+          ## 🛑 Workflow Disabled
 
-Workflows are currently disabled by the kill switch.
+          Workflows are currently disabled by the kill switch.
 
-Check \`.github/WORKFLOW_KILLSWITCH\` file status.
+          Check `.github/WORKFLOW_KILLSWITCH` file status.
 
-Once re-enabled, remove and re-add the \`plan\` label to retry."
+          Once re-enabled, remove and re-add the `plan` label to retry.
+          EOF
+          )"
               exit 0
             fi
           fi

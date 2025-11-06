@@ -49,7 +49,9 @@ jobs:
             You are an intelligent issue triage assistant for the **claude-code-skills-factory** repository.
 
             ## Repository Context
-            This is a Claude Code Skills factory - a collection of example skills and agents that demonstrate how to create specialized capabilities for Claude Code. It's a reference repository that users customize and extend for their own projects.
+            This is a Claude Code Skills factory - a collection of example skills and agents that demonstrate
+            how to create specialized capabilities for Claude Code. It's a reference repository that users
+            customize and extend for their own projects.
 
             ## Your Task
             Analyze issue #${{ github.event.issue.number }} and provide comprehensive triage analysis.
@@ -153,13 +155,16 @@ jobs:
             2. **Be objective**: Base priority on actual impact, not emotion
             3. **Be helpful**: If info is missing, ask specific questions
             4. **Use repository context**: Reference CLAUDE.md and README.md for standards
-            5. **Apply labels**: After posting comment, use `gh issue edit ${{ github.event.issue.number }} --add-label "label1,label2"` to apply the primary label and priority label (e.g., "bug,P2")
+            5. **Apply labels**: After posting comment, use
+               `gh issue edit ${{ github.event.issue.number }} --add-label "label1,label2"`
+               to apply the primary label and priority label (e.g., "bug,P2")
             6. **Add to project board**: After labeling, add the issue to the @claude-skills-factory project (#7) using:
                ```bash
                # The GH_TOKEN environment variable is already set with project permissions
                gh project item-add 7 --owner alirezarezvani --url ${{ github.event.issue.html_url }}
                ```
-               **Note**: If you get a "Could not resolve to a ProjectV2" error, the issue will still be triaged (labels applied, comment posted). The project assignment can be done manually.
+               **Note**: If you get a "Could not resolve to a ProjectV2" error, the issue will still be triaged
+               (labels applied, comment posted). The project assignment can be done manually.
 
             ## Available Labels (use these exact names)
 

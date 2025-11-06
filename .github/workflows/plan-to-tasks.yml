@@ -47,14 +47,17 @@ jobs:
 
           if [ "$core_remaining" -lt 50 ] || [ "$graphql_remaining" -lt 50 ]; then
             echo "can_proceed=false" >> $GITHUB_OUTPUT
-            gh issue comment ${{ github.event.issue.number }} --body "## ⚠️ Rate Limit Protection
+            gh issue comment ${{ github.event.issue.number }} --body "$(cat <<'EOF'
+          ## ⚠️ Rate Limit Protection
 
-Rate limits too low. Task creation postponed until limits reset.
+          Rate limits too low. Task creation postponed until limits reset.
 
-**Current**: REST: $core_remaining | GraphQL: $graphql_remaining
-**Required**: 50+ each
+          **Current**: REST: $core_remaining | GraphQL: $graphql_remaining
+          **Required**: 50+ each
 
-Workflow will retry when limits recover."
+          Workflow will retry when limits recover.
+          EOF
+          )"
             exit 0
           fi
 
