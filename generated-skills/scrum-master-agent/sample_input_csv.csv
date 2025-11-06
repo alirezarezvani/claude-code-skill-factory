@@ -1,0 +1,6 @@
+story_id,title,points,status,assignee,priority,blocked,created_date,labels
+STORY-201,Build mobile app prototype,13,Todo,Emma,High,false,2025-10-30,"mobile,customer-facing"
+STORY-202,Fix login timeout issue,2,In Progress,Frank,High,false,2025-11-01,"bug,security"
+STORY-203,Add search functionality,8,Todo,Emma,Medium,false,2025-10-28,"frontend,feature"
+STORY-204,Update API documentation,3,Done,Grace,Low,false,2025-10-25,"docs,technical-debt"
+STORY-205,Implement caching layer,5,Todo,Unassigned,High,true,2025-11-02,"backend,performance,blocked"

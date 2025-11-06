@@ -1,0 +1,91 @@
+{
+  "sprint_name": "Sprint 45",
+  "report_type": "sprint_review",
+  "metrics": {
+    "velocity": {
+      "current": 11,
+      "committed": 42,
+      "completion_rate": 0.26,
+      "historical_avg": 35.0,
+      "trend": "stable",
+      "forecast_next_sprint": 35.0
+    },
+    "burndown": {
+      "committed_points": 42,
+      "remaining_points": 31,
+      "completed_points": 11,
+      "days_elapsed": 7,
+      "total_days": 14,
+      "ideal_remaining": 21.0,
+      "actual_remaining": 31,
+      "predicted_completion": "2025-11-25",
+      "on_track": false
+    },
+    "capacity": {
+      "total_capacity": 80,
+      "committed_points": 42,
+      "allocation_rate": 0.525,
+      "buffer": 38,
+      "buffer_percentage": 0.475
+    },
+    "sprint_health": {
+      "health_score": 62.3,
+      "rating": "Fair",
+      "breakdown": {
+        "velocity": 10.4,
+        "burndown": 20.3,
+        "blocked_items": 16.7,
+        "team_morale": 10.0
+      },
+      "blocked_count": 1,
+      "total_stories": 6,
+      "velocity_completion_rate": 26.2
+    }
+  },
+  "priority_scores": [
+    {
+      "id": "ENG-124",
+      "title": "Design payment integration",
+      "points": 13,
+      "status": "Todo",
+      "priority_score": 7.85,
+      "value": 10,
+      "effort": 3,
+      "risk": 8,
+      "recommendation": "P0 - Critical"
+    },
+    {
+      "id": "ENG-123",
+      "title": "Implement user authentication",
+      "points": 8,
+      "status": "In Progress",
+      "priority_score": 7.5,
+      "value": 10,
+      "effort": 6,
+      "risk": 9,
+      "recommendation": "P1 - High"
+    },
+    {
+      "id": "ENG-125",
+      "title": "Update dashboard UI",
+      "points": 5,
+      "status": "In Progress",
+      "priority_score": 6.9,
+      "value": 8,
+      "effort": 7,
+      "risk": 10,
+      "recommendation": "P1 - High"
+    }
+  ],
+  "risks": [
+    "Low velocity - only 26% complete",
+    "Behind schedule - predicted completion: 2025-11-25",
+    "Sprint health at risk - score: 62.3/100",
+    "1 stories blocked"
+  ],
+  "recommendations": [
+    "P0: Address blocked story ENG-127 immediately",
+    "P1: Review sprint scope - consider descoping ENG-124 (13 pts)",
+    "P2: Increase daily velocity to 3+ pts to get back on track"
+  ]
+}

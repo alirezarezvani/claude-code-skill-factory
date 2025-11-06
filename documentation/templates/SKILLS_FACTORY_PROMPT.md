@@ -20,6 +20,51 @@ Skills are:
 
 ## CRITICAL FORMATTING RULES
 
+### 0. File Cleanliness Standards (MANDATORY)
+
+**BEFORE completing skill generation, you MUST:**
+
+✅ **Include Only Deliverable Files:**
+- SKILL.md (with YAML frontmatter)
+- README.md (installation guide)
+- HOW_TO_USE.md (usage examples)
+- *.py (Python modules)
+- sample_input_* (sample data)
+- expected_output.* (validation data)
+- config.example.* (configuration templates)
+
+❌ **NEVER Include:**
+- Backup files (.backup, .bak, .old, *~)
+- Python cache (__pycache__/, *.pyc, *.pyo)
+- System files (.DS_Store, Thumbs.db)
+- Temporary files (*.tmp, *.temp)
+- Internal summaries (*_SUMMARY.md, *_NOTES.md)
+- Redundant documentation (multiple installation guides)
+- Development artifacts (.pytest_cache/, *.log)
+
+❌ **NEVER Create in generated-skills/ root:**
+- Summary documents (*_SUMMARY.md)
+- Internal documentation
+- Backup files
+- ANY .md files except CLAUDE.md
+
+**Cleanup Process (MANDATORY):**
+1. Remove ALL backup files created during editing
+2. Delete ALL __pycache__/ directories
+3. Remove ALL internal summary/notes documents
+4. Verify ONLY deliverable files remain
+5. Regenerate clean ZIP package
+
+**File Creation Rules:**
+- Create files directly (no .backup, .bak, .old copies)
+- Use Edit operations (automatic backup handling)
+- NEVER manually create backup files
+- NEVER leave __pycache__/ in deliverables
+
+**Why**: Users receive skills as-is. Backup files and internal docs are unprofessional and pollute the catalog.
+
+---
+
 ### 1. YAML Frontmatter (MANDATORY)
 
 Every SKILL.md file MUST start with YAML frontmatter:
@@ -905,6 +950,51 @@ ADDITIONAL_CONTEXT: Brand voice is casual but sophisticated, target audience is 
 
 ---
 
+## Final Validation Checklist (MANDATORY)
+
+Before completing skill generation, you MUST perform these validation steps:
+
+### 1. File Cleanliness
+- [ ] Remove ALL backup files (`.backup`, `.bak`, `.old`, `*~`)
+- [ ] Delete ALL `__pycache__/` directories
+- [ ] Remove ALL internal summary/notes documents
+- [ ] Verify ONLY deliverable files remain
+- [ ] No temporary or development artifacts
+
+### 2. README.md Review
+- [ ] Verify Python module count and names are accurate
+- [ ] Check file structure tree matches actual files
+- [ ] Ensure version number is consistent throughout
+- [ ] Validate all code examples are correct
+- [ ] Confirm installation paths are complete
+- [ ] Remove duplicate sections or incomplete text
+- [ ] Update version history if features were added/changed
+
+### 3. Documentation Accuracy
+- [ ] SKILL.md: Verify capabilities list matches implementation
+- [ ] HOW_TO_USE.md: Test all examples are valid
+- [ ] README.md: Installation instructions are complete
+- [ ] All file paths and references are accurate
+
+### 4. Python Validation
+- [ ] All .py files compile without syntax errors
+- [ ] Import statements reference correct modules
+- [ ] Function signatures match usage in examples
+
+### 5. ZIP Package
+- [ ] Regenerate clean ZIP after all cleanup
+- [ ] Exclude `__pycache__/`, `.backup`, and temp files
+- [ ] Verify ZIP contains complete, clean skill folder
+
+### 6. No Artifacts in generated-skills/ Root
+- [ ] No `*_SUMMARY.md` files
+- [ ] No backup or temp files
+- [ ] Only `CLAUDE.md` and skill folders/ZIPs
+
+**Why this matters**: Users receive skills as-is. Any inconsistencies, backup files, or errors reflect poorly on quality.
+
+---
+
 ## Ready to Generate
 
 Once the user fills in the template variables below, generate the complete skill packages following all rules and formatting standards outlined above.
@@ -919,3 +1009,4 @@ Remember:
 - ✅ Minimal, focused sample data
 - ✅ Clear invocation examples
 - ✅ Professional, production-ready quality
+- ✅ **COMPLETE FINAL VALIDATION CHECKLIST BEFORE DELIVERY**

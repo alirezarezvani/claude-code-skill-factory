@@ -1,0 +1,93 @@
+{
+  "tool": "linear",
+  "sprint_name": "Sprint 45",
+  "start_date": "2025-11-05",
+  "end_date": "2025-11-19",
+  "team_capacity": 80,
+  "team": [
+    {
+      "name": "Alice",
+      "capacity": 40,
+      "availability": 10
+    },
+    {
+      "name": "Bob",
+      "capacity": 40,
+      "availability": 10
+    }
+  ],
+  "stories": [
+    {
+      "id": "ENG-123",
+      "title": "Implement user authentication",
+      "points": 8,
+      "status": "In Progress",
+      "assignee": "Alice",
+      "priority": "High",
+      "blocked": false,
+      "created_date": "2025-10-28",
+      "labels": ["backend", "security"],
+      "dependencies": []
+    },
+    {
+      "id": "ENG-124",
+      "title": "Design payment integration",
+      "points": 13,
+      "status": "Todo",
+      "assignee": "Bob",
+      "priority": "High",
+      "blocked": false,
+      "created_date": "2025-10-29",
+      "labels": ["backend", "revenue-impact"],
+      "dependencies": ["ENG-123"]
+    },
+    {
+      "id": "ENG-125",
+      "title": "Update dashboard UI",
+      "points": 5,
+      "status": "In Progress",
+      "assignee": "Alice",
+      "priority": "Medium",
+      "blocked": false,
+      "created_date": "2025-10-30",
+      "labels": ["frontend", "customer-facing"],
+      "dependencies": []
+    },
+    {
+      "id": "ENG-126",
+      "title": "Fix email notification bug",
+      "points": 3,
+      "status": "Done",
+      "assignee": "Bob",
+      "priority": "Medium",
+      "blocked": false,
+      "created_date": "2025-10-25",
+      "labels": ["bug", "backend"],
+      "dependencies": []
+    },
+    {
+      "id": "ENG-127",
+      "title": "Add API rate limiting",
+      "points": 5,
+      "status": "Todo",
+      "assignee": "Unassigned",
+      "priority": "High",
+      "blocked": true,
+      "created_date": "2025-11-01",
+      "labels": ["backend", "security", "blocked"],
+      "dependencies": []
+    },
+    {
+      "id": "ENG-128",
+      "title": "Refactor database schema",
+      "points": 8,
+      "status": "Done",
+      "assignee": "Alice",
+      "priority": "Medium",
+      "blocked": false,
+      "created_date": "2025-10-20",
+      "labels": ["backend", "technical-debt"],
+      "dependencies": []
+    }
+  ]
+}
