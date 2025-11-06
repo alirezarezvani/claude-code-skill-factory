@@ -207,11 +207,10 @@ claude-code-skills-factory/
 ├── documentation/
 │   ├── references/                        # Official Anthropic examples
 │   └── templates/                         # 4 factory prompt templates
-└── generated-skills/                      # 9 production-ready skills
+└── generated-skills/                      # 8 production-ready skills
     ├── aws-solution-architect/            # AWS architecture & IaC
     ├── content-trend-researcher/          # Multi-platform content research
     ├── ms365-tenant-manager/              # Microsoft 365 administration
-    ├── psychology-advisor/                # Mental wellness & CBT
     ├── agent-factory/                     # Agent generation system
     ├── prompt-factory/                    # Prompt generation powerhouse
     ├── slash-command-factory/             # Slash command generation
@@ -237,29 +236,25 @@ Multi-platform trend analysis, SEO-optimized outlines
 M365 administration, PowerShell automation
 - [View Skill](generated-skills/ms365-tenant-manager/)
 
-### 4. Psychology Advisor (31 KB)
-Evidence-based mental wellness, CBT techniques
-- [View Skill](generated-skills/psychology-advisor/)
-
-### 5. Agent Factory (12 KB)
+### 4. Agent Factory (12 KB)
 Generate custom Claude Code agents with enhanced YAML
 - [View Skill](generated-skills/agent-factory/)
 
-### 6. Prompt Factory (427 KB)
+### 5. Prompt Factory (427 KB)
 69 professional presets, multi-format output, 7-point validation
 - [View Skill](generated-skills/prompt-factory/)
 - **Most Popular** - Install first for instant productivity
 
-### 7. Slash Command Factory (26 KB)
+### 6. Slash Command Factory (26 KB)
 17 presets, official Anthropic patterns, 4-layer validation
 - [View Skill](generated-skills/slash-command-factory/)
 
-### 8. Codex CLI Bridge (48 KB)
+### 7. Codex CLI Bridge (48 KB)
 Claude Code ↔ Codex CLI interoperability, AGENTS.md generation
 - [View Skill](generated-skills/codex-cli-bridge/)
 - Enables cross-tool team collaboration
 
-### 9. Hook Factory (85 KB) 🆕
+### 8. Hook Factory (85 KB) 🆕
 Build custom Claude Code hooks through interactive Q&A with comprehensive safety validation
 - [View Skill](generated-skills/hook-factory/)
 - **New** - Workflow automation with 4 core patterns and production-ready examples
