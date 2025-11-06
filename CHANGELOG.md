@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2025-11-06
+
+### Added
+- **3 Production-Ready Skills**:
+  - Scrum Master Agent (15 files) - Sprint analytics, backlog prioritization, multi-tool integration
+  - TDD Guide (15 files) - Test generation, coverage analysis, multi-framework support
+  - Tech Stack Evaluator (14 files) - TCO calculation, security assessment, migration analysis
+- **GitHub CI/CD Specialist Mega-Prompt** (~4,800 tokens) - Complete GitHub Actions workflow blueprint
+- **Git Governance Workflows**:
+  - Commit validation (conventional commits with commitlint)
+  - Branch naming enforcement (feat/*, fix/*, docs/*, etc.)
+  - CI quality gates (Python syntax, markdown links, security audit)
+  - Release orchestration
+- **10 Git Slash Commands** for workflow automation
+
+### Changed
+- Disabled yamllint check in CI (creates false positives with markdown in bash strings)
+- Updated SKILLS_FACTORY_PROMPT with file cleanliness standards
+
+### Fixed
+- Branch naming convention validation (slash instead of dash)
+- YAML syntax in workflow files (heredoc format for multiline strings)
+
+---
+
 ## [1.4.0] - 2025-10-30
 
 ### Added
