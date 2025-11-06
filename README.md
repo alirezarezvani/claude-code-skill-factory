@@ -384,3 +384,5 @@ This repository provides examples and templates for creating Claude Skills. The 
 ---
 
 **Ready to build?** Try one of the shortcuts above, or explore the [factory templates](documentation/templates/) to start generating production-ready skills, agents, prompts, or slash commands!
+
+<!-- Last verified: 2025-11-06 -->
