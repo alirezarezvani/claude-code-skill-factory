@@ -198,5 +198,285 @@
         }
       }
     }
+  },
+  "pre_tool_use_validation": {
+    "metadata": {
+      "name": "Validate Before Tool Execution",
+      "description": "Validate inputs and permissions before tool execution to prevent errors",
+      "use_cases": [
+        "Check file permissions before Write/Edit",
+        "Validate paths exist before operations",
+        "Prevent destructive operations on protected files",
+        "Verify disk space before large writes"
+      ],
+      "complexity": "intermediate",
+      "safety_notes": "BLOCKING event - must complete in <10 seconds. Can prevent tool from executing.",
+      "event_type": "PreToolUse",
+      "timing": "Triggers BEFORE tool executes - can block operation"
+    },
+    "template": {
+      "matcher": {
+        "tool_names": ["Write", "Edit", "Bash"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Validate before tool execution\n{{VALIDATION_LOGIC}}",
+          "timeout": 10
+        }
+      ]
+    },
+    "variables": {
+      "VALIDATION_TYPE": {
+        "description": "Type of validation to perform",
+        "options": {
+          "permissions": "Check file write permissions",
+          "path_exists": "Validate path exists for reads",
+          "disk_space": "Check available disk space",
+          "protected_files": "Prevent operations on protected files"
+        }
+      },
+      "VALIDATION_LOGIC": {
+        "description": "Validation logic to execute",
+        "patterns": {
+          "permissions": "if [ -n \"$CLAUDE_TOOL_FILE_PATH\" ] && [ -f \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n    if [ ! -w \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n        echo \"Error: No write permission for $CLAUDE_TOOL_FILE_PATH\"\n        exit 1\n    fi\nfi",
+          "path_exists": "if [ -n \"$CLAUDE_TOOL_FILE_PATH\" ] && [ ! -e \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n    PARENT_DIR=$(dirname \"$CLAUDE_TOOL_FILE_PATH\")\n    if [ ! -d \"$PARENT_DIR\" ]; then\n        echo \"Error: Parent directory does not exist: $PARENT_DIR\"\n        exit 1\n    fi\nfi",
+          "disk_space": "REQUIRED_SPACE=100000  # 100MB in KB\nAVAILABLE=$(df . | tail -1 | awk '{print $4}')\nif [ \"$AVAILABLE\" -lt \"$REQUIRED_SPACE\" ]; then\n    echo \"Error: Insufficient disk space (need 100MB)\"\n    exit 1\nfi",
+          "protected_files": "if [ -n \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n    PROTECTED_PATTERNS=(\"/.env$\" \"/secrets\" \"/credentials\" \"/.aws/\" \"/.ssh/\")\n    for pattern in \"${PROTECTED_PATTERNS[@]}\"; do\n        if [[ \"$CLAUDE_TOOL_FILE_PATH\" =~ $pattern ]]; then\n            echo \"Error: Cannot modify protected file: $CLAUDE_TOOL_FILE_PATH\"\n            exit 1\n        fi\n    done\nfi"
+        }
+      }
+    }
+  },
+  "user_prompt_submit_preprocessor": {
+    "metadata": {
+      "name": "Pre-process User Prompts",
+      "description": "Pre-process and validate user prompts before Claude processes them",
+      "use_cases": [
+        "Add project context to prompts automatically",
+        "Validate prompt safety before processing",
+        "Inject custom instructions",
+        "Log user prompts for analysis"
+      ],
+      "complexity": "advanced",
+      "safety_notes": "BLOCKING event - must complete in <5 seconds. Can modify or reject prompts.",
+      "event_type": "UserPromptSubmit",
+      "timing": "Triggers BEFORE Claude processes user input - can block processing"
+    },
+    "template": {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Pre-process user prompt\n{{PREPROCESS_LOGIC}}",
+          "timeout": 5
+        }
+      ]
+    },
+    "variables": {
+      "PREPROCESS_TYPE": {
+        "description": "Type of pre-processing to perform",
+        "options": {
+          "add_context": "Inject project context into prompts",
+          "validate_safety": "Check for potentially unsafe requests",
+          "log_prompts": "Log prompts to file for analysis",
+          "inject_instructions": "Add custom instructions to prompts"
+        }
+      },
+      "PREPROCESS_LOGIC": {
+        "description": "Pre-processing logic to execute",
+        "patterns": {
+          "add_context": "# Add project context to prompt\nif [ -f .claude/context.txt ]; then\n    echo \"[Context: $(cat .claude/context.txt)]\"\nfi",
+          "validate_safety": "# Check for unsafe patterns\nif [ -n \"$CLAUDE_USER_PROMPT\" ]; then\n    UNSAFE_PATTERNS=(\"rm -rf /\" \"sudo rm\" \"format disk\")\n    for pattern in \"${UNSAFE_PATTERNS[@]}\"; do\n        if [[ \"$CLAUDE_USER_PROMPT\" =~ $pattern ]]; then\n            echo \"Warning: Potentially unsafe request detected\"\n        fi\n    done\nfi",
+          "log_prompts": "# Log prompt to file\nif [ -n \"$CLAUDE_USER_PROMPT\" ]; then\n    echo \"[$(date '+%Y-%m-%d %H:%M:%S')] $CLAUDE_USER_PROMPT\" >> .claude/prompt_log.txt\nfi",
+          "inject_instructions": "# Inject custom instructions\nif [ -f .claude/custom_instructions.txt ]; then\n    echo \"[Instructions: $(cat .claude/custom_instructions.txt)]\"\nfi"
+        }
+      }
+    }
+  },
+  "stop_session_cleanup": {
+    "metadata": {
+      "name": "Session Cleanup on Exit",
+      "description": "Clean up resources and save state when Claude Code session ends",
+      "use_cases": [
+        "Clean up temporary files",
+        "Save session state",
+        "Generate session summary report",
+        "Backup important files"
+      ],
+      "complexity": "beginner",
+      "safety_notes": "Non-blocking. Should complete in <30 seconds. Safe cleanup operations only.",
+      "event_type": "Stop",
+      "timing": "Triggers once when session ends normally"
+    },
+    "template": {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Session cleanup\n{{CLEANUP_LOGIC}}",
+          "timeout": 30
+        }
+      ]
+    },
+    "variables": {
+      "CLEANUP_TYPE": {
+        "description": "Type of cleanup to perform",
+        "options": {
+          "temp_files": "Remove temporary files",
+          "save_state": "Save session state to file",
+          "generate_summary": "Generate session summary",
+          "backup_files": "Backup modified files"
+        }
+      },
+      "CLEANUP_LOGIC": {
+        "description": "Cleanup logic to execute",
+        "patterns": {
+          "temp_files": "# Clean up temporary files\nfind /tmp -name 'claude-*' -mtime +1 -delete 2>/dev/null || exit 0\nfind . -name '*.tmp' -delete 2>/dev/null || exit 0",
+          "save_state": "# Save session state\nif [ -d .claude ]; then\n    echo \"Session ended: $(date)\" >> .claude/session_history.txt\n    git status --short >> .claude/session_history.txt 2>/dev/null || exit 0\nfi",
+          "generate_summary": "# Generate session summary\nif git rev-parse --git-dir &> /dev/null; then\n    echo \"# Session Summary - $(date)\" > .claude/session_summary.md\n    echo \"## Files Modified\" >> .claude/session_summary.md\n    git diff --name-only >> .claude/session_summary.md 2>/dev/null || exit 0\nfi",
+          "backup_files": "# Backup modified files\nif git rev-parse --git-dir &> /dev/null; then\n    BACKUP_DIR=\".claude/backups/$(date +%Y%m%d_%H%M%S)\"\n    mkdir -p \"$BACKUP_DIR\"\n    git diff --name-only | while read file; do\n        if [ -f \"$file\" ]; then\n            cp \"$file\" \"$BACKUP_DIR/\" 2>/dev/null || exit 0\n        fi\n    done\nfi"
+        }
+      }
+    }
+  },
+  "pre_push_validation": {
+    "metadata": {
+      "name": "Validate Before Git Push",
+      "description": "Run validation checks before git push to ensure code quality",
+      "use_cases": [
+        "Run tests before push",
+        "Check commit messages",
+        "Validate branch protection rules",
+        "Run linters and formatters"
+      ],
+      "complexity": "intermediate",
+      "safety_notes": "BLOCKING event - can take 60-120 seconds. Can prevent push if validation fails.",
+      "event_type": "PrePush",
+      "timing": "Triggers BEFORE git push executes - can block push"
+    },
+    "template": {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Pre-push validation\n{{VALIDATION_LOGIC}}",
+          "timeout": 120
+        }
+      ]
+    },
+    "variables": {
+      "VALIDATION_TYPE": {
+        "description": "Type of validation to perform",
+        "options": {
+          "run_tests": "Run test suite before push",
+          "check_commits": "Validate commit messages",
+          "branch_protection": "Check branch protection rules",
+          "lint_code": "Run linters and formatters"
+        }
+      },
+      "VALIDATION_LOGIC": {
+        "description": "Validation logic to execute",
+        "patterns": {
+          "run_tests": "# Run tests before push\nif [ -f package.json ]; then\n    echo \"Running tests...\"\n    npm test || { echo \"Tests failed - push blocked\"; exit 1; }\nelif [ -f pytest.ini ] || [ -f setup.py ]; then\n    echo \"Running tests...\"\n    pytest || { echo \"Tests failed - push blocked\"; exit 1; }\nelse\n    echo \"No test framework detected - skipping\"\nfi",
+          "check_commits": "# Validate commit messages\nCURRENT_BRANCH=$(git branch --show-current)\nREMOTE_BRANCH=\"origin/$CURRENT_BRANCH\"\nif git rev-parse \"$REMOTE_BRANCH\" &> /dev/null; then\n    COMMITS=$(git log \"$REMOTE_BRANCH\"..HEAD --oneline)\n    if echo \"$COMMITS\" | grep -qE '^[0-9a-f]+ (WIP|TODO|FIXME)'; then\n        echo \"Error: Commit messages contain WIP/TODO/FIXME\"\n        exit 1\n    fi\nfi",
+          "branch_protection": "# Check branch protection\nCURRENT_BRANCH=$(git branch --show-current)\nPROTECTED_BRANCHES=(\"main\" \"master\" \"production\")\nfor branch in \"${PROTECTED_BRANCHES[@]}\"; do\n    if [ \"$CURRENT_BRANCH\" = \"$branch\" ]; then\n        echo \"Error: Direct push to protected branch '$branch' is not allowed\"\n        exit 1\n    fi\ndone",
+          "lint_code": "# Run linters\nif [ -f .eslintrc.js ] || [ -f .eslintrc.json ]; then\n    echo \"Running ESLint...\"\n    npx eslint . || { echo \"Linting failed - push blocked\"; exit 1; }\nelif command -v pylint &> /dev/null; then\n    echo \"Running pylint...\"\n    pylint **/*.py || { echo \"Linting failed - push blocked\"; exit 1; }\nelse\n    echo \"No linter detected - skipping\"\nfi"
+        }
+      }
+    }
+  },
+  "notify_user_desktop": {
+    "metadata": {
+      "name": "Desktop Notifications",
+      "description": "Send desktop notifications for important events (macOS/Linux)",
+      "use_cases": [
+        "Notify when agent completes",
+        "Alert on test failures",
+        "Notify on successful operations",
+        "Sound alerts for long-running tasks"
+      ],
+      "complexity": "beginner",
+      "safety_notes": "Non-blocking. Fast execution (<5 seconds). macOS uses osascript, Linux uses notify-send.",
+      "event_type": "PostToolUse",
+      "timing": "Triggers after tool completes or agent finishes"
+    },
+    "template": {
+      "matcher": {
+        "tool_names": ["Bash", "Task"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Send desktop notification\n{{NOTIFICATION_LOGIC}}",
+          "timeout": 5
+        }
+      ]
+    },
+    "variables": {
+      "NOTIFICATION_TYPE": {
+        "description": "Type of notification to send",
+        "options": {
+          "agent_complete": "Notify when agent completes",
+          "test_result": "Notify test pass/fail",
+          "operation_complete": "Notify on operation completion",
+          "sound_alert": "Play sound alert"
+        }
+      },
+      "NOTIFICATION_LOGIC": {
+        "description": "Notification logic for macOS/Linux",
+        "patterns": {
+          "agent_complete": "# Notify agent completion\nif [[ \"$OSTYPE\" == \"darwin\"* ]]; then\n    osascript -e 'display notification \"Agent task completed\" with title \"Claude Code\" sound name \"Glass\"'\nelif command -v notify-send &> /dev/null; then\n    notify-send \"Claude Code\" \"Agent task completed\"\nfi",
+          "test_result": "# Notify test results\nif [[ \"$OSTYPE\" == \"darwin\"* ]]; then\n    if [ $? -eq 0 ]; then\n        osascript -e 'display notification \"All tests passed\" with title \"Test Results\" sound name \"Glass\"'\n    else\n        osascript -e 'display notification \"Tests failed\" with title \"Test Results\" sound name \"Basso\"'\n    fi\nelif command -v notify-send &> /dev/null; then\n    if [ $? -eq 0 ]; then\n        notify-send \"Test Results\" \"All tests passed\"\n    else\n        notify-send -u critical \"Test Results\" \"Tests failed\"\n    fi\nfi",
+          "operation_complete": "# Notify operation complete\nif [[ \"$OSTYPE\" == \"darwin\"* ]]; then\n    osascript -e 'display notification \"Operation completed successfully\" with title \"Claude Code\"'\nelif command -v notify-send &> /dev/null; then\n    notify-send \"Claude Code\" \"Operation completed successfully\"\nfi",
+          "sound_alert": "# Play sound alert\nif [[ \"$OSTYPE\" == \"darwin\"* ]]; then\n    afplay /System/Library/Sounds/Glass.aiff &\nelif command -v paplay &> /dev/null; then\n    paplay /usr/share/sounds/freedesktop/stereo/complete.oga &\nfi"
+        }
+      }
+    }
+  },
+  "security_scan_code": {
+    "metadata": {
+      "name": "Security Scan Code",
+      "description": "Run security scans on code to detect vulnerabilities and secrets",
+      "use_cases": [
+        "Scan for secrets in code (API keys, passwords)",
+        "Run semgrep security rules",
+        "Run bandit for Python security",
+        "Detect common vulnerabilities"
+      ],
+      "complexity": "advanced",
+      "safety_notes": "Can be slow (30-120 seconds). Requires security tools installed. Best for PrePush.",
+      "event_type": "PrePush",
+      "timing": "Best run before git push to catch issues early"
+    },
+    "template": {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Run security scan\n{{SCAN_LOGIC}}",
+          "timeout": 120
+        }
+      ]
+    },
+    "variables": {
+      "SCAN_TYPE": {
+        "description": "Type of security scan to perform",
+        "options": {
+          "secrets": "Scan for hardcoded secrets",
+          "semgrep": "Run semgrep security rules",
+          "bandit": "Run bandit for Python",
+          "combined": "Run all available scanners"
+        }
+      },
+      "SCAN_LOGIC": {
+        "description": "Security scanning logic",
+        "patterns": {
+          "secrets": "# Scan for secrets\necho \"Scanning for secrets...\"\nSECRETS_FOUND=false\n# Check for common secret patterns\nif git diff --cached | grep -iE '(password|api_key|secret|token)\\s*=\\s*[\"'\"'][^\"'\"']+[\"'\"']'; then\n    echo \"Warning: Potential secrets found in staged changes\"\n    SECRETS_FOUND=true\nfi\nif git diff --cached | grep -E '(AKIA|AWS|sk_live_|gh[ps]_)'; then\n    echo \"Error: AWS/Stripe/GitHub tokens detected\"\n    SECRETS_FOUND=true\nfi\nif [ \"$SECRETS_FOUND\" = true ]; then\n    echo \"Security scan failed - potential secrets detected\"\n    exit 1\nfi",
+          "semgrep": "# Run semgrep\nif ! command -v semgrep &> /dev/null; then\n    echo \"semgrep not installed - skipping\"\n    exit 0\nfi\necho \"Running semgrep security scan...\"\nsemgrep --config=auto --error || { echo \"Security issues found\"; exit 1; }",
+          "bandit": "# Run bandit for Python\nif ! command -v bandit &> /dev/null; then\n    echo \"bandit not installed - skipping\"\n    exit 0\nfi\necho \"Running bandit security scan...\"\nbandit -r . -f txt || { echo \"Security issues found\"; exit 1; }",
+          "combined": "# Run all scanners\nERRORS=0\n# Secrets scan\nif git diff --cached | grep -iE '(password|api_key|secret|token)\\s*='; then\n    echo \"Warning: Potential secrets found\"\n    ERRORS=$((ERRORS + 1))\nfi\n# Semgrep if available\nif command -v semgrep &> /dev/null; then\n    semgrep --config=auto --error || ERRORS=$((ERRORS + 1))\nfi\n# Bandit if available\nif command -v bandit &> /dev/null; then\n    bandit -r . -ll || ERRORS=$((ERRORS + 1))\nfi\nif [ $ERRORS -gt 0 ]; then\n    echo \"Security scan found $ERRORS issue(s)\"\n    exit 1\nfi"
+        }
+      }
+    }
   }
 }

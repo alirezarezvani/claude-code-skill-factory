@@ -46,3 +46,10 @@ __pycache__/
 .Python
 openai-codex-cli-intsructions.md
 memory-bank/
+
+# Internal development documentation (not for public)
+documentation/delivery/
+
+# Test hooks (temporary testing artifacts)
+generated-hooks/test-*/
+generated-hooks/integration-test-*/

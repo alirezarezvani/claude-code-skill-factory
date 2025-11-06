@@ -1,0 +1,14 @@
+{
+  "UserPromptSubmit": [
+    {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Log user prompts for analysis\nif [ -n \"$CLAUDE_USER_PROMPT\" ]; then\n    mkdir -p .claude\n    echo \"[$(date '+%Y-%m-%d %H:%M:%S')] $CLAUDE_USER_PROMPT\" >> .claude/prompt_log.txt\nfi\n\n# Add project context if available\nif [ -f .claude/context.txt ]; then\n    echo \"[Context: $(cat .claude/context.txt)]\"\nfi\n\n# Check for unsafe patterns (warning only)\nif [ -n \"$CLAUDE_USER_PROMPT\" ]; then\n    if echo \"$CLAUDE_USER_PROMPT\" | grep -qiE '(rm -rf /|sudo rm|format disk)'; then\n        echo \"Warning: Potentially unsafe request detected\"\n    fi\nfi",
+          "timeout": 5
+        }
+      ]
+    }
+  ]
+}

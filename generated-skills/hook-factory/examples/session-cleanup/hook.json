@@ -1,0 +1,14 @@
+{
+  "Stop": [
+    {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Session cleanup on exit\nmkdir -p .claude\n\n# Save session state\necho \"Session ended: $(date)\" >> .claude/session_history.txt\n\n# Record git status if in repo\nif git rev-parse --git-dir &> /dev/null; then\n    echo \"Git status at end:\" >> .claude/session_history.txt\n    git status --short >> .claude/session_history.txt 2>/dev/null || exit 0\n    echo \"---\" >> .claude/session_history.txt\nfi\n\n# Clean up temporary files\nfind /tmp -name 'claude-*' -mtime +1 -delete 2>/dev/null || exit 0\nfind . -name '*.tmp' -type f -delete 2>/dev/null || exit 0\n\necho \"Session cleanup complete\"",
+          "timeout": 30
+        }
+      ]
+    }
+  ]
+}

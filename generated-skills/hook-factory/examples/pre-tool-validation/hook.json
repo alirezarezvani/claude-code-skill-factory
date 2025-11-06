@@ -1,0 +1,16 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": {
+        "tool_names": ["Write", "Edit"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Validate file permissions before writing\nif [ -n \"$CLAUDE_TOOL_FILE_PATH\" ] && [ -f \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n    if [ ! -w \"$CLAUDE_TOOL_FILE_PATH\" ]; then\n        echo \"Error: No write permission for $CLAUDE_TOOL_FILE_PATH\"\n        exit 1\n    fi\nfi\n\n# Check for protected files\nPROTECTED_PATTERNS=(\"/.env$\" \"/secrets\" \"/credentials\" \"/.aws/\" \"/.ssh/\")\nfor pattern in \"${PROTECTED_PATTERNS[@]}\"; do\n    if [[ \"$CLAUDE_TOOL_FILE_PATH\" =~ $pattern ]]; then\n        echo \"Error: Cannot modify protected file: $CLAUDE_TOOL_FILE_PATH\"\n        exit 1\n    fi\ndone\n\necho \"Validation passed\"",
+          "timeout": 10
+        }
+      ]
+    }
+  ]
+}

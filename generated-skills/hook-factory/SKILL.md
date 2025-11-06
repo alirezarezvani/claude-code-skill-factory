@@ -1,24 +1,30 @@
 ---
 name: hook-factory
-description: Generate production-ready Claude Code hooks from natural language requests or templates with automatic validation and safety checks
-version: 1.0.0
+description: Generate production-ready Claude Code hooks with interactive Q&A, automated installation, and enhanced validation. Supports 10 templates across 7 event types for comprehensive workflow automation.
+version: 2.0.0
 author: Claude Code Skills Factory
-tags: [hooks, automation, code-generation, workflow, productivity]
+tags: [hooks, automation, code-generation, workflow, productivity, interactive, installer]
 ---
 
-# Hook Factory
+# Hook Factory v2.0
 
-**Generate production-ready Claude Code hooks with automatic validation and safety checks.**
+**Generate production-ready Claude Code hooks with interactive Q&A, automated installation, and enhanced validation.**
 
 ## What This Skill Does
 
-Hook Factory is an interactive skill that helps you create Claude Code hooks from simple natural language requests. It:
+Hook Factory v2.0 is a comprehensive hook generation system with three modes:
 
-- **Analyzes** your request to determine the best hook pattern
-- **Generates** complete hook configuration with safety wrappers
-- **Validates** the hook for correctness and safety
-- **Creates** comprehensive documentation and installation guides
-- **Saves** everything to `generated-hooks/` ready to use
+1. **Interactive Mode** (NEW!) - 7-question guided flow with smart defaults
+2. **Natural Language** - Describe what you want in plain English
+3. **Template Mode** - Direct generation from 10 production templates
+
+**Key Features:**
+- **Interactive Q&A** - 7 questions with validation and smart defaults
+- **Automated Installation** - Python and Bash installers with backup/rollback
+- **Enhanced Validation** - Secrets detection, event-specific rules, command validation
+- **10 Templates** - Covering 7 event types (PostToolUse, SubagentStop, SessionStart, PreToolUse, UserPromptSubmit, Stop, PrePush)
+- **Comprehensive Safety** - Tool detection, silent failure, atomic operations
+- **macOS/Linux Support** - Production-ready for Unix environments
 
 ## When to Use This Skill
 
@@ -33,27 +39,52 @@ Use hook-factory when you want to:
 
 ## Capabilities
 
-### Supported Hook Patterns
+### Three Generation Modes
 
-1. **PostToolUse Auto-Format**
-   - Auto-format Python, JavaScript, TypeScript, Rust, or Go files
-   - Triggers immediately after editing
-   - Uses language-specific formatters (black, prettier, rustfmt, gofmt)
+**1. Interactive Mode (Recommended)**
+```bash
+python3 hook_factory.py -i
+```
+- 7-question guided flow
+- Smart defaults based on event type
+- Input validation and safety warnings
+- Optional auto-install
 
-2. **PostToolUse Git Auto-Add**
-   - Automatically stage modified files with git
-   - Simplifies git workflow
-   - Silent failure if not a git repository
+**2. Natural Language Mode**
+```bash
+python3 hook_factory.py -r "auto-format Python files after editing"
+```
+- Simple keyword matching
+- Quick generation for common patterns
 
-3. **SubagentStop Test Runner**
-   - Run tests when agent completes work
-   - Supports pytest, jest, cargo test, go test
-   - Quality gate before continuing
+**3. Template Mode (Advanced)**
+```bash
+python3 hook_factory.py -t post_tool_use_format -l python
+```
+- Direct template selection
+- Full customization control
 
-4. **SessionStart Context Loader**
-   - Load project context when session starts
-   - Display TODO lists, project status, git changes
-   - Fast read-only operations
+### Supported Hook Templates (10 Total)
+
+**Formatting & Code Quality:**
+1. **post_tool_use_format** - Auto-format after editing (Python, JS, TS, Rust, Go)
+2. **post_tool_use_git_add** - Auto-stage files with git
+
+**Testing & Validation:**
+3. **subagent_stop_test_runner** - Run tests when agent completes
+4. **pre_tool_use_validation** - Validate before tool execution
+5. **pre_push_validation** - Check before git push
+
+**Session Management:**
+6. **session_start_load_context** - Load context at session start
+7. **stop_session_cleanup** - Cleanup at session end
+
+**User Interaction:**
+8. **user_prompt_submit_preprocessor** - Pre-process user prompts
+9. **notify_user_desktop** - Desktop notifications (macOS/Linux)
+
+**Security:**
+10. **security_scan_code** - Security scanning with semgrep/bandit
 
 ### Languages Supported
 
@@ -63,15 +94,31 @@ Use hook-factory when you want to:
 - Rust (rustfmt, cargo test)
 - Go (gofmt, go test)
 
+### Enhanced Validation (v2.0)
+
+**4-Layer Validation System:**
+
+1. **Structure Validation** - JSON syntax, required fields, types
+2. **Safety Validation** - No destructive ops, tool detection, silent failure
+3. **Matcher Validation** - Valid glob patterns, tool names, file paths
+4. **Event-Specific Validation** - Rules per event type (PreToolUse, SessionStart, etc.)
+
+**NEW in v2.0:**
+- ✅ **Secrets Detection** - AWS keys, JWT tokens, API keys, private keys (20+ patterns)
+- ✅ **Event-Specific Rules** - PreToolUse must have tool matcher, SessionStart read-only, etc.
+- ✅ **Command Validation** - Bash syntax, Unix commands, path validation, dangerous operations
+- ✅ **macOS/Linux Validation** - Platform-specific command checks
+
 ### Safety Features
 
 Every generated hook includes:
 - ✅ Tool detection (checks if required tools are installed)
 - ✅ Silent failure mode (never interrupts your workflow)
-- ✅ Appropriate timeout settings
+- ✅ Appropriate timeout settings (5s-120s based on event type)
 - ✅ No destructive operations
 - ✅ Comprehensive validation before generation
 - ✅ Clear documentation and troubleshooting guides
+- ✅ Automatic backup during installation
 
 ## How to Invoke
 
@@ -179,6 +226,47 @@ Comprehensive documentation including:
 
 ## Installation of Generated Hooks
 
+### Automated Installation (NEW in v2.0!)
+
+**Using Python Installer:**
+```bash
+cd generated-skills/hook-factory
+
+# Install to user level (~/.claude/settings.json)
+python3 installer.py install generated-hooks/[hook-name] user
+
+# Install to project level (.claude/settings.json)
+python3 installer.py install generated-hooks/[hook-name] project
+
+# Uninstall
+python3 installer.py uninstall [hook-name] user
+
+# List installed hooks
+python3 installer.py list user
+```
+
+**Using Bash Script (macOS/Linux):**
+```bash
+cd generated-skills/hook-factory
+
+# Install
+./install-hook.sh generated-hooks/[hook-name] user
+
+# Features:
+# - Automatic backup with timestamp
+# - JSON validation before/after
+# - Atomic write operations
+# - Rollback on failure
+# - Keeps last 5 backups
+```
+
+**Auto-Install from Interactive Mode:**
+- Answer 'y' to Q7 (Auto-Install)
+- Hook is automatically installed
+- No manual steps required
+
+### Manual Installation (Legacy)
+
 1. **Review Generated Files**
    ```bash
    cd generated-hooks/[hook-name]
@@ -216,41 +304,66 @@ Every hook is validated for:
 4. **Customize Gradually**: Start with defaults, customize later
 5. **Monitor Logs**: Check `~/.claude/logs/` if hooks aren't working
 
-## Limitations (Simple Version)
+## Limitations
 
-This is the simple version of Hook Factory. Current limitations:
+**Platform Support:**
+- ✅ macOS and Linux fully supported
+- ❌ Windows not supported (Unix commands, bash-specific syntax)
 
-- Supports 4 core hook patterns (more coming)
-- Simple keyword matching for natural language
-- Manual installation required (no automated install script yet)
-- Limited customization options during generation
+**Customization:**
+- Interactive mode provides smart defaults but limited deep customization
+- Advanced users should use template mode + manual editing
+- No GUI - CLI only
 
-Future enhancements will add:
-- Interactive questioning for advanced options
-- Automated installation scripts
-- More hook patterns (PreToolUse, PrePush, etc.)
-- Template composition (combine multiple patterns)
-- Educational annotations explaining design choices
+**Template System:**
+- 10 templates cover common patterns
+- Custom templates require manual addition to templates.json
+- No template composition yet (combining multiple patterns)
 
 ## Technical Details
 
 ### Files in This Skill
 
+**Core Files:**
 - `SKILL.md` - This manifest file
-- `hook_factory.py` - Main orchestrator (CLI interface)
+- `hook_factory.py` - Main orchestrator with CLI interface (687 lines)
 - `generator.py` - Template substitution and hook generation
-- `validator.py` - JSON validation and safety checks
-- `templates.json` - Hook pattern templates (4 core patterns)
+- `validator.py` - Enhanced validation engine (700+ lines)
+- `templates.json` - 10 production hook templates
 - `README.md` - Skill usage guide and examples
-- `examples/` - Reference examples for each pattern
+
+**NEW in v2.0:**
+- `installer.py` - Automated installation system (536 lines)
+- `install-hook.sh` - Bash installation script (148 lines)
+- `examples/` - 10 reference examples (10 folders × 2 files)
 
 ### Dependencies
 
 - Python 3.7+
 - Standard library only (no external dependencies)
 
-### Architecture
+### Architecture (v2.0)
 
+**Interactive Mode Flow:**
+```
+User: python3 hook_factory.py -i
+    ↓
+[7-Question Flow with Smart Defaults]
+    ↓
+[Template Selection]
+    ↓
+[Variable Substitution]
+    ↓
+[4-Layer Validation]
+    ↓
+[File Generation]
+    ↓
+[Optional: Auto-Install via installer.py]
+    ↓
+Generated Hook in generated-hooks/ + Installed
+```
+
+**Natural Language Flow:**
 ```
 User Request
     ↓
@@ -260,11 +373,30 @@ User Request
     ↓
 [Variable Substitution]
     ↓
-[Safety Validation]
+[4-Layer Validation]
     ↓
 [File Generation]
     ↓
 Generated Hook in generated-hooks/
+```
+
+**Installation Flow:**
+```
+Hook Folder
+    ↓
+[installer.py or install-hook.sh]
+    ↓
+[Backup settings.json]
+    ↓
+[Load + Validate JSON]
+    ↓
+[Merge Hook]
+    ↓
+[Atomic Write (temp → rename)]
+    ↓
+[Validate Result]
+    ↓
+✅ Installed (or ❌ Rollback)
 ```
 
 ## Troubleshooting

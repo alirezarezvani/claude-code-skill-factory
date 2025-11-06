@@ -14,12 +14,15 @@ Hook Factory is a skill for Claude Code that automates the creation of hooks wit
 - 📚 **Creates** comprehensive documentation
 - 💾 **Saves** everything to `generated-hooks/` ready to use
 
-### Key Features
+### Key Features (v2.0)
 
-- **4 Core Hook Patterns** - Format, Git Add, Test Runner, Context Loader
+- **10 Production Templates** - Formatting, testing, validation, sessions, notifications, security
+- **7 Event Types** - PostToolUse, SubagentStop, SessionStart, PreToolUse, UserPromptSubmit, Stop, PrePush
+- **Interactive Mode** - 7-question guided flow with smart defaults and auto-install
+- **Automated Installation** - Python and Bash installers with backup/rollback
+- **Enhanced Validation** - Secrets detection, event-specific rules, command validation
 - **5 Language Support** - Python, JavaScript, TypeScript, Rust, Go
 - **Automatic Safety** - Tool detection, silent failure, no destructive ops
-- **Complete Validation** - JSON syntax, structure, safety, matchers
 - **Rich Documentation** - Installation guides, troubleshooting, customization
 
 ## Quick Start
@@ -427,30 +430,38 @@ See `validator.py` for complete validation logic:
 - **Timeout limits:** 1s - 600s
 - **Valid tool names:** Read, Write, Edit, Bash, etc.
 
-## Limitations (Simple Version)
+## Limitations
 
-This is the simple version of Hook Factory. Current limitations:
+**Hook Factory v2.0** is a production-ready system. Current capabilities:
 
-- ✅ **Supported:** 4 core hook patterns
+- ✅ **Supported:** 10 production hook templates
 - ✅ **Supported:** 5 languages (Python, JS, TS, Rust, Go)
-- ✅ **Supported:** Simple keyword matching
-- ❌ **Not yet:** Interactive questioning for advanced options
-- ❌ **Not yet:** Automated installation scripts
+- ✅ **Supported:** 7 event types (PostToolUse, SubagentStop, SessionStart, PreToolUse, UserPromptSubmit, Stop, PrePush)
+- ✅ **Supported:** Interactive mode with 7-question flow
+- ✅ **Supported:** Automated installation/uninstall (Python + Bash)
+- ✅ **Supported:** Enhanced validation (secrets, events, commands)
+- ✅ **Supported:** macOS and Linux (Unix environments)
+
+**Current Limitations:**
+
+- ❌ **Not supported:** Windows (Unix commands, bash-specific syntax)
 - ❌ **Not yet:** Template composition (combine multiple patterns)
-- ❌ **Not yet:** All hook event types (only PostToolUse, SubagentStop, SessionStart)
+- ❌ **Not yet:** GUI interface (CLI only)
 - ❌ **Not yet:** Educational annotations explaining design choices
+- ❌ **Not yet:** Test scripts to simulate hook execution
+- ❌ **Not yet:** Advanced intent analysis (better keyword matching)
 
 ## Future Enhancements
 
-**Phase 2 will add:**
+**Potential v3.0 Features:**
 
-- 🔄 Interactive questioning for custom options
-- 📦 Automated installation/uninstall scripts
-- 🎓 Educational annotations explaining each choice
-- 🧩 Template composition (combine patterns)
-- 📋 All 7+ hook patterns (PreToolUse, PrePush, Stop, etc.)
-- 🧪 Test scripts to simulate hook execution
-- 🎯 Advanced intent analysis (better keyword matching)
+- 🧩 Template composition (combine multiple patterns into one hook)
+- 🎓 Educational annotations explaining each design choice
+- 🧪 Test scripts to simulate hook execution before installation
+- 🎯 Advanced intent analysis with better keyword matching
+- 🪟 Windows support (PowerShell-based hooks)
+- 🎨 GUI interface for visual hook building
+- 📊 Hook analytics and usage tracking
 
 ## Contributing
 
@@ -470,6 +481,16 @@ To contribute new hook patterns:
 - **Template Format:** See `templates.json`
 
 ## Version History
+
+- **2.0.0** (2025-11-06) - Major update with interactive mode and automated installation
+  - 10 production hook templates (was 4)
+  - 7 event types supported (was 3)
+  - Interactive mode with 7-question flow and smart defaults
+  - Automated installation system (Python + Bash installers)
+  - Enhanced validation (secrets detection, event-specific rules, command validation)
+  - macOS/Linux optimization
+  - Auto-install integration
+  - Backup/rollback system
 
 - **1.0.0** (2025-10-30) - Initial release
   - 4 core hook patterns
