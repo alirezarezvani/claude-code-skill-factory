@@ -172,42 +172,44 @@ jobs:
           fi
 
           # Create issue body
-          BODY="## $SEVERITY Workflow Health Alert
+          BODY=$(cat <<EOF
+          ## $SEVERITY Workflow Health Alert
 
-**Generated**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **Generated**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
 
-### 📊 Rate Limits
+          ### 📊 Rate Limits
 
-| Resource | Remaining | Limit | Usage |
-|----------|-----------|-------|-------|
-| REST API | ${{ steps.rate_limits.outputs.core_remaining }} | ${{ steps.rate_limits.outputs.core_limit }} | ${{ steps.rate_limits.outputs.core_pct }}% |
-| GraphQL API | ${{ steps.rate_limits.outputs.graphql_remaining }} | ${{ steps.rate_limits.outputs.graphql_limit }} | ${{ steps.rate_limits.outputs.graphql_pct }}% |
+          | Resource | Remaining | Limit | Usage |
+          |----------|-----------|-------|-------|
+          | REST API | ${{ steps.rate_limits.outputs.core_remaining }} | ${{ steps.rate_limits.outputs.core_limit }} | ${{ steps.rate_limits.outputs.core_pct }}% |
+          | GraphQL API | ${{ steps.rate_limits.outputs.graphql_remaining }} | ${{ steps.rate_limits.outputs.graphql_limit }} | ${{ steps.rate_limits.outputs.graphql_pct }}% |
 
-**Reset Times**:
-- REST API: ${{ steps.rate_limits.outputs.core_reset_time }}
-- GraphQL API: ${{ steps.rate_limits.outputs.graphql_reset_time }}
+          **Reset Times**:
+          - REST API: ${{ steps.rate_limits.outputs.core_reset_time }}
+          - GraphQL API: ${{ steps.rate_limits.outputs.graphql_reset_time }}
 
-### 📈 Workflow Statistics (Last 24 Hours)
+          ### 📈 Workflow Statistics (Last 24 Hours)
 
-| Metric | Count | Percentage |
-|--------|-------|------------|
-| Total Runs | ${{ steps.workflow_stats.outputs.total }} | - |
-| Successful | ${{ steps.workflow_stats.outputs.success }} | ${{ steps.workflow_stats.outputs.success_rate }}% |
-| Failed | ${{ steps.workflow_stats.outputs.failure }} | - |
-| Cancelled | ${{ steps.workflow_stats.outputs.cancelled }} | - |
-| In Progress | ${{ steps.workflow_stats.outputs.in_progress }} | - |
+          | Metric | Count | Percentage |
+          |--------|-------|------------|
+          | Total Runs | ${{ steps.workflow_stats.outputs.total }} | - |
+          | Successful | ${{ steps.workflow_stats.outputs.success }} | ${{ steps.workflow_stats.outputs.success_rate }}% |
+          | Failed | ${{ steps.workflow_stats.outputs.failure }} | - |
+          | Cancelled | ${{ steps.workflow_stats.outputs.cancelled }} | - |
+          | In Progress | ${{ steps.workflow_stats.outputs.in_progress }} | - |
 
-### 🏗️ Task Hierarchy
+          ### 🏗️ Task Hierarchy
 
-| Level | Open | Total |
-|-------|------|-------|
-| Plans | ${{ steps.hierarchy_health.outputs.plans_open }} | ${{ steps.hierarchy_health.outputs.plans }} |
-| Tasks | ${{ steps.hierarchy_health.outputs.tasks_open }} | ${{ steps.hierarchy_health.outputs.tasks }} |
-| Subtasks | ${{ steps.hierarchy_health.outputs.subtasks_open }} | ${{ steps.hierarchy_health.outputs.subtasks }} |
+          | Level | Open | Total |
+          |-------|------|-------|
+          | Plans | ${{ steps.hierarchy_health.outputs.plans_open }} | ${{ steps.hierarchy_health.outputs.plans }} |
+          | Tasks | ${{ steps.hierarchy_health.outputs.tasks_open }} | ${{ steps.hierarchy_health.outputs.tasks }} |
+          | Subtasks | ${{ steps.hierarchy_health.outputs.subtasks_open }} | ${{ steps.hierarchy_health.outputs.subtasks }} |
 
-### 🔧 Recommended Actions
+          ### 🔧 Recommended Actions
 
-"
+          EOF
+          )
 
           # Add specific recommendations based on status
           if [ "$STATUS" = "critical" ]; then

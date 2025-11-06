@@ -26,8 +26,8 @@ jobs:
       issue_number: ${{ steps.check.outputs.issue_number }}
 
     steps:
-        - name: Check Workflow Kill Switch
-          run: |
+      - name: Check Workflow Kill Switch
+        run: |
             if [ -f ".github/WORKFLOW_KILLSWITCH" ]; then
               STATUS=$(grep "STATUS:" .github/WORKFLOW_KILLSWITCH | awk '{print $2}')
               if [ "$STATUS" = "DISABLED" ]; then
@@ -250,7 +250,8 @@ jobs:
 
             PROJECT_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.id')
             STATUS_FIELD_ID=$(echo "$PROJECT_DATA" | jq -r '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .id')
-            STATUS_OPTION_ID=$(echo "$PROJECT_DATA" | jq -r --arg status "$TARGET_STATUS" '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == $status) | .id')
+            STATUS_OPTION_ID=$(echo "$PROJECT_DATA" | jq -r --arg status "$TARGET_STATUS" \
+              '.data.user.projectV2.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == $status) | .id')
             ```
 
             ### Step 4: Update Project Board

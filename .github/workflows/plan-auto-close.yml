@@ -102,25 +102,28 @@ jobs:
           echo "🎉 Closing plan #$PLAN_NUM..."
 
           # Create completion comment
-          COMMENT="## ✅ Plan Completed
+          COMMENT=$(cat <<EOF
+          ## ✅ Plan Completed
 
-All **$TOTAL tasks** have been completed! This plan is now being automatically closed.
+          All **$TOTAL tasks** have been completed! This plan is now being automatically closed.
 
-### 📊 Completion Summary
+          ### 📊 Completion Summary
 
-- **Total Tasks**: $TOTAL
-- **Completed**: $CLOSED
-- **Success Rate**: 100%
+          - **Total Tasks**: $TOTAL
+          - **Completed**: $CLOSED
+          - **Success Rate**: 100%
 
-### 🎉 What's Next?
+          ### 🎉 What's Next?
 
-- Review completed work
-- Archive or reference this plan for future projects
-- Create new plans for upcoming work
+          - Review completed work
+          - Archive or reference this plan for future projects
+          - Create new plans for upcoming work
 
----
+          ---
 
-*🤖 Automatically closed by plan-auto-close.yml*"
+          *🤖 Automatically closed by plan-auto-close.yml*
+          EOF
+          )
 
           # Post comment
           gh issue comment $PLAN_NUM --body "$COMMENT"

@@ -8,18 +8,18 @@ This directory contains 5 comprehensive examples demonstrating the **Prompt Fact
 
 | # | Example | Complexity | Techniques | Tokens | Use Case | File |
 |---|---------|------------|------------|--------|----------|------|
-| 1 | **Code Reviewer** | ⭐ Basic | Role-based prompting, clear constraints | ~3,200 | Team code quality standards | [example-1-basic-code-reviewer.md](example-1-basic-code-reviewer.md) |
-| 2 | **Data Analyst** | ⭐⭐ Intermediate | Few-shot learning, chain of thought | ~5,800 | Business intelligence, data analysis | [example-2-intermediate-data-analyst.md](example-2-intermediate-data-analyst.md) |
-| 3 | **System Architect** | ⭐⭐⭐ Advanced | Tree of Thoughts, multi-path reasoning | ~8,400 | Enterprise architecture decisions | [example-3-advanced-system-architect.md](example-3-advanced-system-architect.md) |
-| 4 | **Research Analyst** | ⭐⭐⭐⭐ Expert | Meta-prompting, self-consistency, recursive reasoning | ~10,200 | Strategic research, market analysis | [example-4-expert-research-analyst.md](example-4-expert-research-analyst.md) |
-| 5 | **Strategic Consultant** | ⭐⭐⭐⭐⭐ Master | Multi-agent simulation, first-principles, constrained generation | ~11,800 | Board-level strategy, M&A, investments | [example-5-master-strategic-consultant.md](example-5-master-strategic-consultant.md) |
+| 1 | **Code Reviewer** | ⭐ Basic | Role-based prompting, clear constraints | ~3,200 | Team code quality standards | [basic-code-reviewer.md](basic-code-reviewer.md) |
+| 2 | **Data Analyst** | ⭐⭐ Intermediate | Few-shot learning, chain of thought | ~5,800 | Business intelligence, data analysis | [intermediate-data-analyst.md](intermediate-data-analyst.md) |
+| 3 | **System Architect** | ⭐⭐⭐ Advanced | Tree of Thoughts, multi-path reasoning | ~8,400 | Enterprise architecture decisions | [advanced-system-architect.md](advanced-system-architect.md) |
+| 4 | **Research Analyst** | ⭐⭐⭐⭐ Expert | Meta-prompting, self-consistency, recursive reasoning | ~10,200 | Strategic research, market analysis | [expert-research-analyst.md](expert-research-analyst.md) |
+| 5 | **Strategic Consultant** | ⭐⭐⭐⭐⭐ Master | Multi-agent simulation, first-principles, constrained generation | ~11,800 | Board-level strategy, M&A, investments | [master-strategic-consultant.md](master-strategic-consultant.md) |
 
 ---
 
 ## Example 1: Code Reviewer (Basic)
 
 **Complexity**: ⭐ Basic
-**File**: [example-1-basic-code-reviewer.md](example-1-basic-code-reviewer.md)
+**File**: [example-1-basic-code-reviewer.md](basic-code-reviewer.md)
 
 ### Prompting Techniques
 - **Role-based prompting**: Clear role definition with specific constraints
@@ -53,7 +53,7 @@ This directory contains 5 comprehensive examples demonstrating the **Prompt Fact
 ## Example 2: Data Analyst (Intermediate)
 
 **Complexity**: ⭐⭐ Intermediate
-**File**: [example-2-intermediate-data-analyst.md](example-2-intermediate-data-analyst.md)
+**File**: [intermediate-data-analyst.md](intermediate-data-analyst.md)
 
 ### Prompting Techniques
 - **Few-shot learning**: Detailed examples teaching the pattern
@@ -95,7 +95,7 @@ Sales = Traffic × Conversion × AOV
 ## Example 3: System Architect (Advanced)
 
 **Complexity**: ⭐⭐⭐ Advanced
-**File**: [example-3-advanced-system-architect.md](example-3-advanced-system-architect.md)
+**File**: [advanced-system-architect.md](advanced-system-architect.md)
 
 ### Prompting Techniques
 - **Tree of Thoughts (ToT)**: Explores multiple solution paths before deciding
@@ -145,7 +145,7 @@ Sales = Traffic × Conversion × AOV
 ## Example 4: Research Analyst (Expert)
 
 **Complexity**: ⭐⭐⭐⭐ Expert
-**File**: [example-4-expert-research-analyst.md](example-4-expert-research-analyst.md)
+**File**: [expert-research-analyst.md](expert-research-analyst.md)
 
 ### Prompting Techniques
 - **Meta-prompting**: Questions the question itself before answering
@@ -198,7 +198,7 @@ Sales = Traffic × Conversion × AOV
 ## Example 5: Strategic Consultant (Master)
 
 **Complexity**: ⭐⭐⭐⭐⭐ Master
-**File**: [example-5-master-strategic-consultant.md](example-5-master-strategic-consultant.md)
+**File**: [master-strategic-consultant.md](master-strategic-consultant.md)
 
 ### Prompting Techniques
 - **Multi-agent simulation**: Simulates 5 distinct expert personas (CFO, COO, CSO, CTO, Board)
