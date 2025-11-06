@@ -10,6 +10,54 @@ The `generated-skills/` folder contains complete, production-ready skills create
 
 ---
 
+## ⚠️ CRITICAL: Skill Generation Standards
+
+When generating or modifying skills in this folder, follow these strict rules:
+
+### What MUST BE INCLUDED in skill folders:
+- ✅ `SKILL.md` - Main skill definition with YAML frontmatter
+- ✅ `README.md` - Installation guide and overview
+- ✅ `HOW_TO_USE.md` - Usage examples
+- ✅ `*.py` - Python modules (implementation)
+- ✅ `sample_input_*` - Sample data files
+- ✅ `expected_output.*` - Validation data
+- ✅ `config.example.*` - Configuration templates
+
+### What MUST NEVER be included:
+- ❌ Backup files (`.backup`, `.bak`, `.old`, `*~`)
+- ❌ Python cache (`__pycache__/`, `*.pyc`, `*.pyo`)
+- ❌ System files (`.DS_Store`, `Thumbs.db`)
+- ❌ Temporary files (`*.tmp`, `*.temp`)
+- ❌ Internal summaries (`*_SUMMARY.md`, `*_NOTES.md`)
+- ❌ Redundant documentation (multiple installation guides)
+- ❌ Development artifacts (`.pytest_cache/`, `*.log`)
+
+### What MUST NEVER be in generated-skills/ root:
+- ❌ ANY `.md` files except `CLAUDE.md`
+- ❌ Summary documents (`*_SUMMARY.md`)
+- ❌ Internal documentation
+- ❌ Backup files
+- ❌ Temporary files
+
+### Cleanup Process (MANDATORY before completion):
+1. ✅ Remove all backup files created during editing
+2. ✅ Delete `__pycache__/` directories
+3. ✅ Remove internal summary/notes documents
+4. ✅ Verify only deliverable files remain
+5. ✅ Regenerate clean ZIP package
+6. ✅ Use Edit tool instead of creating backup copies
+
+### File Creation Rules:
+- ✅ Create files directly (no intermediate backups)
+- ✅ Use Edit tool for modifications (automatic backup handling)
+- ❌ NEVER create `.backup`, `.bak`, or `.old` files manually
+- ❌ NEVER leave `__pycache__/` in deliverables
+- ❌ NEVER create summary docs outside skill folders
+
+**Why this matters**: Users receive these skills as-is. Backup files and internal docs are unprofessional and pollute the catalog. Keep deliverables clean.
+
+---
+
 ## Available Skills
 
 ### 1. AWS Solution Architect (53 KB)

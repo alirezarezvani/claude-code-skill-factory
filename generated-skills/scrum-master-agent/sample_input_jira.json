@@ -1,0 +1,71 @@
+{
+  "tool": "jira",
+  "issues": [
+    {
+      "key": "PROJ-456",
+      "fields": {
+        "summary": "Implement GraphQL API",
+        "customfield_10016": 8,
+        "status": {
+          "name": "In Progress"
+        },
+        "assignee": {
+          "displayName": "Charlie"
+        },
+        "priority": {
+          "name": "High"
+        },
+        "labels": ["api", "backend"],
+        "created": "2025-10-27",
+        "issuelinks": []
+      }
+    },
+    {
+      "key": "PROJ-457",
+      "fields": {
+        "summary": "Add user profile page",
+        "customfield_10016": 5,
+        "status": {
+          "name": "Todo"
+        },
+        "assignee": {
+          "displayName": "Diana"
+        },
+        "priority": {
+          "name": "Medium"
+        },
+        "labels": ["frontend", "customer-facing"],
+        "created": "2025-10-28",
+        "issuelinks": [
+          {
+            "type": {
+              "name": "Depends"
+            },
+            "inwardIssue": {
+              "key": "PROJ-456"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "PROJ-458",
+      "fields": {
+        "summary": "Optimize database queries",
+        "customfield_10016": 3,
+        "status": {
+          "name": "Done"
+        },
+        "assignee": {
+          "displayName": "Charlie"
+        },
+        "priority": {
+          "name": "Low"
+        },
+        "labels": ["performance", "backend"],
+        "created": "2025-10-22",
+        "issuelinks": []
+      }
+    }
+  ]
+}

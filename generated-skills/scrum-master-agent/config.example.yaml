@@ -1,0 +1,149 @@
+# Scrum Master Agent - Notification Configuration Example
+#
+# Copy this file to 'config.yaml' and customize with your webhook URLs
+# Alternatively, use environment variables (see README.md)
+
+notifications:
+  # Enable/disable notifications (default: false)
+  enabled: false
+
+  # Channel selection: slack or teams
+  channel: slack
+
+  # Slack webhook URL
+  # Get webhook URL from: https://api.slack.com/messaging/webhooks
+  # Example: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX
+  slack_webhook: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
+  # Microsoft Teams webhook URL
+  # Get webhook URL from Teams channel -> Connectors -> Incoming Webhook
+  # Example: https://outlook.office.com/webhook/xxxx-xxxx-xxxx/IncomingWebhook/yyyy-yyyy-yyyy
+  teams_webhook: https://outlook.office.com/webhook/YOUR/WEBHOOK/URL
+
+# ================================================================================
+# SETUP INSTRUCTIONS
+# ================================================================================
+
+# Option 1: YAML Configuration File (Recommended)
+# ------------------------------------------------
+# 1. Copy this file: cp config.example.yaml config.yaml
+# 2. Edit config.yaml with your webhook URLs
+# 3. Set enabled: true
+# 4. Choose channel: slack or teams
+# 5. Save and use skill - notifications will work automatically
+
+# Option 2: Environment Variables
+# --------------------------------
+# Set these environment variables before running:
+#
+#   export NOTIFY_ENABLED=true
+#   export NOTIFY_CHANNEL=slack
+#   export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+#   export TEAMS_WEBHOOK_URL=https://outlook.office.com/webhook/YOUR/WEBHOOK/URL
+
+# ================================================================================
+# GETTING WEBHOOK URLS
+# ================================================================================
+
+# Slack Setup:
+# ------------
+# 1. Go to: https://api.slack.com/messaging/webhooks
+# 2. Click "Create your Slack app"
+# 3. Choose "From scratch"
+# 4. Name your app (e.g., "Scrum Master Bot")
+# 5. Select workspace
+# 6. Go to "Incoming Webhooks" -> Activate
+# 7. Click "Add New Webhook to Workspace"
+# 8. Choose channel (e.g., #sprint-updates)
+# 9. Copy webhook URL
+# 10. Paste into slack_webhook field above
+
+# Microsoft Teams Setup:
+# ----------------------
+# 1. Open Teams channel where you want notifications
+# 2. Click "..." (More options) next to channel name
+# 3. Select "Connectors"
+# 4. Search for "Incoming Webhook"
+# 5. Click "Configure"
+# 6. Name webhook (e.g., "Scrum Master Updates")
+# 7. Optionally upload icon
+# 8. Click "Create"
+# 9. Copy webhook URL
+# 10. Paste into teams_webhook field above
+
+# ================================================================================
+# NOTIFICATION FORMAT
+# ================================================================================
+
+# Notifications are token-efficient (50-100 tokens max) and include:
+# - Sprint name and status
+# - Velocity (current/committed points)
+# - Sprint health score (0-100)
+# - Completion percentage
+# - Top 3 risks (if any)
+#
+# Slack format: Rich blocks with emoji indicators
+# Teams format: Adaptive Cards with fact sets
+
+# ================================================================================
+# USAGE EXAMPLES
+# ================================================================================
+
+# Automatic notification (in user request):
+# "Generate daily standup summary and send to Slack"
+#
+# Programmatic notification (in Python):
+# formatter.format_standup_summary(metrics, send_notification=True)
+#
+# Manual notification test:
+# from notify_channels import NotificationManager
+# manager = NotificationManager('config.yaml')
+# manager.send_sprint_summary(metrics)
+
+# ================================================================================
+# SECURITY NOTES
+# ================================================================================
+
+# - NEVER commit config.yaml with real webhook URLs to version control
+# - Add config.yaml to .gitignore
+# - Rotate webhook URLs if compromised
+# - Use environment variables in CI/CD pipelines
+# - Webhook URLs grant write access - keep them secret
+# - Consider using separate webhooks for dev/staging/prod
+
+# ================================================================================
+# TROUBLESHOOTING
+# ================================================================================
+
+# Notifications not working?
+# --------------------------
+# 1. Check enabled: true in config.yaml
+# 2. Verify webhook URL is correct (test in browser - should return error)
+# 3. Check channel matches webhook (slack vs teams)
+# 4. Verify network connectivity (firewall/proxy)
+# 5. Check skill logs for error messages
+# 6. Test webhook with curl:
+#
+#    Slack:
+#    curl -X POST -H 'Content-Type: application/json' \
+#      -d '{"text":"Test from Scrum Master"}' \
+#      YOUR_SLACK_WEBHOOK_URL
+#
+#    Teams:
+#    curl -X POST -H 'Content-Type: application/json' \
+#      -d '{"text":"Test from Scrum Master"}' \
+#      YOUR_TEAMS_WEBHOOK_URL
+
+# ================================================================================
+# ADVANCED: JSON Configuration
+# ================================================================================
+
+# If you prefer JSON over YAML, create config.json:
+# {
+#   "notifications": {
+#     "enabled": false,
+#     "channel": "slack",
+#     "slack_webhook": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+#     "teams_webhook": "https://outlook.office.com/webhook/YOUR/WEBHOOK/URL"
+#   }
+# }
