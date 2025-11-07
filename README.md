@@ -257,7 +257,7 @@ Claude Code ↔ Codex CLI interoperability, AGENTS.md generation
 ### 8. Hook Factory (85 KB) 🆕
 Build custom Claude Code hooks through interactive Q&A with comprehensive safety validation
 - [View Skill](generated-skills/hook-factory/)
-- **New** - Workflow automation with 4 core patterns and production-ready examples
+- **v2.0** - 10 production templates, automated installer (Python + Bash), secrets detection, event-specific validation
 
 ---
 

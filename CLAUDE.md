@@ -130,10 +130,12 @@ Generate new capabilities using these templates:
 
 ### Create a Hook
 
-1. Use `/build-hook` slash command or invoke `hooks-guide` agent
-2. Answer 5-7 questions about hook purpose and behavior
+1. Use `/build-hook` slash command or run `python3 hook_factory.py -i` for interactive mode
+2. Answer 7 questions about hook purpose and behavior (event type, language, matcher, command, timeout, install level, auto-install)
 3. Generated files: `generated-hooks/[hook-name]/hook.json` + README.md
-4. Install to `.claude/settings.json` (project) or `~/.claude/settings.json` (user)
+4. Install automatically (if selected) or manually:
+   - Automated: `python3 installer.py install generated-hooks/[hook-name] user|project`
+   - Manual: Add hook.json config to `.claude/settings.json` (project) or `~/.claude/settings.json` (user)
 5. Restart Claude Code to activate hook
 6. Test hook with relevant events
 

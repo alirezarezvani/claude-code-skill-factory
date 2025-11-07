@@ -114,17 +114,26 @@ class HookGenerator:
         # Perform template substitution
         hook_config = self._substitute_template(template, requirements)
 
-        # Add metadata
-        hook_config['_metadata'] = {
+        # Get event type from template metadata
+        event_type = template['metadata'].get('event_type', 'PostToolUse')
+
+        # Wrap hook config with event type for installer compatibility
+        wrapped_config = {
+            event_type: [hook_config]
+        }
+
+        # Add metadata at root level (for reference, not used by installer)
+        wrapped_config['_metadata'] = {
             'generated_by': 'hook-factory',
             'generated_at': datetime.utcnow().isoformat() + 'Z',
             'template': requirements.template_name,
             'language': requirements.language,
-            'hook_name': requirements.hook_name
+            'hook_name': requirements.hook_name,
+            'event_type': event_type
         }
 
         # Generate JSON string
-        hook_json = json.dumps(hook_config, indent=2)
+        hook_json = json.dumps(wrapped_config, indent=2)
 
         # Generate README
         readme_md = self._generate_readme(template, requirements, hook_config)
@@ -133,8 +142,8 @@ class HookGenerator:
         output_dir = os.path.join('generated-hooks', requirements.hook_name)
 
         return HookPackage(
-            hook_config=hook_config,
-            hook_json=hook_json,
+            hook_config=hook_config,  # Raw format for validation
+            hook_json=hook_json,  # Wrapped format saved to file
             readme_md=readme_md,
             output_dir=output_dir,
             hook_name=requirements.hook_name

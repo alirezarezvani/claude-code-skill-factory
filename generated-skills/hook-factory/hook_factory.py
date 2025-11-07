@@ -254,6 +254,359 @@ class HookFactory:
             print()
 
 
+def interactive_mode(factory: HookFactory) -> int:
+    """
+    Interactive mode with guided 7-question flow.
+
+    Args:
+        factory: HookFactory instance
+
+    Returns:
+        Exit code (0 for success, 1 for failure)
+    """
+    print("\n" + "=" * 70)
+    print("🎯 Hook Factory - Interactive Mode")
+    print("=" * 70)
+    print("\nThis wizard will guide you through creating a custom hook.")
+    print("You can press Ctrl+C at any time to cancel.\n")
+
+    try:
+        # Q1: Event Type
+        event_type = _ask_event_type()
+
+        # Q2: Programming Language
+        language = _ask_language(event_type)
+
+        # Q3: Tool Matcher
+        matcher = _ask_matcher(event_type)
+
+        # Q4: Command to Run
+        command = _ask_command(event_type, language)
+
+        # Q5: Timeout
+        timeout = _ask_timeout(event_type)
+
+        # Q6: Installation Level
+        level = _ask_installation_level()
+
+        # Q7: Auto-Install
+        auto_install = _ask_auto_install()
+
+        # Summary
+        print("\n" + "=" * 70)
+        print("📋 Hook Configuration Summary")
+        print("=" * 70)
+        print(f"  Event Type: {event_type}")
+        print(f"  Language: {language}")
+        print(f"  Matcher: {matcher}")
+        print(f"  Command: {command[:60]}..." if len(command) > 60 else f"  Command: {command}")
+        print(f"  Timeout: {timeout}s")
+        print(f"  Level: {level}")
+        print(f"  Auto-Install: {'Yes' if auto_install else 'No'}")
+        print("=" * 70)
+
+        confirm = input("\n✅ Generate this hook? (y/n): ").strip().lower()
+        if confirm != 'y':
+            print("❌ Hook generation cancelled.")
+            return 1
+
+        # Generate hook name from event and language
+        hook_name = f"{event_type.lower().replace('tooluse', 'tool_use')}-{language.lower()}"
+
+        # Create HookRequirements
+        requirements = HookRequirements(
+            template_name=_get_template_for_event(event_type),
+            language=language,
+            hook_name=hook_name,
+            additional_options={
+                'matcher': matcher,
+                'command': command,
+                'timeout': timeout
+            }
+        )
+
+        # Generate hook
+        try:
+            package = factory.generator.generate_hook(requirements)
+            result = factory._process_package(package)
+
+            if not result:
+                print("❌ Hook generation failed.")
+                return 1
+
+            # Auto-install if requested
+            if auto_install:
+                print("\n🔧 Installing hook...")
+                try:
+                    from installer import HookInstaller
+                    installer = HookInstaller()
+                    hook_path = result['output_dir']
+
+                    success = installer.install_hook(hook_path, level=level)
+                    if success:
+                        print("✅ Hook installed successfully!")
+                        print(f"📍 Location: {level} level")
+                        print("\nℹ️  Restart Claude Code to activate the hook")
+                    else:
+                        print("⚠️  Hook generation succeeded but installation failed.")
+                        print(f"   You can manually install from: {hook_path}")
+
+                except ImportError:
+                    print("⚠️  installer.py not found - skipping auto-install")
+                    print(f"   You can manually install from: {result['output_dir']}")
+                except Exception as e:
+                    print(f"⚠️  Auto-install failed: {e}")
+                    print(f"   You can manually install from: {result['output_dir']}")
+
+            return 0
+
+        except Exception as e:
+            print(f"❌ Error generating hook: {e}")
+            return 1
+
+    except KeyboardInterrupt:
+        print("\n\n❌ Hook generation cancelled by user.")
+        return 1
+    except Exception as e:
+        print(f"\n❌ Unexpected error: {e}")
+        return 1
+
+
+def _ask_event_type() -> str:
+    """Ask user for event type."""
+    print("\n" + "-" * 70)
+    print("❓ Q1: Event Type")
+    print("-" * 70)
+    print("\nWhat event should trigger this hook?\n")
+    print("  1. PostToolUse - After using a tool (Edit, Write, Bash)")
+    print("  2. SubagentStop - When an agent completes")
+    print("  3. SessionStart - At session startup")
+    print("  4. PreToolUse - Before using a tool (validation)")
+    print("  5. UserPromptSubmit - Before processing user prompt")
+    print("  6. Stop - At session end (cleanup)")
+    print("  7. PrePush - Before git push (validation)")
+
+    event_map = {
+        '1': 'PostToolUse',
+        '2': 'SubagentStop',
+        '3': 'SessionStart',
+        '4': 'PreToolUse',
+        '5': 'UserPromptSubmit',
+        '6': 'Stop',
+        '7': 'PrePush'
+    }
+
+    while True:
+        choice = input("\nYour choice (1-7): ").strip()
+        if choice in event_map:
+            return event_map[choice]
+        print("❌ Invalid choice. Please enter a number between 1 and 7.")
+
+
+def _ask_language(event_type: str) -> str:
+    """Ask user for programming language with smart defaults."""
+    print("\n" + "-" * 70)
+    print("❓ Q2: Programming Language")
+    print("-" * 70)
+    print("\nWhat programming language? (for formatting/testing templates)\n")
+    print("  1. Python")
+    print("  2. JavaScript")
+    print("  3. TypeScript")
+    print("  4. Rust")
+    print("  5. Go")
+    print("  6. N/A (not language-specific)")
+
+    # Smart default
+    default = '1' if event_type in ['PostToolUse', 'SubagentStop'] else '6'
+    default_name = {
+        '1': 'Python', '2': 'JavaScript', '3': 'TypeScript',
+        '4': 'Rust', '5': 'Go', '6': 'N/A'
+    }[default]
+
+    print(f"\n💡 Suggested: {default_name}")
+
+    language_map = {
+        '1': 'python',
+        '2': 'javascript',
+        '3': 'typescript',
+        '4': 'rust',
+        '5': 'go',
+        '6': 'generic'
+    }
+
+    while True:
+        choice = input(f"\nYour choice (1-6, default={default}): ").strip() or default
+        if choice in language_map:
+            return language_map[choice]
+        print("❌ Invalid choice. Please enter a number between 1 and 6.")
+
+
+def _ask_matcher(event_type: str) -> str:
+    """Ask user for tool matcher."""
+    print("\n" + "-" * 70)
+    print("❓ Q3: Tool Matcher")
+    print("-" * 70)
+    print("\nWhat tools should trigger this hook?\n")
+    print("Examples:")
+    print('  "Edit,Write" - Trigger on Edit or Write')
+    print('  "Bash" - Trigger on Bash only')
+    print('  "*.py" - Trigger on Python files')
+    print('  "*" - Trigger on all tools (not recommended for PreToolUse)')
+
+    # Smart defaults
+    if event_type == 'PostToolUse':
+        default = "Edit,Write"
+    elif event_type == 'PreToolUse':
+        default = "Write,Edit"
+    elif event_type == 'SubagentStop':
+        default = "*"
+    else:
+        default = "{}"  # Empty matcher
+
+    print(f"\n💡 Suggested: {default}")
+
+    while True:
+        answer = input(f"\nYour answer (default={default}): ").strip() or default
+
+        # Validation
+        if event_type == 'PreToolUse' and answer == '*':
+            print("⚠️  Warning: PreToolUse with '*' matcher is not recommended (too broad)")
+            confirm = input("   Continue anyway? (y/n): ").strip().lower()
+            if confirm != 'y':
+                continue
+
+        return answer
+
+
+def _ask_command(event_type: str, language: str) -> str:
+    """Ask user for command to run."""
+    print("\n" + "-" * 70)
+    print("❓ Q4: Command to Run")
+    print("-" * 70)
+    print("\nWhat command should the hook execute?\n")
+    print("Examples:")
+    print('  "black {file_path}" (Python formatting)')
+    print('  "git add {file_path}" (Git auto-add)')
+    print('  "pytest tests/" (Run tests)')
+    print('  "echo Session started" (Simple notification)')
+
+    # Smart defaults based on event + language
+    defaults = {
+        ('PostToolUse', 'python'): 'black {file_path}',
+        ('PostToolUse', 'javascript'): 'prettier --write {file_path}',
+        ('PostToolUse', 'typescript'): 'prettier --write {file_path}',
+        ('SubagentStop', 'python'): 'pytest tests/',
+        ('SessionStart', 'generic'): 'echo "🚀 Session started at $(date)"',
+        ('Stop', 'generic'): 'echo "👋 Session ended at $(date)"',
+        ('PrePush', 'python'): 'pytest tests/ && echo "✅ Tests passed"'
+    }
+
+    default = defaults.get((event_type, language), 'echo "Hook triggered"')
+    print(f"\n💡 Suggested: {default}")
+
+    while True:
+        answer = input(f"\nYour command (default={default}): ").strip() or default
+
+        # Basic validation
+        if not answer:
+            print("❌ Command cannot be empty.")
+            continue
+
+        # Warn about dangerous commands
+        dangerous = ['rm -rf', 'dd if=', '> /dev/', 'chmod -R 777']
+        if any(d in answer for d in dangerous):
+            print("⚠️  Warning: This command may be dangerous!")
+            confirm = input("   Continue anyway? (y/n): ").strip().lower()
+            if confirm != 'y':
+                continue
+
+        return answer
+
+
+def _ask_timeout(event_type: str) -> int:
+    """Ask user for timeout with smart defaults."""
+    print("\n" + "-" * 70)
+    print("❓ Q5: Timeout")
+    print("-" * 70)
+    print("\nMaximum execution time?\n")
+    print("  1. 5s (quick validation)")
+    print("  2. 10s (formatting)")
+    print("  3. 30s (testing, notifications)")
+    print("  4. 60s (comprehensive tests)")
+    print("  5. 120s (slow tests, security scans)")
+
+    # Smart defaults based on event type
+    defaults = {
+        'PreToolUse': '1',      # 5s - blocking
+        'UserPromptSubmit': '1', # 5s - blocking
+        'PostToolUse': '2',      # 10s - formatting
+        'SessionStart': '3',     # 30s - setup
+        'SubagentStop': '4',     # 60s - tests
+        'Stop': '3',             # 30s - cleanup
+        'PrePush': '5'           # 120s - comprehensive
+    }
+
+    default = defaults.get(event_type, '3')
+    timeout_map = {'1': 5, '2': 10, '3': 30, '4': 60, '5': 120}
+
+    print(f"\n💡 Suggested: {timeout_map[default]}s (choice {default})")
+
+    while True:
+        choice = input(f"\nYour choice (1-5, default={default}): ").strip() or default
+        if choice in timeout_map:
+            return timeout_map[choice]
+        print("❌ Invalid choice. Please enter a number between 1 and 5.")
+
+
+def _ask_installation_level() -> str:
+    """Ask user for installation level."""
+    print("\n" + "-" * 70)
+    print("❓ Q6: Installation Level")
+    print("-" * 70)
+    print("\nWhere should this hook be installed?\n")
+    print("  1. User (~/.claude/settings.json) - All projects")
+    print("  2. Project (.claude/settings.json) - This project only")
+
+    print("\n💡 Suggested: User (safer, applies to all projects)")
+
+    level_map = {'1': 'user', '2': 'project'}
+
+    while True:
+        choice = input("\nYour choice (1-2, default=1): ").strip() or '1'
+        if choice in level_map:
+            return level_map[choice]
+        print("❌ Invalid choice. Please enter 1 or 2.")
+
+
+def _ask_auto_install() -> bool:
+    """Ask user if auto-install is desired."""
+    print("\n" + "-" * 70)
+    print("❓ Q7: Auto-Install")
+    print("-" * 70)
+    print("\nInstall the hook automatically after generation?")
+    print("(You can also install manually later)\n")
+
+    while True:
+        choice = input("Auto-install? (y/n, default=n): ").strip().lower() or 'n'
+        if choice in ['y', 'n', 'yes', 'no']:
+            return choice in ['y', 'yes']
+        print("❌ Invalid choice. Please enter 'y' or 'n'.")
+
+
+def _get_template_for_event(event_type: str) -> str:
+    """Get appropriate template name for event type."""
+    template_map = {
+        'PostToolUse': 'post_tool_use_format',
+        'SubagentStop': 'subagent_stop_test_runner',
+        'SessionStart': 'session_start_load_context',
+        'PreToolUse': 'pre_tool_use_validation',
+        'UserPromptSubmit': 'user_prompt_submit_preprocessor',
+        'Stop': 'stop_session_cleanup',
+        'PrePush': 'pre_push_validation'
+    }
+    return template_map.get(event_type, 'post_tool_use_format')
+
+
 def main():
     """Main entry point for CLI usage."""
     import argparse
@@ -263,6 +616,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
+  # Interactive mode (guided 7-question flow)
+  python hook_factory.py -i
+
   # Generate from natural language
   python hook_factory.py -r "auto-format Python files after editing"
   python hook_factory.py -r "run tests when agent completes"
@@ -289,12 +645,19 @@ Examples:
     parser.add_argument('--list',
                         action='store_true',
                         help='List available templates')
+    parser.add_argument('-i', '--interactive',
+                        action='store_true',
+                        help='Interactive mode with guided questions')
     parser.add_argument('--project-root',
                         help='Project root directory (default: auto-detect)')
 
     args = parser.parse_args()
 
     factory = HookFactory(project_root=args.project_root)
+
+    # Interactive mode
+    if args.interactive:
+        return interactive_mode(factory)
 
     # List templates
     if args.list:

@@ -1,0 +1,14 @@
+{
+  "PrePush": [
+    {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Security scan before git push\necho \"Running security scan...\"\nERRORS=0\n\n# Scan for hardcoded secrets in staged changes\necho \"Checking for secrets...\"\nSECRETS_FOUND=false\n\n# Check for common secret patterns\nif git diff --cached | grep -iE '(password|api_key|secret|token)\\s*=\\s*[\"'\"'][^\"'\"']+[\"'\"']'; then\n    echo \"Warning: Potential secrets found in staged changes\"\n    SECRETS_FOUND=true\nfi\n\n# Check for AWS/Stripe/GitHub tokens\nif git diff --cached | grep -E '(AKIA|AWS|sk_live_|sk_test_|gh[ps]_)'; then\n    echo \"Error: AWS/Stripe/GitHub tokens detected in staged changes\"\n    SECRETS_FOUND=true\nfi\n\n# Check for private keys\nif git diff --cached | grep -E '-----BEGIN.*PRIVATE KEY-----'; then\n    echo \"Error: Private key detected in staged changes\"\n    SECRETS_FOUND=true\nfi\n\nif [ \"$SECRETS_FOUND\" = true ]; then\n    echo \"Security scan failed - potential secrets detected\"\n    echo \"Please remove secrets before pushing\"\n    exit 1\nfi\n\n# Run semgrep if available\nif command -v semgrep &> /dev/null; then\n    echo \"Running semgrep security scan...\"\n    if ! semgrep --config=auto --error; then\n        echo \"Semgrep found security issues\"\n        ERRORS=$((ERRORS + 1))\n    fi\nelse\n    echo \"semgrep not installed - skipping (install with: pip install semgrep)\"\nfi\n\n# Run bandit for Python if available\nif command -v bandit &> /dev/null && find . -name '*.py' -type f | grep -q .; then\n    echo \"Running bandit security scan for Python...\"\n    if ! bandit -r . -ll -f txt 2>/dev/null; then\n        echo \"Bandit found security issues\"\n        ERRORS=$((ERRORS + 1))\n    fi\nelse\n    if ! command -v bandit &> /dev/null; then\n        echo \"bandit not installed - skipping Python scan (install with: pip install bandit)\"\n    fi\nfi\n\nif [ $ERRORS -gt 0 ]; then\n    echo \"Security scan found $ERRORS issue(s) - push blocked\"\n    exit 1\nfi\n\necho \"Security scan passed!\"",
+          "timeout": 120
+        }
+      ]
+    }
+  ]
+}

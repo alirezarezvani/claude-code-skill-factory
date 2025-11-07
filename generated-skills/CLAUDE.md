@@ -311,6 +311,70 @@ When generating or modifying skills in this folder, follow these strict rules:
 
 ---
 
+### 8. Hook Factory v2.0 (92 KB) 🆕
+
+**Location**: `hook-factory/`
+
+**Files**:
+- `SKILL.md` - Skill definition and documentation (v2.0.0)
+- `hook_factory.py` - Interactive CLI with 7-question flow
+- `generator.py` - Hook generation engine with template substitution
+- `validator.py` - Enhanced validation (4 layers: structure, safety, secrets, events)
+- `installer.py` - Automated installer with atomic operations (536 lines)
+- `install-hook.sh` - Bash installer for macOS/Linux (148 lines)
+- `templates.json` - 10 production hook templates
+
+**Purpose**: Generate production-ready Claude Code hooks through interactive Q&A with automated installation, comprehensive validation, and 10 pre-built templates covering 7 event types
+
+**Key Features**:
+- **Interactive Mode**: 7-question guided flow with smart defaults and validation
+- **10 Templates**: PostToolUse (format, git-add), SubagentStop (test-runner), SessionStart (context-loader), PreToolUse (validation), UserPromptSubmit (preprocessor), Stop (cleanup), PrePush (validation), Notification (desktop-notify, security-scan)
+- **Automated Installation**: Python and Bash installers with atomic operations, backup/rollback
+- **Enhanced Validation**: 4-layer validation (structure, safety, secrets detection, event-specific rules)
+- **Template Variables**: Language-specific substitution (Python/JavaScript/TypeScript/Rust/Go)
+
+**Pattern**: Interactive Q&A → Template selection → Validation → Auto-install (optional)
+
+**Templates (10 Total)**:
+1. `post_tool_use_format` - Auto-format code after editing (black, prettier, rustfmt, gofmt)
+2. `post_tool_use_git_add` - Auto-stage files after editing
+3. `subagent_stop_test_runner` - Run tests when agent completes
+4. `session_start_context_loader` - Load context on session start
+5. `pre_tool_use_validation` - Validate inputs before tool execution
+6. `user_prompt_submit_preprocessor` - Pre-process user prompts
+7. `stop_session_cleanup` - Cleanup on session end
+8. `pre_push_validation` - Validate before git push
+9. `notify_user_desktop` - Desktop notifications (macOS/Linux)
+10. `security_scan_code` - Security scanning (semgrep, bandit)
+
+**Validation Features**:
+- Secrets detection (AWS keys, RSA, JWT, env vars)
+- Event-specific rules (timing, matchers, blocking requirements)
+- Destructive command detection (rm -rf, chmod 777, sudo rm, etc.)
+- Tool detection patterns (ensure external tools exist before running)
+
+**Installer Features**:
+- Atomic operations (temp file → rename pattern)
+- Automatic backups with timestamps
+- Rollback on failure
+- List/install/uninstall commands
+- Both user (~/.claude/) and project (.claude/) levels
+
+**Use Cases**:
+- Automate code formatting after edits
+- Auto-stage files for git commits
+- Run tests when agents complete work
+- Load project context on session start
+- Validate inputs before dangerous operations
+- Pre-process user prompts for better results
+- Cleanup temporary files on exit
+- Run security scans before git push
+- Desktop notifications for long-running operations
+
+**Documentation**: See [hook-factory/README.md](hook-factory/README.md) and [hook-factory/SKILL.md](hook-factory/SKILL.md)
+
+---
+
 ## Installation
 
 ### General Installation Process
@@ -355,11 +419,12 @@ All skills can be customized for specific needs:
 | Skill | Size | Complexity |
 |-------|------|------------|
 | Agent Factory | 12 KB | Simple |
-| Slash Command Factory | 26 KB | Medium |
+| Slash Command Factory v2.0 | 26 KB | Medium |
 | Psychology Advisor | 31 KB | Medium |
 | Content Trend Researcher | 35 KB | Medium |
 | Microsoft 365 Tenant Manager | 40 KB | Medium |
 | AWS Solution Architect | 53 KB | High |
+| Hook Factory v2.0 | 92 KB | High |
 | Prompt Factory | 427 KB | Very High |
 
 ---

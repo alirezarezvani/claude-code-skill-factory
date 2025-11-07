@@ -1,0 +1,14 @@
+{
+  "PrePush": [
+    {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Pre-push validation checks\necho \"Running pre-push validation...\"\n\n# Check for protected branches\nCURRENT_BRANCH=$(git branch --show-current)\nPROTECTED_BRANCHES=(\"main\" \"master\" \"production\")\nfor branch in \"${PROTECTED_BRANCHES[@]}\"; do\n    if [ \"$CURRENT_BRANCH\" = \"$branch\" ]; then\n        echo \"Error: Direct push to protected branch '$branch' is not allowed\"\n        echo \"Please create a feature branch and submit a pull request\"\n        exit 1\n    fi\ndone\n\n# Check for WIP/TODO/FIXME in commit messages\nREMOTE_BRANCH=\"origin/$CURRENT_BRANCH\"\nif git rev-parse \"$REMOTE_BRANCH\" &> /dev/null 2>&1; then\n    if git log \"$REMOTE_BRANCH\"..HEAD --oneline | grep -qE '^[0-9a-f]+ (WIP|TODO|FIXME)'; then\n        echo \"Error: Commit messages contain WIP/TODO/FIXME\"\n        echo \"Please clean up commit messages before pushing\"\n        exit 1\n    fi\nfi\n\n# Run tests if test framework detected\nif [ -f package.json ] && command -v npm &> /dev/null; then\n    echo \"Running npm tests...\"\n    npm test || { echo \"Tests failed - push blocked\"; exit 1; }\nelif [ -f pytest.ini ] || [ -f setup.py ]; then\n    if command -v pytest &> /dev/null; then\n        echo \"Running pytest...\"\n        pytest || { echo \"Tests failed - push blocked\"; exit 1; }\n    fi\nelse\n    echo \"No test framework detected - skipping tests\"\nfi\n\necho \"All pre-push checks passed!\"",
+          "timeout": 120
+        }
+      ]
+    }
+  ]
+}

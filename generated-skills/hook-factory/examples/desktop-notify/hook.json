@@ -1,0 +1,14 @@
+{
+  "SubagentStop": [
+    {
+      "matcher": {},
+      "hooks": [
+        {
+          "type": "command",
+          "command": "# Send desktop notification when agent completes\nif [[ \"$OSTYPE\" == \"darwin\"* ]]; then\n    # macOS notification\n    osascript -e 'display notification \"Agent task completed successfully\" with title \"Claude Code\" sound name \"Glass\"'\nelif command -v notify-send &> /dev/null; then\n    # Linux notification\n    notify-send \"Claude Code\" \"Agent task completed successfully\"\nelse\n    echo \"Desktop notifications not supported on this platform\"\nfi",
+          "timeout": 5
+        }
+      ]
+    }
+  ]
+}
