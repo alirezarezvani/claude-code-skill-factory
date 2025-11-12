@@ -1,0 +1,465 @@
+# ─────────────────────────────────────────────────────────────────
+# Create Branch on Issue Workflow
+# ─────────────────────────────────────────────────────────────────
+# Automatically creates feature branches when issues are labeled
+# with both 'claude-code' and 'status:ready'.
+#
+# Features:
+# - Smart branch naming: {type}/issue-{number}-{slug}
+# - Base branch detection (dev → main fallback)
+# - Configurable via labels (base:main, type:fix, etc.)
+# - Idempotency (skip if branch exists)
+# - Issue status label update (→ status:in-progress)
+# - Helpful comment with checkout instructions
+#
+# Branch Types (from labels):
+# - type:fix → fix/issue-X-title
+# - type:hotfix → hotfix/issue-X-title
+# - type:refactor → refactor/issue-X-title
+# - type:test → test/issue-X-title
+# - type:docs → docs/issue-X-title
+# - (default) → feature/issue-X-title
+#
+# Created: November 13, 2025
+# Part of: GitHub Workflow Implementation (Day 5)
+# ─────────────────────────────────────────────────────────────────
+
+name: Create Branch on Issue
+
+on:
+  issues:
+    types:
+      - labeled
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # Check Trigger Conditions
+  # ─────────────────────────────────────────────────────────────────
+  check-labels:
+    name: Check Required Labels
+    runs-on: ubuntu-latest
+    outputs:
+      should-create-branch: ${{ steps.check.outputs.should-create-branch }}
+      has-claude-code: ${{ steps.check.outputs.has-claude-code }}
+      has-status-ready: ${{ steps.check.outputs.has-status-ready }}
+
+    steps:
+      - name: Check for required labels
+        id: check
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name);
+
+            console.log(`🏷️  Issue #${issue.number} labels:`, labels);
+
+            const hasClaudeCode = labels.includes('claude-code');
+            const hasStatusReady = labels.includes('status:ready');
+
+            console.log(`   claude-code: ${hasClaudeCode ? '✅' : '❌'}`);
+            console.log(`   status:ready: ${hasStatusReady ? '✅' : '❌'}`);
+
+            const shouldCreate = hasClaudeCode && hasStatusReady;
+
+            if (!shouldCreate) {
+              console.log('⏭️  Skipping branch creation - missing required labels');
+              console.log('   Required: claude-code AND status:ready');
+            } else {
+              console.log('✅ All required labels present - will create branch');
+            }
+
+            core.setOutput('should-create-branch', shouldCreate);
+            core.setOutput('has-claude-code', hasClaudeCode);
+            core.setOutput('has-status-ready', hasStatusReady);
+
+  # ─────────────────────────────────────────────────────────────────
+  # Create Branch
+  # ─────────────────────────────────────────────────────────────────
+  create-branch:
+    name: Create Feature Branch
+    runs-on: ubuntu-latest
+    needs: check-labels
+    if: needs.check-labels.outputs.should-create-branch == 'true'
+    outputs:
+      branch-name: ${{ steps.branch.outputs.branch-name }}
+      base-branch: ${{ steps.branch.outputs.base-branch }}
+      branch-created: ${{ steps.branch.outputs.branch-created }}
+      branch-type: ${{ steps.branch.outputs.branch-type }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine branch details
+        id: branch
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name);
+
+            console.log(`📝 Processing issue #${issue.number}: ${issue.title}`);
+
+            // Determine branch type from labels
+            let branchType = 'feature'; // default
+
+            if (labels.includes('type:fix')) {
+              branchType = 'fix';
+            } else if (labels.includes('type:hotfix')) {
+              branchType = 'hotfix';
+            } else if (labels.includes('type:refactor')) {
+              branchType = 'refactor';
+            } else if (labels.includes('type:test')) {
+              branchType = 'test';
+            } else if (labels.includes('type:docs')) {
+              branchType = 'docs';
+            }
+
+            console.log(`   Branch type: ${branchType}`);
+
+            // Create slug from issue title
+            const slug = issue.title
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
+              .replace(/\s+/g, '-')          // Replace spaces with hyphens
+              .replace(/-+/g, '-')           // Collapse multiple hyphens
+              .substring(0, 50)              // Max 50 chars
+              .replace(/-+$/, '');           // Remove trailing hyphens
+
+            console.log(`   Slug: ${slug}`);
+
+            // Build branch name
+            const branchName = `${branchType}/issue-${issue.number}-${slug}`;
+            console.log(`   Branch name: ${branchName}`);
+
+            // Determine base branch
+            let baseBranch = 'dev'; // default
+
+            // Check for custom base branch label (e.g., base:main)
+            const baseBranchLabel = labels.find(l => l.startsWith('base:'));
+            if (baseBranchLabel) {
+              baseBranch = baseBranchLabel.split(':')[1];
+              console.log(`   Custom base branch from label: ${baseBranch}`);
+            } else {
+              // Check if dev branch exists
+              try {
+                await github.rest.repos.getBranch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  branch: 'dev'
+                });
+                console.log(`   Base branch: dev (exists)`);
+              } catch (error) {
+                // dev doesn't exist, use main
+                baseBranch = 'main';
+                console.log(`   Base branch: main (dev not found, using fallback)`);
+              }
+            }
+
+            core.setOutput('branch-name', branchName);
+            core.setOutput('base-branch', baseBranch);
+            core.setOutput('branch-type', branchType);
+            core.setOutput('slug', slug);
+
+            return { branchName, baseBranch, branchType, slug };
+
+      - name: Check if branch already exists
+        id: check-existing
+        run: |
+          BRANCH_NAME="${{ steps.branch.outputs.branch-name }}"
+
+          echo "🔍 Checking if branch already exists: $BRANCH_NAME"
+
+          # Check remote branches
+          if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+            echo "⏭️  Branch already exists: $BRANCH_NAME"
+            echo "branch-exists=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "✅ Branch does not exist - will create"
+          echo "branch-exists=false" >> $GITHUB_OUTPUT
+
+      - name: Create branch from base
+        if: steps.check-existing.outputs.branch-exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BRANCH_NAME="${{ steps.branch.outputs.branch-name }}"
+          BASE_BRANCH="${{ steps.branch.outputs.base-branch }}"
+
+          echo "🌿 Creating branch: $BRANCH_NAME"
+          echo "   From base: $BASE_BRANCH"
+
+          # Get base branch SHA
+          BASE_SHA=$(git rev-parse "origin/$BASE_BRANCH")
+          echo "   Base SHA: $BASE_SHA"
+
+          # Create branch via API
+          gh api repos/${{ github.repository }}/git/refs \
+            -f ref="refs/heads/$BRANCH_NAME" \
+            -f sha="$BASE_SHA"
+
+          echo "✅ Branch created successfully"
+          echo "branch-created=true" >> $GITHUB_OUTPUT
+
+      - name: Set output for existing branch
+        if: steps.check-existing.outputs.branch-exists == 'true'
+        run: |
+          echo "branch-created=false" >> $GITHUB_OUTPUT
+
+  # ─────────────────────────────────────────────────────────────────
+  # Update Issue Status Label
+  # ─────────────────────────────────────────────────────────────────
+  update-issue-status:
+    name: Update Issue Status
+    runs-on: ubuntu-latest
+    needs:
+      - check-labels
+      - create-branch
+    if: |
+      always() &&
+      needs.check-labels.outputs.should-create-branch == 'true' &&
+      needs.create-branch.outputs.branch-created == 'true'
+
+    steps:
+      - name: Remove status:ready and add status:in-progress
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const issueNumber = context.payload.issue.number;
+
+            console.log(`🏷️  Updating issue #${issueNumber} status labels...`);
+
+            // Remove status:ready
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: 'status:ready'
+              });
+              console.log('   ✅ Removed status:ready');
+            } catch (error) {
+              console.log('   ⚠️  status:ready not found (may have been removed already)');
+            }
+
+            // Add status:in-progress
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['status:in-progress']
+            });
+
+            console.log('   ✅ Added status:in-progress');
+            console.log('✅ Issue status updated successfully');
+
+  # ─────────────────────────────────────────────────────────────────
+  # Comment on Issue
+  # ─────────────────────────────────────────────────────────────────
+  comment-on-issue:
+    name: Add Comment with Instructions
+    runs-on: ubuntu-latest
+    needs:
+      - check-labels
+      - create-branch
+    if: always() && needs.check-labels.outputs.should-create-branch == 'true'
+
+    steps:
+      - name: Add helpful comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const issue = context.payload.issue;
+            const branchName = '${{ needs.create-branch.outputs.branch-name }}';
+            const baseBranch = '${{ needs.create-branch.outputs.base-branch }}';
+            const branchCreated = '${{ needs.create-branch.outputs.branch-created }}' === 'true';
+            const branchType = '${{ needs.create-branch.outputs.branch-type }}';
+
+            let comment = '';
+
+            if (branchCreated) {
+              comment = `## 🌿 Branch Created!
+
+            I've automatically created a ${branchType} branch for this issue.
+
+            ### 📋 Branch Details
+            - **Branch:** \`${branchName}\`
+            - **Base:** \`${baseBranch}\`
+            - **Type:** \`${branchType}\`
+            - **Issue:** #${issue.number}
+
+            ### 🚀 Get Started
+
+            **Clone and checkout:**
+            \`\`\`bash
+            git fetch origin
+            git checkout ${branchName}
+            \`\`\`
+
+            **Or create local branch tracking remote:**
+            \`\`\`bash
+            git checkout -b ${branchName} origin/${branchName}
+            \`\`\`
+
+            ### 📝 Development Workflow
+
+            1. **Make your changes** on this branch
+               - Add new skills to \`generated-skills/\`
+               - Update documentation in \`documentation/\`
+               - Add examples to \`claude-skills-examples/\`
+
+            2. **Commit with conventional format**
+               \`\`\`bash
+               git commit -m "feat: add AWS architect skill"
+               git commit -m "fix: resolve YAML validation error"
+               git commit -m "docs: update skill installation guide"
+               \`\`\`
+
+            3. **Push to origin**
+               \`\`\`bash
+               git push origin ${branchName}
+               \`\`\`
+
+            4. **Create PR to \`${baseBranch}\`**
+               \`\`\`bash
+               gh pr create --base ${baseBranch} --title "${branchType}: Your PR title" --body "Closes #${issue.number}"
+               \`\`\`
+
+            ### 💡 Quality Checks
+
+            Before pushing, ensure:
+            - ✅ All YAML files are valid (\`yamllint generated-skills/\`)
+            - ✅ Skills have proper frontmatter (SKILL.md format)
+            - ✅ No hardcoded secrets or credentials
+            - ✅ Documentation updated (README.md, CHANGELOG.md)
+
+            ### 🔄 PR Validation
+
+            When you create a PR, the following checks will run automatically:
+            - Branch naming validation
+            - PR title validation (conventional commits)
+            - Linked issue requirement
+            - Quality gates (lint, type-check, tests)
+            - YAML validation
+
+            ---
+            🤖 _This branch was created automatically. Status updated to **in-progress**._`;
+            } else {
+              comment = `## ℹ️ Branch Already Exists
+
+            A branch for this issue already exists:
+
+            ### 📋 Branch Details
+            - **Branch:** \`${branchName}\`
+            - **Base:** \`${baseBranch}\`
+            - **Type:** \`${branchType}\`
+
+            ### 🚀 Checkout Instructions
+            \`\`\`bash
+            git fetch origin
+            git checkout ${branchName}
+            \`\`\`
+
+            ### 🔄 Need to Recreate?
+
+            If you need to recreate this branch, delete it first:
+            \`\`\`bash
+            git push origin --delete ${branchName}
+            \`\`\`
+
+            Then remove the \`status:ready\` label and add it again to trigger branch creation.
+
+            ---
+            🤖 _This is an automated message_`;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: comment
+            });
+
+            console.log(`✅ Comment added to issue #${issue.number}`);
+
+  # ─────────────────────────────────────────────────────────────────
+  # Generate Summary
+  # ─────────────────────────────────────────────────────────────────
+  summary:
+    name: Workflow Summary
+    runs-on: ubuntu-latest
+    needs:
+      - check-labels
+      - create-branch
+      - update-issue-status
+      - comment-on-issue
+    if: always()
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "# 🌿 Create Branch Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check label requirements
+          if [[ "${{ needs.check-labels.outputs.should-create-branch }}" != "true" ]]; then
+            echo "## ⏭️ Branch Creation Skipped" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Reason:** Issue does not have both required labels" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Label | Present |" >> $GITHUB_STEP_SUMMARY
+            echo "|-------|---------|" >> $GITHUB_STEP_SUMMARY
+            echo "| \`claude-code\` | ${{ needs.check-labels.outputs.has-claude-code == 'true' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| \`status:ready\` | ${{ needs.check-labels.outputs.has-status-ready == 'true' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**To trigger branch creation:**" >> $GITHUB_STEP_SUMMARY
+            echo "1. Add \`claude-code\` label to the issue" >> $GITHUB_STEP_SUMMARY
+            echo "2. Add \`status:ready\` label to the issue" >> $GITHUB_STEP_SUMMARY
+            echo "3. Optionally add type labels: \`type:fix\`, \`type:hotfix\`, \`type:refactor\`, \`type:test\`, \`type:docs\`" >> $GITHUB_STEP_SUMMARY
+            echo "4. Optionally override base branch: \`base:main\` (default: \`dev\`)" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          # Branch creation results
+          echo "## ✅ Branch Creation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Issue | #${{ github.event.issue.number }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | \`${{ needs.create-branch.outputs.branch-name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Base Branch | \`${{ needs.create-branch.outputs.base-branch }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | \`${{ needs.create-branch.outputs.branch-type }}\` |" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.create-branch.outputs.branch-created }}" == "true" ]]; then
+            echo "| Status | ✅ Created |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Status | ⏭️ Already Exists |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Status update
+          if [[ "${{ needs.update-issue-status.result }}" == "success" ]]; then
+            echo "## 🏷️ Issue Status" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Issue status updated: **status:ready** → **status:in-progress**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Branch creation completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')_" >> $GITHUB_STEP_SUMMARY
