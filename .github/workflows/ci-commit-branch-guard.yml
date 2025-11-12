@@ -42,15 +42,41 @@ jobs:
           BRANCH_NAME: ${{ steps.ref.outputs.target_ref }}
         run: |
           echo "Validating branch name: $BRANCH_NAME"
-          if [[ "$BRANCH_NAME" =~ ^(feat|fix|docs|chore|refactor|test|build|ci|perf|style|hotfix|release)/[a-z0-9][a-z0-9-]*$ ]]; then
-            exit 0
-          fi
+
+          # Allow automation branches
           if [[ "$BRANCH_NAME" =~ ^(dependabot|renovate)/.+$ ]]; then
-            echo "Branch is managed by automation ($BRANCH_NAME). Allowing."
+            echo "✅ Branch is managed by automation ($BRANCH_NAME). Allowing."
             exit 0
           fi
+
+          # New naming convention (preferred): feature/, fix/, hotfix/, refactor/, test/, docs/
+          if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|refactor|test|docs)/[a-z0-9][a-z0-9-]*$ ]]; then
+            echo "✅ Branch name follows new convention: $BRANCH_NAME"
+            exit 0
+          fi
+
+          # Old naming convention (backward compatibility): feat/, fix/, docs/, chore/, etc.
+          if [[ "$BRANCH_NAME" =~ ^(feat|fix|docs|chore|refactor|test|build|ci|perf|style|hotfix|release)/[a-z0-9][a-z0-9-]*$ ]]; then
+            echo "⚠️  Branch name follows old convention: $BRANCH_NAME"
+            echo "   Preferred: Use 'feature/' instead of 'feat/', etc."
+            echo "   Old convention still allowed for backward compatibility."
+            exit 0
+          fi
+
           echo "::error::Branch '$BRANCH_NAME' does not match required pattern."
-          echo "Allowed prefixes: feat/, fix/, docs/, chore/, refactor/, test/, build/, ci/, perf/, style/, hotfix/, release/, dependabot/, renovate/."
+          echo ""
+          echo "Preferred prefixes (new convention):"
+          echo "  - feature/  (for new features)"
+          echo "  - fix/      (for bug fixes)"
+          echo "  - hotfix/   (for critical fixes)"
+          echo "  - refactor/ (for code refactoring)"
+          echo "  - test/     (for test additions/updates)"
+          echo "  - docs/     (for documentation changes)"
+          echo ""
+          echo "Also accepted (old convention):"
+          echo "  - feat/, fix/, docs/, chore/, refactor/, test/, build/, ci/, perf/, style/, hotfix/, release/"
+          echo ""
+          echo "Automation: dependabot/, renovate/"
           exit 1
 
       - name: Set up Node.js

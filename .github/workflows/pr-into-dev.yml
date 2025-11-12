@@ -1,0 +1,421 @@
+# ─────────────────────────────────────────────────────────────────
+# PR into Dev Workflow
+# ─────────────────────────────────────────────────────────────────
+# Validates pull requests before merging to dev.
+#
+# Validations:
+# - Source branch must be feature/*, fix/*, hotfix/*, refactor/*, test/*, or docs/*
+# - PR title must follow conventional commit format
+# - At least one issue must be linked
+# - All quality gates must pass (lint, type-check, tests, YAML)
+# - Fork PRs run read-only checks
+#
+# Created: November 13, 2025
+# Part of: GitHub Workflow Implementation (Day 3)
+# ─────────────────────────────────────────────────────────────────
+
+name: PR into Dev
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+    branches:
+      - dev
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+  statuses: write
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: pr-dev-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # Fork Safety Check
+  # ─────────────────────────────────────────────────────────────────
+  fork-check:
+    name: Check Fork Status
+    runs-on: ubuntu-latest
+    outputs:
+      is-fork: ${{ steps.fork-safety.outputs.is-fork }}
+      should-skip-writes: ${{ steps.fork-safety.outputs.should-skip-writes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if PR is from fork
+        id: fork-safety
+        uses: ./.github/actions/fork-safety
+
+      - name: Log fork status
+        run: |
+          if [[ "${{ steps.fork-safety.outputs.is-fork }}" == "true" ]]; then
+            echo "⚠️  This PR is from a fork - write operations will be skipped for security"
+          else
+            echo "✅ This PR is from the same repository"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────
+  # Branch Name Validation
+  # ─────────────────────────────────────────────────────────────────
+  validate-branch:
+    name: Validate Branch Name
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate source branch name
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "🔍 Validating branch name: $BRANCH_NAME"
+
+          # Allow dependabot and renovate branches
+          if [[ "$BRANCH_NAME" =~ ^(dependabot|renovate)/.+$ ]]; then
+            echo "✅ Automation branch detected: $BRANCH_NAME"
+            exit 0
+          fi
+
+          # Check if branch follows naming convention
+          if [[ ! "$BRANCH_NAME" =~ ^(feature|fix|hotfix|refactor|test|docs)/ ]]; then
+            echo "❌ Invalid branch name: $BRANCH_NAME"
+            echo ""
+            echo "Branch must start with one of:"
+            echo "  - feature/  (for new features)"
+            echo "  - fix/      (for bug fixes)"
+            echo "  - hotfix/   (for critical fixes)"
+            echo "  - refactor/ (for code refactoring)"
+            echo "  - test/     (for test additions/updates)"
+            echo "  - docs/     (for documentation changes)"
+            echo ""
+            echo "Example: feature/issue-123-add-aws-skill"
+            echo "Example: fix/issue-456-resolve-null-pointer"
+            exit 1
+          fi
+
+          echo "✅ Branch name is valid: $BRANCH_NAME"
+
+  # ─────────────────────────────────────────────────────────────────
+  # PR Title Validation (Conventional Commits)
+  # ─────────────────────────────────────────────────────────────────
+  validate-pr-title:
+    name: Validate PR Title
+    runs-on: ubuntu-latest
+    needs: fork-check
+
+    steps:
+      - name: Validate conventional commit format
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+          subjectPattern: ^[A-Z].+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            didn't match the configured pattern. Please ensure that the subject
+            starts with an uppercase character.
+
+      - name: Add comment on invalid title
+        if: failure() && needs.fork-check.outputs.should-skip-writes != 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const comment = `## ❌ Invalid PR Title
+
+            Your PR title doesn't follow the conventional commit format.
+
+            **Required format:** \`<type>(<scope>): <subject>\`
+
+            **Valid types:**
+            - \`feat\`: New feature
+            - \`fix\`: Bug fix
+            - \`docs\`: Documentation changes
+            - \`style\`: Code style changes (formatting, etc.)
+            - \`refactor\`: Code refactoring
+            - \`perf\`: Performance improvements
+            - \`test\`: Adding or updating tests
+            - \`build\`: Build system changes
+            - \`ci\`: CI/CD changes
+            - \`chore\`: Other changes
+            - \`revert\`: Revert a previous commit
+
+            **Examples:**
+            - \`feat(skills): Add AWS architect skill\`
+            - \`fix(hooks): Resolve null pointer exception\`
+            - \`docs: Update README with installation guide\`
+
+            **Subject rules:**
+            - Start with uppercase letter
+            - Be concise and descriptive
+            - Use imperative mood ("Add" not "Added")
+
+            Please update your PR title and I'll re-check automatically.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });
+
+  # ─────────────────────────────────────────────────────────────────
+  # Linked Issue Validation
+  # ─────────────────────────────────────────────────────────────────
+  validate-linked-issue:
+    name: Validate Linked Issue
+    runs-on: ubuntu-latest
+    needs: fork-check
+
+    steps:
+      - name: Check for linked issues
+        id: check-linked-issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const prBody = context.payload.pull_request.body || '';
+
+            // Regex to find linked issues: Closes #123, Fixes #456, Relates to #789
+            const issueRegex = /(close[sd]?|fix(e[sd])?|resolve[sd]?|relates?\s+to)\s+#(\d+)/gi;
+            const matches = [...prBody.matchAll(issueRegex)];
+
+            if (matches.length === 0) {
+              core.setFailed('No linked issues found in PR description');
+              core.setOutput('has-linked-issue', 'false');
+              return;
+            }
+
+            const issueNumbers = matches.map(m => m[3]);
+            console.log(`✅ Found ${matches.length} linked issue(s): #${issueNumbers.join(', #')}`);
+            core.setOutput('has-linked-issue', 'true');
+            core.setOutput('issue-numbers', issueNumbers.join(','));
+
+      - name: Add comment on missing linked issue
+        if: failure() && needs.fork-check.outputs.should-skip-writes != 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const comment = `## ❌ No Linked Issue Found
+
+            This PR must be linked to at least one issue for automated tracking.
+
+            **How to link an issue:**
+
+            Add one of the following keywords to your PR description:
+
+            - \`Closes #123\` - Closes the issue when PR is merged
+            - \`Fixes #456\` - Closes the issue when PR is merged
+            - \`Resolves #789\` - Closes the issue when PR is merged
+            - \`Relates to #101\` - References the issue without closing
+
+            **Example:**
+            \`\`\`markdown
+            ## Summary
+            This PR adds AWS architect skill.
+
+            Closes #123
+            Relates to #124
+            \`\`\`
+
+            **Why this is required:**
+            - Enables automated status tracking on the project board
+            - Links code changes to requirements
+            - Maintains project traceability
+
+            Please update your PR description with a linked issue.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });
+
+  # ─────────────────────────────────────────────────────────────────
+  # Quality Gates (Lint, Type-Check, Tests, YAML Validation)
+  # ─────────────────────────────────────────────────────────────────
+  quality-checks:
+    name: Run Quality Checks
+    runs-on: ubuntu-latest
+    needs:
+      - fork-check
+      - validate-branch
+      - validate-pr-title
+      - validate-linked-issue
+    if: |
+      always() &&
+      needs.validate-branch.result == 'success' &&
+      needs.validate-pr-title.result == 'success' &&
+      needs.validate-linked-issue.result == 'success'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            echo "📦 Installing dependencies..."
+            npm ci 2>/dev/null || npm install 2>/dev/null || echo "⏭️  No dependencies to install"
+          else
+            echo "⏭️  No package.json found - skipping dependency installation"
+          fi
+
+      - name: Run quality gates
+        id: quality
+        uses: ./.github/actions/quality-gates
+        with:
+          skip-lint: 'false'
+          skip-typecheck: 'false'
+          skip-tests: 'false'
+
+      - name: Post quality results comment
+        if: always() && needs.fork-check.outputs.should-skip-writes != 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const lintPassed = '${{ steps.quality.outputs.lint-passed }}' === 'true';
+            const typecheckPassed = '${{ steps.quality.outputs.typecheck-passed }}' === 'true';
+            const testsPassed = '${{ steps.quality.outputs.tests-passed }}' === 'true';
+            const allPassed = '${{ steps.quality.outputs.all-passed }}' === 'true';
+
+            const statusIcon = (passed) => passed ? '✅' : '❌';
+
+            const comment = `## 📊 Quality Checks Results
+
+            | Check | Status |
+            |-------|--------|
+            | Linting | ${statusIcon(lintPassed)} ${lintPassed ? 'Passed' : 'Failed'} |
+            | Type Checking | ${statusIcon(typecheckPassed)} ${typecheckPassed ? 'Passed' : 'Failed'} |
+            | Tests | ${statusIcon(testsPassed)} ${testsPassed ? 'Passed' : 'Failed'} |
+
+            ${allPassed ? '✅ **All quality checks passed!**' : '❌ **Some quality checks failed. Please review and fix the issues.**'}
+
+            _Quality checks completed at ${new Date().toISOString()}_`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: comment
+            });
+
+      - name: Verify all quality gates passed
+        if: steps.quality.outputs.all-passed != 'true'
+        run: |
+          echo "❌ Quality gates failed"
+          exit 1
+
+  # ─────────────────────────────────────────────────────────────────
+  # Final Status Check
+  # ─────────────────────────────────────────────────────────────────
+  final-status:
+    name: Final PR Status
+    runs-on: ubuntu-latest
+    needs:
+      - fork-check
+      - validate-branch
+      - validate-pr-title
+      - validate-linked-issue
+      - quality-checks
+    if: always()
+
+    steps:
+      - name: Generate final summary
+        run: |
+          echo "# 🎯 PR Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Fork status
+          if [[ "${{ needs.fork-check.outputs.is-fork }}" == "true" ]]; then
+            echo "⚠️  **Fork PR**: This PR is from a fork. Write operations were skipped for security." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "## ✅ Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          # Branch name
+          if [[ "${{ needs.validate-branch.result }}" == "success" ]]; then
+            echo "| Branch Name | ✅ Valid |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Branch Name | ❌ Invalid |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # PR title
+          if [[ "${{ needs.validate-pr-title.result }}" == "success" ]]; then
+            echo "| PR Title (Conventional) | ✅ Valid |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| PR Title (Conventional) | ❌ Invalid |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Linked issue
+          if [[ "${{ needs.validate-linked-issue.result }}" == "success" ]]; then
+            echo "| Linked Issue | ✅ Found |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Linked Issue | ❌ Missing |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Quality checks
+          if [[ "${{ needs.quality-checks.result }}" == "success" ]]; then
+            echo "| Quality Checks | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          elif [[ "${{ needs.quality-checks.result }}" == "skipped" ]]; then
+            echo "| Quality Checks | ⏭️ Skipped (validation failed) |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Quality Checks | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Overall status
+          if [[ "${{ needs.validate-branch.result }}" == "failure" ]] || \
+             [[ "${{ needs.validate-pr-title.result }}" == "failure" ]] || \
+             [[ "${{ needs.validate-linked-issue.result }}" == "failure" ]] || \
+             [[ "${{ needs.quality-checks.result }}" == "failure" ]]; then
+            echo "## ❌ PR Validation Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please fix the issues above before this PR can be merged." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "## ✅ PR Ready for Review" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "All validations passed! This PR is ready for code review and merge." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_PR validation completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')_" >> $GITHUB_STEP_SUMMARY
