@@ -207,15 +207,20 @@ claude-code-skills-factory/
 ├── documentation/
 │   ├── references/                        # Official Anthropic examples
 │   └── templates/                         # 4 factory prompt templates
-└── generated-skills/                      # 8 production-ready skills
-    ├── aws-solution-architect/            # AWS architecture & IaC
-    ├── content-trend-researcher/          # Multi-platform content research
-    ├── ms365-tenant-manager/              # Microsoft 365 administration
-    ├── agent-factory/                     # Agent generation system
-    ├── prompt-factory/                    # Prompt generation powerhouse
-    ├── slash-command-factory/             # Slash command generation
-    ├── codex-cli-bridge/                  # Claude Code ↔ Codex CLI bridge
-    └── hook-factory/                      # Claude Code hooks automation
+├── generated-skills/                      # 9 production-ready skills
+│   ├── aws-solution-architect/            # AWS architecture & IaC
+│   ├── content-trend-researcher/          # Multi-platform content research
+│   ├── ms365-tenant-manager/              # Microsoft 365 administration
+│   ├── agent-factory/                     # Agent generation system
+│   ├── prompt-factory/                    # Prompt generation powerhouse
+│   ├── slash-command-factory/             # Slash command generation
+│   ├── codex-cli-bridge/                  # Claude Code ↔ Codex CLI bridge
+│   ├── hook-factory/                      # Claude Code hooks automation
+│   └── claude-md-enhancer/                # CLAUDE.md generation & maintenance
+├── generated-agents/                      # Specialized agents
+│   └── claude-md-guardian/                # CLAUDE.md maintenance agent
+└── generated-commands/                    # Custom slash commands
+    └── enhance-claude-md/                 # CLAUDE.md enhancement command
 ```
 
 ---
@@ -258,6 +263,14 @@ Claude Code ↔ Codex CLI interoperability, AGENTS.md generation
 Build custom Claude Code hooks through interactive 7-question Q&A with automated installation and enhanced validation
 - [View Skill](generated-skills/hook-factory/)
 - **v2.0** - 10 production templates, automated installer (Python + Bash), secrets detection, event-specific validation
+
+### 9. CLAUDE.md Enhancer (50 KB) 🆕
+Analyze, generate, and enhance CLAUDE.md files with 100% native format compliance, interactive initialization, and automatic maintenance
+- [View Skill](generated-skills/claude-md-enhancer/)
+- **Ecosystem**: Skill + Agent + Slash Command for complete CLAUDE.md lifecycle management
+- **Features**: Interactive workflow, quality scoring (0-100), modular architecture, 7 built-in examples
+- **Companion Agent**: [claude-md-guardian](generated-agents/claude-md-guardian/) - Background maintenance with auto-sync
+- **Slash Command**: `/enhance-claude-md` - Initialize or enhance CLAUDE.md files
 
 ---
 
