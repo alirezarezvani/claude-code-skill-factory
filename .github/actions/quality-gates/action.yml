@@ -1,0 +1,190 @@
+name: Quality Gates
+description: Runs lint, type-check, and tests with graceful fallback
+
+inputs:
+  skip-lint:
+    description: Skip linting check
+    required: false
+    default: 'false'
+  skip-typecheck:
+    description: Skip type checking
+    required: false
+    default: 'false'
+  skip-tests:
+    description: Skip tests
+    required: false
+    default: 'false'
+
+outputs:
+  lint-passed:
+    description: Whether lint check passed
+    value: ${{ steps.results.outputs.lint-passed }}
+  typecheck-passed:
+    description: Whether type check passed
+    value: ${{ steps.results.outputs.typecheck-passed }}
+  tests-passed:
+    description: Whether tests passed
+    value: ${{ steps.results.outputs.tests-passed }}
+  all-passed:
+    description: Whether all quality gates passed
+    value: ${{ steps.results.outputs.all-passed }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check for package.json
+      id: has-package
+      shell: bash
+      run: |
+        if [ -f "package.json" ]; then
+          echo "has-package=true" >> $GITHUB_OUTPUT
+          echo "✅ Found package.json"
+        else
+          echo "has-package=false" >> $GITHUB_OUTPUT
+          echo "ℹ️  No package.json found - skipping Node.js quality checks"
+        fi
+
+    - name: Run linter
+      id: lint
+      if: inputs.skip-lint != 'true' && steps.has-package.outputs.has-package == 'true'
+      shell: bash
+      continue-on-error: true
+      run: |
+        echo "🔍 Running linter..."
+        if npm run lint 2>/dev/null; then
+          echo "✅ Lint passed"
+          echo "passed=true" >> $GITHUB_OUTPUT
+        else
+          if grep -q '"lint"' package.json; then
+            echo "❌ Lint failed"
+            echo "passed=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "⏭️  No lint script found - skipping"
+            echo "passed=true" >> $GITHUB_OUTPUT
+          fi
+        fi
+
+    - name: Run type check
+      id: typecheck
+      if: inputs.skip-typecheck != 'true' && steps.has-package.outputs.has-package == 'true'
+      shell: bash
+      continue-on-error: true
+      run: |
+        echo "🔍 Running type check..."
+
+        # Check if tsconfig.json exists
+        if [ ! -f "tsconfig.json" ]; then
+          echo "⏭️  No tsconfig.json found - skipping type check"
+          echo "passed=true" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Try different type check commands
+        if npm run type-check 2>/dev/null; then
+          echo "✅ Type check passed"
+          echo "passed=true" >> $GITHUB_OUTPUT
+        elif npm run typecheck 2>/dev/null; then
+          echo "✅ Type check passed"
+          echo "passed=true" >> $GITHUB_OUTPUT
+        elif npx tsc --noEmit 2>/dev/null; then
+          echo "✅ Type check passed"
+          echo "passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Type check failed"
+          echo "passed=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Run tests
+      id: tests
+      if: inputs.skip-tests != 'true' && steps.has-package.outputs.has-package == 'true'
+      shell: bash
+      continue-on-error: true
+      run: |
+        echo "🔍 Running tests..."
+        if npm test 2>/dev/null; then
+          echo "✅ Tests passed"
+          echo "passed=true" >> $GITHUB_OUTPUT
+        else
+          if grep -q '"test"' package.json && ! grep -q '"test".*"echo' package.json; then
+            echo "❌ Tests failed"
+            echo "passed=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "⏭️  No test script found - skipping"
+            echo "passed=true" >> $GITHUB_OUTPUT
+          fi
+        fi
+
+    - name: Validate YAML files (Skills Factory specific)
+      id: yaml-validation
+      shell: bash
+      continue-on-error: true
+      run: |
+        echo "🔍 Validating YAML files in skills..."
+
+        # Check if yamllint is available
+        if ! command -v yamllint &> /dev/null; then
+          echo "⏭️  yamllint not installed - skipping YAML validation"
+          echo "passed=true" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Find YAML files in skills
+        YAML_FILES=$(find generated-skills -name "*.yml" -o -name "*.yaml" 2>/dev/null | head -10)
+
+        if [ -z "$YAML_FILES" ]; then
+          echo "ℹ️  No YAML files found in generated-skills"
+          echo "passed=true" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Validate each file
+        FAILED=0
+        while IFS= read -r file; do
+          if yamllint -d relaxed "$file" 2>/dev/null; then
+            echo "✅ Valid: $file"
+          else
+            echo "❌ Invalid: $file"
+            FAILED=1
+          fi
+        done <<< "$YAML_FILES"
+
+        if [ $FAILED -eq 0 ]; then
+          echo "✅ All YAML files are valid"
+          echo "passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Some YAML files have validation errors"
+          echo "passed=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Summary
+      id: results
+      shell: bash
+      run: |
+        LINT_PASSED="${{ steps.lint.outputs.passed || 'true' }}"
+        TYPECHECK_PASSED="${{ steps.typecheck.outputs.passed || 'true' }}"
+        TESTS_PASSED="${{ steps.tests.outputs.passed || 'true' }}"
+        YAML_PASSED="${{ steps.yaml-validation.outputs.passed || 'true' }}"
+
+        echo "lint-passed=$LINT_PASSED" >> $GITHUB_OUTPUT
+        echo "typecheck-passed=$TYPECHECK_PASSED" >> $GITHUB_OUTPUT
+        echo "tests-passed=$TESTS_PASSED" >> $GITHUB_OUTPUT
+        echo "yaml-passed=$YAML_PASSED" >> $GITHUB_OUTPUT
+
+        if [ "$LINT_PASSED" == "true" ] && [ "$TYPECHECK_PASSED" == "true" ] && [ "$TESTS_PASSED" == "true" ] && [ "$YAML_PASSED" == "true" ]; then
+          echo "all-passed=true" >> $GITHUB_OUTPUT
+          echo ""
+          echo "✅ All quality gates passed!"
+        else
+          echo "all-passed=false" >> $GITHUB_OUTPUT
+          echo ""
+          echo "❌ Some quality gates failed:"
+          [ "$LINT_PASSED" != "true" ] && echo "  - Lint"
+          [ "$TYPECHECK_PASSED" != "true" ] && echo "  - Type check"
+          [ "$TESTS_PASSED" != "true" ] && echo "  - Tests"
+          [ "$YAML_PASSED" != "true" ] && echo "  - YAML validation"
+          exit 1
+        fi

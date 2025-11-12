@@ -1,0 +1,85 @@
+name: Branch Cleanup
+description: Automatically deletes merged branches and posts confirmation
+
+inputs:
+  github-token:
+    description: GitHub token for API operations
+    required: true
+  skip-cleanup:
+    description: Skip branch cleanup (for forks or manual control)
+    required: false
+    default: 'false'
+
+outputs:
+  cleaned:
+    description: Whether branch was deleted
+    value: ${{ steps.cleanup.outputs.cleaned }}
+  branch-name:
+    description: Name of the deleted branch
+    value: ${{ steps.cleanup.outputs.branch-name }}
+
+runs:
+  using: composite
+  steps:
+    - name: Clean up merged branch
+      id: cleanup
+      if: inputs.skip-cleanup != 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        echo "🧹 Checking if branch cleanup is needed..."
+
+        # Get branch name from PR
+        BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+
+        if [ -z "$BRANCH_NAME" ]; then
+          echo "⏭️  Not a PR event - skipping cleanup"
+          echo "cleaned=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Check if PR is merged (not just closed)
+        PR_MERGED="${{ github.event.pull_request.merged }}"
+
+        if [ "$PR_MERGED" != "true" ]; then
+          echo "ℹ️  PR was closed but not merged - skipping branch deletion"
+          echo "cleaned=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        # Check if it's a protected branch pattern
+        if [[ "$BRANCH_NAME" =~ ^(main|dev|release/.*)$ ]]; then
+          echo "⚠️  Protected branch pattern detected: $BRANCH_NAME"
+          echo "   Skipping deletion for safety"
+          echo "cleaned=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
+        echo "🗑️  Deleting merged branch: $BRANCH_NAME"
+
+        # Delete the branch
+        if gh api \
+          --method DELETE \
+          -H "Accept: application/vnd.github+json" \
+          "/repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME" 2>/dev/null; then
+
+          echo "✅ Branch deleted: $BRANCH_NAME"
+          echo "cleaned=true" >> $GITHUB_OUTPUT
+          echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+          # Post confirmation comment
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "🧹 **Branch Cleanup**: Automatically deleted merged branch \`$BRANCH_NAME\`" \
+            2>/dev/null || echo "⚠️  Could not post comment (non-critical)"
+        else
+          echo "ℹ️  Branch may have already been deleted or is protected"
+          echo "cleaned=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Skip cleanup notice
+      if: inputs.skip-cleanup == 'true'
+      shell: bash
+      run: |
+        echo "⏭️  Branch cleanup skipped (skip-cleanup=true)"
+        echo "   This is normal for fork PRs or manual workflows"

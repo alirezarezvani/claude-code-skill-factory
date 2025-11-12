@@ -1,0 +1,30 @@
+name: Fork Safety Check
+description: Detects if PR is from a fork and sets appropriate permissions
+
+outputs:
+  is-fork:
+    description: Whether the PR is from a fork
+    value: ${{ steps.check.outputs.is-fork }}
+  should-skip-writes:
+    description: Whether write operations should be skipped
+    value: ${{ steps.check.outputs.should-skip-writes }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check if PR is from fork
+      id: check
+      shell: bash
+      run: |
+        if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+          echo "is-fork=true" >> $GITHUB_OUTPUT
+          echo "should-skip-writes=true" >> $GITHUB_OUTPUT
+          echo "⚠️  PR is from a fork repository"
+          echo "   Source: ${{ github.event.pull_request.head.repo.full_name }}"
+          echo "   Target: ${{ github.repository }}"
+          echo "   Write operations will be restricted for security"
+        else
+          echo "is-fork=false" >> $GITHUB_OUTPUT
+          echo "should-skip-writes=false" >> $GITHUB_OUTPUT
+          echo "✅ PR is from the same repository"
+        fi
