@@ -12,6 +12,21 @@ The `generated-skills/` folder contains complete, production-ready skills create
 
 ## ⚠️ CRITICAL: Skill Generation Standards
 
+### Critical Validation Rule
+
+**"Always validate your output against official native examples before declaring complete."**
+
+When generating skills in this folder:
+1. Compare output against official Anthropic documentation
+2. Check reference examples in `../documentation/references/`
+3. Verify all required sections/fields are present (e.g., project structure diagrams for CLAUDE.md skills)
+4. Cross-check against similar generated examples in this folder
+5. **Never assume completion without validation**
+
+This prevents gaps like missing native format sections, setup instructions, or other required components.
+
+### File Inclusion Rules
+
 When generating or modifying skills in this folder, follow these strict rules:
 
 ### What MUST BE INCLUDED in skill folders:
@@ -375,6 +390,93 @@ When generating or modifying skills in this folder, follow these strict rules:
 
 ---
 
+### 9. CLAUDE.md Enhancer (50 KB) 🆕
+
+**Location**: `claude-md-enhancer/`
+
+**Files**:
+- `SKILL.md` - Skill definition and documentation
+- `workflow.py` - Interactive initialization workflow (329 lines)
+- `analyzer.py` - File analysis and quality scoring
+- `validator.py` - Best practices validation
+- `generator.py` - Content generation engine
+- `template_selector.py` - Template selection logic
+- `README.md` - Installation guide and overview
+- `HOW_TO_USE.md` - Comprehensive usage examples
+- `sample_input.json` - Example inputs (7 scenarios)
+- `expected_output.json` - Expected outputs
+- `examples/` - 7 built-in reference CLAUDE.md files
+
+**Purpose**: Analyze, generate, and enhance CLAUDE.md files for any project type with intelligent templates, best practices validation, and interactive initialization workflow
+
+**Key Classes**:
+- `InitializationWorkflow` - 7-step interactive workflow with repository exploration and user confirmation
+- `CLAUDEMDAnalyzer` - Quality scoring (0-100) and section analysis
+- `BestPracticesValidator` - 5-layer validation (length, structure, formatting, completeness, anti-patterns)
+- `ContentGenerator` - Generates root files and context-specific files (backend/, frontend/, database/)
+- `TemplateSelector` - Matrix-based template selection (project type × team size × phase)
+
+**Pattern**: Repository exploration → context detection (project type, tech stack, team size, phase, workflows) → user confirmation → CLAUDE.md generation → enhancement → validation
+
+**Interactive Initialization** (🆕 New Feature):
+1. Check if CLAUDE.md exists
+2. Explore repository (built-in Claude Code command)
+3. Detect project context automatically:
+   - Project types: web_app, api, fullstack, cli, library, mobile, desktop
+   - Tech stacks: TypeScript, Python, React, FastAPI, PostgreSQL, Docker, etc.
+   - Team sizes: solo, small (<10), medium (10-50), large (50+)
+   - Development phases: prototype, mvp, production, enterprise
+   - Workflows: TDD, CI/CD, documentation-first, agile
+4. Show discoveries to user for confirmation
+5. Create customized CLAUDE.md file(s) after approval
+6. Enhance with best practices
+7. Provide summary of created files
+
+**Quality Scoring** (0-100):
+- Length appropriateness: 25 points
+- Section completeness: 25 points
+- Formatting quality: 20 points
+- Content specificity: 15 points
+- Modular organization: 15 points
+
+**Template Matrix**:
+| Project Type | Team Size | Target Lines | Complexity |
+|--------------|-----------|--------------|------------|
+| Web App | Solo | 75 | Minimal |
+| API | Small (<10) | 125 | Core |
+| Full-Stack | Medium (10-50) | 200 | Detailed |
+| Library | Large (50+) | 275 | Comprehensive |
+
+**Modular Architecture Support**:
+- Root CLAUDE.md (navigation hub, <150 lines)
+- backend/CLAUDE.md (API and database guidelines)
+- frontend/CLAUDE.md (component standards, state management)
+- database/CLAUDE.md (schema, migrations, queries)
+- .github/CLAUDE.md (CI/CD workflows)
+
+**Built-in Examples** (7 Reference Files):
+1. `minimal-solo-CLAUDE.md` (~50 lines) - Solo developer prototypes
+2. `core-small-team-CLAUDE.md` (~125 lines) - Small team MVPs
+3. `modular-root-CLAUDE.md` (~100 lines) - Full-stack root navigation
+4. `modular-backend-CLAUDE.md` (~150 lines) - Backend-specific guidelines
+5. `modular-frontend-CLAUDE.md` (~175 lines) - Frontend-specific guidelines
+6. `python-api-CLAUDE.md` (~150 lines) - Python FastAPI projects
+7. `examples/README.md` - Examples catalog and selection guide
+
+**Use Cases**:
+- Interactive initialization for new projects (conversational workflow)
+- Analyze existing CLAUDE.md files for quality (score 0-100)
+- Generate customized CLAUDE.md from scratch (tech stack-specific)
+- Enhance existing files with missing sections
+- Validate before commits (5-layer validation)
+- Create modular architecture for complex projects
+- Adapt to team size changes (solo → small → medium → large)
+- Tech stack migration support (update guidelines)
+
+**Documentation**: See [claude-md-enhancer/README.md](claude-md-enhancer/README.md) and [claude-md-enhancer/HOW_TO_USE.md](claude-md-enhancer/HOW_TO_USE.md)
+
+---
+
 ## Installation
 
 ### General Installation Process
@@ -423,6 +525,7 @@ All skills can be customized for specific needs:
 | Psychology Advisor | 31 KB | Medium |
 | Content Trend Researcher | 35 KB | Medium |
 | Microsoft 365 Tenant Manager | 40 KB | Medium |
+| CLAUDE.md Enhancer | 50 KB | Medium |
 | AWS Solution Architect | 53 KB | High |
 | Hook Factory v2.0 | 92 KB | High |
 | Prompt Factory | 427 KB | Very High |

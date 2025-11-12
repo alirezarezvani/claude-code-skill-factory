@@ -1,0 +1,155 @@
+{
+  "outputs": [
+    {
+      "scenario": "initialize_new_project",
+      "output": {
+        "workflow_status": "completed",
+        "detected_context": {
+          "project_type": "fullstack",
+          "tech_stack": ["typescript", "react", "express"],
+          "team_size": "small",
+          "phase": "mvp",
+          "workflows": ["tdd", "cicd"],
+          "modular_recommended": true
+        },
+        "confirmation_prompt": "Based on my exploration, here's what I discovered:\n\n**Project Type**: Fullstack\n**Tech Stack**: typescript, react, express\n**Team Size**: Small (2-9 developers)\n**Development Phase**: Mvp\n**Workflows**: tdd, cicd\n\n**Recommended Structure**:\nModular architecture (separate CLAUDE.md files for major components)\n\nWould you like me to create a CLAUDE.md file based on these discoveries?",
+        "created_files": [
+          "CLAUDE.md",
+          "backend/CLAUDE.md",
+          "frontend/CLAUDE.md"
+        ],
+        "summary": "✅ CLAUDE.md Initialization Complete!\n\n**Created Files** (3):\n- CLAUDE.md\n- backend/CLAUDE.md\n- frontend/CLAUDE.md\n\n**Next Steps**:\n1. Review the generated CLAUDE.md file\n2. Customize for your specific needs\n3. Add team-specific conventions\n4. Update as your project evolves\n\nYour project is now set up for efficient AI-assisted development with Claude Code!"
+      }
+    },
+    {
+      "scenario": "analyze_existing",
+      "output": {
+        "analysis": {
+          "file_metrics": {
+            "char_count": 150,
+            "line_count": 12,
+            "word_count": 25,
+            "heading_count": 3,
+            "code_block_count": 0
+          },
+          "sections_found": ["Tech Stack", "Workflow"],
+          "missing_sections": [
+            "Quick Navigation",
+            "Core Principles",
+            "Quality Checklist",
+            "File Organization",
+            "Common Commands",
+            "References"
+          ],
+          "structure_analysis": {
+            "has_main_title": true,
+            "has_navigation_section": false,
+            "has_code_examples": false,
+            "has_links": false,
+            "mentions_modular_architecture": false,
+            "section_count": 2,
+            "subsection_count": 0,
+            "hierarchy_depth": 2
+          },
+          "issues": [
+            {
+              "type": "too_short",
+              "severity": "medium",
+              "message": "File is very short (12 lines). May need more guidance."
+            },
+            {
+              "type": "missing_critical_sections",
+              "severity": "high",
+              "message": "Missing critical sections: Core Principles"
+            }
+          ],
+          "quality_score": 35,
+          "recommendations": [
+            "CRITICAL: Add essential sections: Core Principles",
+            "Expand with essential sections: Core Principles, Tech Stack, Workflow Instructions",
+            "Consider adding: Quick Navigation, Quality Checklist, File Organization",
+            "Include code examples for complex patterns to improve clarity",
+            "Overall quality score is 35/100 - prioritize critical improvements"
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "create_new_fullstack",
+      "output": {
+        "root_file": "# CLAUDE.md\n\nThis file provides top-level guidance for Claude Code when working with this fullstack.\n\n## Quick Navigation\n\n- [Backend Guidelines](backend/CLAUDE.md)\n- [Frontend Guidelines](frontend/CLAUDE.md)\n- [Database Operations](database/CLAUDE.md)\n- [CI/CD Workflows](.github/CLAUDE.md)\n\n## Core Principles\n\n1. **Test-Driven Development**: Write tests before implementation\n2. **Use TypeScript strict mode throughout the project**: Use TypeScript strict mode throughout the project\n3. **Prefer functional components with hooks over class components**: Prefer functional components with hooks over class components\n4. **Use multi-stage Dockerfiles for optimized image size**: Use multi-stage Dockerfiles for optimized image size\n5. **Code Quality**: Maintain high code quality with clear, readable implementations\n\n## Tech Stack\n\n- **Languages**: TypeScript\n- **Frameworks**: React\n- **Tools**: PostgreSQL, Docker\n\n## Quick Reference\n\n```bash\n# Common development commands\nnpm test          # Run tests\nnpm run lint      # Run linter\nnpm run build     # Build for production\n```\n\n---\n\nFor detailed guidelines, see context-specific CLAUDE.md files in subdirectories.",
+        "context_files": {
+          "backend": "# Backend Development Guidelines\n\nThis file provides guidance for backend development in this project.\n\n## API Design\n\n- Use RESTful conventions for API endpoints\n- Implement proper HTTP status codes (200, 201, 400, 404, 500)\n- Version APIs when breaking changes are needed (/api/v1/, /api/v2/)\n- Document all endpoints with OpenAPI/Swagger\n\n## Database Operations\n\n- Use migrations for all schema changes\n- Implement proper indexes for query performance\n- Use transactions for multi-step operations\n- Avoid N+1 queries - use joins or batch loading\n\n## Error Handling\n\n- Implement global error handling middleware\n- Log errors with context (request ID, user ID, timestamp)\n- Return consistent error response format\n- Never expose stack traces to clients in production\n\n## Testing Requirements\n\n- Write unit tests for business logic\n- Write integration tests for API endpoints\n- Mock external services in tests\n- Aim for 80%+ code coverage\n",
+          "frontend": "# Frontend Development Guidelines\n\nThis file provides guidance for frontend development in this project.\n\n## Component Standards\n\n- Prefer functional components with hooks over class components\n- Use TypeScript for type safety\n- Keep components small and focused (< 200 lines)\n- Extract reusable logic into custom hooks\n\n## State Management\n\n- Keep component state local when possible\n- Use global state only for truly shared data\n- Avoid prop drilling - use context/store for deep state\n- Document state shape and update patterns\n\n## Styling Guidelines\n\n- Use consistent naming conventions (BEM, CSS Modules, etc.)\n- Avoid inline styles except for dynamic values\n- Use design tokens for colors, spacing, typography\n- Ensure responsive design for all breakpoints\n\n## Performance Optimization\n\n- Lazy load routes and heavy components\n- Optimize images (use WebP, lazy loading)\n- Minimize bundle size - code split where possible\n- Use memoization for expensive calculations\n",
+          "database": "# Database Guidelines\n\nThis file provides guidance for database operations and migrations.\n\n## Schema Design\n\n- Use meaningful table and column names\n- Always include created_at and updated_at timestamps\n- Use proper foreign key constraints\n- Add indexes for frequently queried columns\n\n## Migration Guidelines\n\n- Never edit existing migrations - create new ones\n- Test migrations on copy of production data\n- Include both up and down migrations\n- Document breaking changes in migration comments\n\n## Query Optimization\n\n- Use EXPLAIN to analyze slow queries\n- Avoid SELECT * - specify needed columns\n- Use appropriate JOIN types\n- Limit result sets with pagination\n"
+        }
+      }
+    },
+    {
+      "scenario": "enhance_with_missing_sections",
+      "output": {
+        "enhanced_content": "# CLAUDE.md\n\n## Core Principles\n1. Write tests first\n2. Use TypeScript\n\n## Tech Stack\n- TypeScript\n- React\n- PostgreSQL\n\n## Testing Requirements\n\n- Write tests before or alongside feature implementation\n- Maintain minimum 80% code coverage\n- Include unit, integration, and e2e tests\n- Mock external dependencies in tests\n\n## Error Handling Patterns\n\n- Implement comprehensive error handling from the start\n- Log errors with context (user ID, request ID, timestamp)\n- Provide helpful error messages to users\n- Never expose sensitive information in error messages\n\n## Performance Guidelines\n\n[Add performance guidelines specific to your project]\n",
+        "sections_added": ["Testing Requirements", "Error Handling Patterns", "Performance Guidelines"]
+      }
+    },
+    {
+      "scenario": "validate_existing",
+      "output": {
+        "valid": true,
+        "validation_results": {
+          "length": {
+            "check": "file_length",
+            "status": "pass",
+            "message": "File length is appropriate (19 lines)",
+            "severity": "info",
+            "actual_value": 19,
+            "expected_range": "20-300 lines"
+          },
+          "structure": {
+            "check": "file_structure",
+            "status": "pass",
+            "message": "Structure validation complete",
+            "severity": "info",
+            "errors": [],
+            "warnings": [],
+            "sections_found": 5
+          },
+          "formatting": {
+            "check": "markdown_formatting",
+            "status": "pass",
+            "message": "Formatting validation complete",
+            "severity": "low",
+            "errors": [],
+            "warnings": []
+          },
+          "completeness": {
+            "check": "content_completeness",
+            "status": "pass",
+            "message": "Completeness validation complete",
+            "severity": "medium",
+            "errors": [],
+            "warnings": [],
+            "has_code_examples": false,
+            "has_links": false,
+            "has_lists": true,
+            "tech_stack_mentioned": true
+          },
+          "anti_patterns": {
+            "check": "anti_patterns",
+            "status": "pass",
+            "message": "No anti-patterns detected",
+            "severity": "info",
+            "detected_patterns": []
+          }
+        },
+        "errors": [],
+        "warnings": [
+          "No code examples found - consider adding examples for clarity",
+          "No links found - consider linking to external documentation"
+        ],
+        "pass_count": 5,
+        "fail_count": 0
+      }
+    }
+  ]
+}

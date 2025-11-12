@@ -54,6 +54,19 @@ claude-code-skills-factory/
 
 ## Key Principles
 
+### 0. Critical Validation Rule ⚠️
+
+**"Always validate your output against official native examples before declaring complete."**
+
+When generating skills, agents, prompts, or slash commands:
+1. Compare output against official Anthropic documentation
+2. Check reference examples in `documentation/references/`
+3. Verify all required sections/fields are present
+4. Cross-check against similar generated examples
+5. **Never assume completion without validation**
+
+This prevents gaps like missing project structure diagrams, setup instructions, or other native format requirements.
+
 ### 1. Don't Overengineer
 Skills should be as simple as possible while solving the problem. Avoid unnecessary complexity.
 
