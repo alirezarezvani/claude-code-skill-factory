@@ -1,0 +1,109 @@
+{
+  "examples": [
+    {
+      "scenario": "initialize_new_project",
+      "description": "Interactive initialization workflow for new project without CLAUDE.md",
+      "input": {
+        "mode": "initialize",
+        "exploration_results": {
+          "files": ["package.json", "tsconfig.json", "README.md", ".github/workflows/ci.yml"],
+          "directories": ["src", "backend", "frontend", "tests", ".github/workflows"],
+          "file_contents": {
+            "package.json": "{\"dependencies\": {\"react\": \"^18.0.0\", \"typescript\": \"^5.0.0\", \"express\": \"^4.18.0\"}}",
+            "README.md": "# Full-Stack TypeScript Project"
+          }
+        },
+        "user_confirmation": "yes"
+      }
+    },
+    {
+      "scenario": "analyze_existing",
+      "description": "Analyze an existing CLAUDE.md file for quality and completeness",
+      "input": {
+        "mode": "analyze",
+        "content": "# CLAUDE.md\n\nThis is a basic CLAUDE file.\n\n## Tech Stack\n- TypeScript\n- React\n- Node.js\n\n## Workflow\n- Use Git for version control\n- Write tests\n\n",
+        "project_context": {
+          "type": "web_app",
+          "tech_stack": ["typescript", "react", "node"],
+          "team_size": "small",
+          "phase": "mvp"
+        }
+      }
+    },
+    {
+      "scenario": "create_new_fullstack",
+      "description": "Create new CLAUDE.md for a full-stack TypeScript project",
+      "input": {
+        "mode": "create",
+        "project_context": {
+          "type": "fullstack",
+          "tech_stack": ["typescript", "react", "node", "postgresql", "docker"],
+          "team_size": "small",
+          "phase": "mvp",
+          "workflows": ["tdd", "cicd", "documentation_first"]
+        },
+        "modular": true,
+        "subdirectories": ["backend", "frontend", "database"]
+      }
+    },
+    {
+      "scenario": "enhance_with_missing_sections",
+      "description": "Enhance existing file by adding missing sections",
+      "input": {
+        "mode": "enhance",
+        "content": "# CLAUDE.md\n\n## Core Principles\n1. Write tests first\n2. Use TypeScript\n\n## Tech Stack\n- TypeScript\n- React\n- PostgreSQL\n",
+        "project_context": {
+          "type": "web_app",
+          "tech_stack": ["typescript", "react", "postgresql"],
+          "team_size": "medium",
+          "phase": "production"
+        },
+        "add_sections": ["Testing Requirements", "Error Handling Patterns", "Performance Guidelines"]
+      }
+    },
+    {
+      "scenario": "create_modular_architecture",
+      "description": "Create modular CLAUDE.md setup for large team",
+      "input": {
+        "mode": "create",
+        "project_context": {
+          "type": "api",
+          "tech_stack": ["python", "fastapi", "postgresql", "redis", "docker", "kubernetes"],
+          "team_size": "large",
+          "phase": "enterprise",
+          "workflows": ["tdd", "cicd", "agile"]
+        },
+        "modular": true,
+        "subdirectories": ["backend", "database", "docs", ".github"]
+      }
+    },
+    {
+      "scenario": "validate_existing",
+      "description": "Validate existing CLAUDE.md against best practices",
+      "input": {
+        "mode": "validate",
+        "content": "# CLAUDE.md\n\nGuidance for development.\n\n## Core Principles\n\n1. Code quality matters\n2. Test everything\n3. Document changes\n\n## Tech Stack\n\n- React 18\n- TypeScript 5\n- Node 20\n- PostgreSQL 15\n\n## Workflow Instructions\n\n### Development Process\n\n1. Create feature branch\n2. Write tests\n3. Implement feature\n4. Create PR\n5. Code review\n6. Merge to main\n\n## Testing Requirements\n\n- Unit tests for all business logic\n- Integration tests for API endpoints\n- E2E tests for critical user flows\n- Minimum 80% code coverage\n\n## Error Handling\n\n- Use try-catch blocks\n- Log errors with context\n- Return meaningful error messages\n- Never expose sensitive data\n\n",
+        "project_context": {
+          "type": "fullstack",
+          "tech_stack": ["typescript", "react", "node", "postgresql"],
+          "team_size": "small",
+          "phase": "production"
+        }
+      }
+    },
+    {
+      "scenario": "generate_context_specific",
+      "description": "Generate backend-specific CLAUDE.md file",
+      "input": {
+        "mode": "generate_context",
+        "context": "backend",
+        "project_context": {
+          "type": "api",
+          "tech_stack": ["python", "fastapi", "postgresql"],
+          "team_size": "small",
+          "phase": "mvp"
+        }
+      }
+    }
+  ]
+}
