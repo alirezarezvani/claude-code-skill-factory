@@ -1,0 +1,517 @@
+# ─────────────────────────────────────────────────────────────────
+# Release to Main Workflow (Release Gates)
+# ─────────────────────────────────────────────────────────────────
+# Validates release pull requests before merging to main (production).
+#
+# Release Gates:
+# - Source must be dev or release/* branches
+# - Quality gates must pass (stricter than dev)
+# - YAML validation for all skills
+# - Security quick scan (secrets, debug statements)
+# - Deployment readiness checklist
+#
+# Allowed source branches:
+# - dev: Production releases (standard flow)
+# - release/*: Emergency hotfix releases
+# - dependabot/*: Automated dependency updates
+#
+# All other branches (feature/*, fix/*, test/*) must merge to dev first.
+#
+# Created: November 13, 2025
+# Part of: GitHub Workflow Implementation (Day 4)
+# ─────────────────────────────────────────────────────────────────
+
+name: Release to Main
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+# Only one release PR can be processed at a time
+concurrency:
+  group: release-to-main
+  cancel-in-progress: false
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # Source Branch Validation
+  # ─────────────────────────────────────────────────────────────────
+  validate-source:
+    name: Validate Source Branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate source is dev or release/* branch
+        run: |
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          ACTOR="${{ github.actor }}"
+          echo "🔍 Validating source branch: $SOURCE_BRANCH (Actor: $ACTOR)"
+
+          # Allow dependabot PRs to bypass dev branch requirement
+          # Check both actor name and branch name prefix
+          if [[ "$ACTOR" == "dependabot[bot]" ]] || [[ "$SOURCE_BRANCH" =~ ^dependabot/ ]]; then
+            echo "✅ Dependabot PR detected - skipping source branch validation"
+            echo "   Dependabot PRs are allowed to merge directly to main"
+            echo "   Actor: $ACTOR"
+            echo "   Branch: $SOURCE_BRANCH"
+            exit 0
+          fi
+
+          # Allowlist: branches permitted to merge to main
+          # Only: dev (production), release/* (hotfixes)
+          # All other branches (feature/*, fix/*, test/*) must go through dev first
+          ALLOWED_REGEX='^(dev|release/.*)$'
+
+          if [[ ! $SOURCE_BRANCH =~ $ALLOWED_REGEX ]]; then
+            echo "❌ Invalid source branch: $SOURCE_BRANCH"
+            echo ""
+            echo "Only dev and release/* branches may be merged to 'main'."
+            echo ""
+            echo "Allowed patterns:"
+            echo "  - dev (production releases)"
+            echo "  - release/* (emergency hotfixes)"
+            echo ""
+            echo "Got: $SOURCE_BRANCH → main"
+            echo ""
+            echo "All other branches (feature/*, fix/*, test/*) must merge to dev first:"
+            echo "  $SOURCE_BRANCH → dev → main"
+            echo ""
+            echo "This ensures proper testing and review before production deployment."
+            exit 1
+          fi
+
+          echo "✅ Source branch is valid: $SOURCE_BRANCH → main"
+
+  # ─────────────────────────────────────────────────────────────────
+  # Quality Gates (Stricter than dev branch)
+  # ─────────────────────────────────────────────────────────────────
+  quality-checks:
+    name: Quality Gates (Production)
+    runs-on: ubuntu-latest
+    needs: validate-source
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            echo "📦 Installing dependencies..."
+            npm ci 2>/dev/null || npm install 2>/dev/null || echo "⏭️  No dependencies to install"
+          else
+            echo "⏭️  No package.json found - skipping dependency installation"
+          fi
+
+      - name: Run quality gates
+        id: quality
+        uses: ./.github/actions/quality-gates
+        with:
+          skip-lint: 'false'
+          skip-typecheck: 'false'
+          skip-tests: 'false'
+
+      - name: Verify all quality gates passed
+        if: steps.quality.outputs.all-passed != 'true'
+        run: |
+          echo "❌ Quality gates failed"
+          echo ""
+          echo "Production releases require all quality checks to pass:"
+          echo "  - Lint: ${{ steps.quality.outputs.lint-passed }}"
+          echo "  - Type Check: ${{ steps.quality.outputs.typecheck-passed }}"
+          echo "  - Tests: ${{ steps.quality.outputs.tests-passed }}"
+          echo ""
+          echo "Please fix all quality issues before merging to main."
+          exit 1
+
+  # ─────────────────────────────────────────────────────────────────
+  # Skills YAML Validation (Skills Factory Specific)
+  # ─────────────────────────────────────────────────────────────────
+  validate-skills:
+    name: Validate Skills YAML
+    runs-on: ubuntu-latest
+    needs: validate-source
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: |
+          if ! command -v yamllint &> /dev/null; then
+            echo "📦 Installing yamllint..."
+            pip3 install yamllint
+          else
+            echo "✅ yamllint already installed"
+          fi
+
+      - name: Validate all YAML files in generated-skills
+        run: |
+          echo "🔍 Validating YAML files in generated-skills/..."
+
+          # Find all YAML files in generated-skills
+          YAML_FILES=$(find generated-skills -name "*.yml" -o -name "*.yaml" 2>/dev/null)
+
+          if [ -z "$YAML_FILES" ]; then
+            echo "ℹ️  No YAML files found in generated-skills/"
+            echo "   This is normal if no skills have been generated yet."
+            exit 0
+          fi
+
+          # Count files
+          FILE_COUNT=$(echo "$YAML_FILES" | wc -l | tr -d ' ')
+          echo "Found $FILE_COUNT YAML file(s) to validate"
+
+          # Validate each file
+          FAILED=0
+          FAILED_FILES=()
+
+          while IFS= read -r file; do
+            if yamllint -d relaxed "$file" 2>/dev/null; then
+              echo "✅ Valid: $file"
+            else
+              echo "❌ Invalid: $file"
+              FAILED=1
+              FAILED_FILES+=("$file")
+            fi
+          done <<< "$YAML_FILES"
+
+          if [ $FAILED -eq 0 ]; then
+            echo ""
+            echo "✅ All $FILE_COUNT YAML file(s) are valid"
+          else
+            echo ""
+            echo "❌ Some YAML files have validation errors:"
+            for failed_file in "${FAILED_FILES[@]}"; do
+              echo "  - $failed_file"
+            done
+            echo ""
+            echo "Please fix YAML syntax errors before merging to main."
+            exit 1
+          fi
+
+  # ─────────────────────────────────────────────────────────────────
+  # Security Quick Scan (Skills Factory Specific)
+  # ─────────────────────────────────────────────────────────────────
+  security-scan:
+    name: Security Quick Scan
+    runs-on: ubuntu-latest
+    needs: validate-source
+    continue-on-error: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "🔍 Checking for potential hardcoded secrets..."
+
+          ISSUES_FOUND=0
+
+          # Check for API keys, tokens, passwords in skills
+          echo "Scanning generated-skills/ for secrets..."
+          if grep -r -i "api[_-]key\s*=\|api[_-]secret\s*=\|password\s*=\|token\s*=\|secret\s*=" \
+              generated-skills/ \
+              --include="*.md" --include="*.py" --include="*.js" --include="*.ts" \
+              2>/dev/null | grep -v "example\|placeholder\|YOUR_API_KEY"; then
+            echo "⚠️  Potential hardcoded secrets found in skills (review manually)"
+            ((ISSUES_FOUND++))
+          else
+            echo "✅ No obvious secrets found in skills"
+          fi
+
+          # Check for AWS/GCP credentials
+          echo "Checking for cloud credentials..."
+          if grep -r -i "aws_access_key_id\|aws_secret_access_key\|gcp_service_account" \
+              generated-skills/ \
+              --include="*.md" --include="*.py" --include="*.json" \
+              2>/dev/null | grep -v "example\|placeholder"; then
+            echo "⚠️  Potential cloud credentials found (review manually)"
+            ((ISSUES_FOUND++))
+          else
+            echo "✅ No cloud credentials found"
+          fi
+
+          if [[ $ISSUES_FOUND -eq 0 ]]; then
+            echo ""
+            echo "✅ Security scan passed - no obvious secrets found"
+          else
+            echo ""
+            echo "⚠️  Found $ISSUES_FOUND potential issue(s) - manual review recommended"
+            echo "   This is informational only and won't block the release."
+          fi
+
+      - name: Check for debug statements in Python skills
+        run: |
+          echo "🔍 Checking for debug statements in Python skills..."
+
+          # Check for print() statements (common debug tool)
+          if find generated-skills/ -name "*.py" -exec grep -l "print(" {} \; 2>/dev/null | grep -v "__pycache__"; then
+            echo "⚠️  Found print() statements in Python skills"
+            echo "   Consider using proper logging instead for production skills."
+          else
+            echo "✅ No debug print statements found"
+          fi
+
+      - name: Check npm dependencies for vulnerabilities
+        if: hashFiles('package.json') != ''
+        run: |
+          echo "🔍 Running npm audit..."
+          npm audit --audit-level=moderate || echo "⚠️  Vulnerabilities found (informational only)"
+
+      - name: Generate security report
+        if: always()
+        run: |
+          echo "# 🔒 Security Scan Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** Informational (non-blocking)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Security quick scan completed. Review the logs above for details." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️  **Note:** This is a basic scan only. For production releases, consider:" >> $GITHUB_STEP_SUMMARY
+          echo "- Full security audit with \`npm audit\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Manual review of generated skills for sensitive data" >> $GITHUB_STEP_SUMMARY
+          echo "- Dependency vulnerability scanning (Snyk, Dependabot)" >> $GITHUB_STEP_SUMMARY
+          echo "- Code quality analysis (SonarQube, CodeQL)" >> $GITHUB_STEP_SUMMARY
+
+  # ─────────────────────────────────────────────────────────────────
+  # Deployment Readiness Checklist
+  # ─────────────────────────────────────────────────────────────────
+  deployment-readiness:
+    name: Deployment Readiness
+    runs-on: ubuntu-latest
+    needs:
+      - validate-source
+      - quality-checks
+      - validate-skills
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check version bump
+        id: version-check
+        run: |
+          echo "📦 Checking version..."
+
+          if [ -f "package.json" ]; then
+            VERSION=$(jq -r '.version' package.json 2>/dev/null || echo "unknown")
+            echo "Current version: $VERSION"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️  package.json not found - skipping version check"
+            echo "version=N/A" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check changelog
+        id: changelog-check
+        run: |
+          echo "📝 Checking changelog..."
+
+          if [ -f "CHANGELOG.md" ]; then
+            echo "✅ Found CHANGELOG.md"
+
+            # Check if changelog has recent updates (within last 7 days)
+            DAYS_OLD=$(find CHANGELOG.md -mtime +7 2>/dev/null | wc -l | tr -d ' ')
+
+            if [[ "$DAYS_OLD" -eq 0 ]]; then
+              echo "✅ CHANGELOG.md was updated recently (within 7 days)"
+              echo "changelog-updated=true" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️  CHANGELOG.md hasn't been updated in over 7 days"
+              echo "   Consider updating it with release notes."
+              echo "changelog-updated=false" >> $GITHUB_OUTPUT
+            fi
+
+            echo "changelog-found=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  CHANGELOG.md not found"
+            echo "   Consider creating one for production releases."
+            echo "changelog-found=false" >> $GITHUB_OUTPUT
+            echo "changelog-updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check README updates
+        id: readme-check
+        run: |
+          echo "📖 Checking README updates..."
+
+          if [ -f "README.md" ]; then
+            echo "✅ README.md exists"
+
+            # Check if README mentions the current version
+            if [ -f "package.json" ]; then
+              VERSION=$(jq -r '.version' package.json 2>/dev/null || echo "unknown")
+              if grep -q "$VERSION" README.md 2>/dev/null; then
+                echo "✅ README.md mentions current version ($VERSION)"
+              else
+                echo "ℹ️  README.md doesn't mention current version"
+                echo "   This is optional but recommended for major releases."
+              fi
+            fi
+
+            echo "readme-found=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  README.md not found (unusual)"
+            echo "readme-found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Count new/modified skills
+        id: skills-count
+        run: |
+          echo "📊 Counting skills changes..."
+
+          # Count SKILL.md files in generated-skills
+          SKILL_COUNT=$(find generated-skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+
+          echo "Total skills in repository: $SKILL_COUNT"
+          echo "skill-count=$SKILL_COUNT" >> $GITHUB_OUTPUT
+
+      - name: Generate deployment readiness report
+        run: |
+          echo "# 🚀 Deployment Readiness Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## ✅ Pre-Deployment Checks" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Source Branch | ✅ dev → main |" >> $GITHUB_STEP_SUMMARY
+          echo "| Quality Gates | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Skills YAML Validation | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scan | ℹ️ Informational |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## 📊 Release Information" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** \`${{ steps.version-check.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Changelog:** ${{ steps.changelog-check.outputs.changelog-found == 'true' && '✅ Found' || '⚠️ Not found' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **README:** ${{ steps.readme-check.outputs.readme-found == 'true' && '✅ Found' || '⚠️ Not found' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Skills:** ${{ steps.skills-count.outputs.skill-count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## 📋 Pre-Merge Checklist" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Before merging this release PR, ensure:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Version bumped in package.json (if applicable)" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] CHANGELOG.md updated with release notes" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] All new skills tested and documented" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] README updated with new features" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Breaking changes documented (if any)" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Migration guide provided (if needed)" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Generated skills reviewed for quality" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] No hardcoded secrets or credentials" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+  # ─────────────────────────────────────────────────────────────────
+  # Final Release Status
+  # ─────────────────────────────────────────────────────────────────
+  release-status:
+    name: Release Gate Status
+    runs-on: ubuntu-latest
+    needs:
+      - validate-source
+      - quality-checks
+      - validate-skills
+      - deployment-readiness
+    if: always()
+
+    steps:
+      - name: Generate final release summary
+        run: |
+          echo "# 🎯 Release Gate Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## ✅ Required Checks" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          # Source validation
+          if [[ "${{ needs.validate-source.result }}" == "success" ]]; then
+            echo "| Source Branch | ✅ Valid (dev → main) |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Source Branch | ❌ Invalid |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Quality checks
+          if [[ "${{ needs.quality-checks.result }}" == "success" ]]; then
+            echo "| Quality Gates | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Quality Gates | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Skills validation
+          if [[ "${{ needs.validate-skills.result }}" == "success" ]]; then
+            echo "| Skills YAML Validation | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Skills YAML Validation | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Deployment readiness
+          if [[ "${{ needs.deployment-readiness.result }}" == "success" ]]; then
+            echo "| Deployment Readiness | ✅ Ready |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Deployment Readiness | ❌ Not Ready |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Overall status - check if ALL required gates passed
+          VALIDATE_RESULT="${{ needs.validate-source.result }}"
+          QUALITY_RESULT="${{ needs.quality-checks.result }}"
+          SKILLS_RESULT="${{ needs.validate-skills.result }}"
+          DEPLOY_RESULT="${{ needs.deployment-readiness.result }}"
+
+          if [[ "$VALIDATE_RESULT" != "success" ]] || \
+             [[ "$QUALITY_RESULT" != "success" ]] || \
+             [[ "$SKILLS_RESULT" != "success" ]] || \
+             [[ "$DEPLOY_RESULT" != "success" ]]; then
+            echo "## ❌ Release Blocked" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "One or more release gates did not pass. Please fix the issues before merging to production." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Gate Results:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Source validation: $VALIDATE_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo "- Quality gates: $QUALITY_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo "- Skills validation: $SKILLS_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo "- Deployment readiness: $DEPLOY_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Review the failed checks above and fix all issues before attempting to merge." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "## ✅ Release Approved" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "All release gates passed! This release is ready to be deployed to production." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🚀 Next Steps:" >> $GITHUB_STEP_SUMMARY
+            echo "1. ✅ Review the pre-merge checklist in the deployment readiness report above" >> $GITHUB_STEP_SUMMARY
+            echo "2. 👥 Get required approvals from team members" >> $GITHUB_STEP_SUMMARY
+            echo "3. 🔀 Merge this PR to deploy to production (main branch)" >> $GITHUB_STEP_SUMMARY
+            echo "4. 🏷️ Tag the release with the version number" >> $GITHUB_STEP_SUMMARY
+            echo "5. 📢 Announce the release to users (GitHub release notes, changelog)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Claude Code Skills Factory** is ready for production deployment! 🎉" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Release validation completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')_" >> $GITHUB_STEP_SUMMARY
